@@ -1,0 +1,414 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Admin / Auth
+// ---------------------------------------------------------------------------
+
+enum AdminRole {
+  SUPER_ADMIN
+  EDITOR
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         AdminRole @default(EDITOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  articles     Article[]
+  actionLogs   AdminActionLog[]
+
+  @@map("admin_users")
+}
+
+model AdminActionLog {
+  id          String   @id @default(cuid())
+  adminId     String
+  admin       AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([adminId])
+  @@index([entityType, entityId])
+  @@map("admin_action_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Articles (Actualites)
+// ---------------------------------------------------------------------------
+
+enum ArticleStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+}
+
+enum ArticleCategory {
+  SENEGAL
+  AFRIQUE
+  INTERNATIONAL
+  MERCATO
+  CAN
+  LIGUE_DES_CHAMPIONS
+  JEUNES_TALENTS
+  SELECTIONS_NATIONALES
+}
+
+model Article {
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  excerpt       String
+  content       String
+  coverImage    String?
+  category      ArticleCategory
+  tags          String[]        @default([])
+  country       String?
+  competition   String?
+  status        ArticleStatus   @default(DRAFT)
+  publishedAt   DateTime?
+  views         Int             @default(0)
+  authorId      String?
+  author        AdminUser?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  @@index([category])
+  @@index([status, publishedAt])
+  @@index([deletedAt])
+  @@map("articles")
+}
+
+// ---------------------------------------------------------------------------
+// Videos
+// ---------------------------------------------------------------------------
+
+enum VideoCategory {
+  INTERVIEWS
+  MICRO_TROTTOIRS
+  REPORTAGES
+  ACTUALITES
+  DEBATS
+  HIGHLIGHTS
+  SHORTS
+  TALENTS
+}
+
+enum VideoPlatform {
+  SITE
+  YOUTUBE
+  TIKTOK
+  FACEBOOK
+  INSTAGRAM
+}
+
+enum VideoStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Video {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  thumbnail   String?
+  platform    VideoPlatform
+  url         String
+  category    VideoCategory
+  status      VideoStatus   @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  playerId    String?
+  player      Player?       @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  deletedAt   DateTime?
+
+  @@index([category, status])
+  @@map("videos")
+}
+
+// ---------------------------------------------------------------------------
+// Players / Talents
+// ---------------------------------------------------------------------------
+
+enum PlayerPosition {
+  GARDIEN
+  DEFENSEUR_CENTRAL
+  LATERAL_DROIT
+  LATERAL_GAUCHE
+  MILIEU_DEFENSIF
+  MILIEU_CENTRAL
+  MILIEU_OFFENSIF
+  AILIER_DROIT
+  AILIER_GAUCHE
+  AVANT_CENTRE
+}
+
+enum StrongFoot {
+  DROIT
+  GAUCHE
+  AMBIDEXTRE
+}
+
+enum PlayerStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Player {
+  id              String         @id @default(cuid())
+  firstName       String
+  lastName        String
+  slug            String         @unique
+  photo           String?
+  nationality     String
+  flag            String?
+  birthDate       DateTime
+  height          Int?
+  weight          Int?
+  position        PlayerPosition
+  secondaryPosition PlayerPosition?
+  strongFoot      StrongFoot
+  club            String?
+  previousClub    String?
+  number          Int?
+  bio             String?
+  cvUrl           String?
+  documentUrls    String[]       @default([])
+  status          PlayerStatus   @default(DRAFT)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+
+  stats           PlayerStat[]
+  videos          Video[]
+  candidacy       Candidacy?     @relation(fields: [candidacyId], references: [id], onDelete: SetNull)
+  candidacyId     String?        @unique
+
+  @@index([status])
+  @@map("players")
+}
+
+model PlayerStat {
+  id                String  @id @default(cuid())
+  playerId          String
+  player            Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  competition       String
+  season            String
+  matches           Int     @default(0)
+  goals             Int     @default(0)
+  assists           Int     @default(0)
+  minutesPlayed     Int     @default(0)
+
+  @@index([playerId])
+  @@map("player_stats")
+}
+
+// ---------------------------------------------------------------------------
+// Candidacy ("Devenir joueur")
+// ---------------------------------------------------------------------------
+
+enum CandidacyStatus {
+  PENDING
+  INFO_REQUESTED
+  ACCEPTED
+  REJECTED
+}
+
+model Candidacy {
+  id                  String          @id @default(cuid())
+
+  // Etape 1 - informations personnelles
+  firstName           String
+  lastName             String
+  birthDate            DateTime
+  nationality          String
+  residenceCountry     String
+  phone                String
+  whatsapp             String?
+  email                String
+
+  // Etape 2 - informations football
+  mainPosition         PlayerPosition
+  secondaryPosition    PlayerPosition?
+  strongFoot           StrongFoot
+  height               Int?
+  weight               Int?
+  currentClub          String?
+  level                String?
+  previousClub         String?
+
+  // Etape 3 - passeport
+  hasPassport          Boolean         @default(false)
+  passportCountry      String?
+  passportExpiry       DateTime?
+
+  // Etape 4 - parcours football
+  clubHistory          String?
+  experience           String?
+  selections            String?
+  competitionsPlayed    String?
+  honours               String?
+
+  // Etape 5 - videos
+  youtubeLink          String?
+  tiktokLink           String?
+  driveLink            String?
+  otherVideoLinks       String[]        @default([])
+
+  // Etape 6 - documents (Vercel Blob URLs)
+  photoUrl             String?
+  cvUrl                String?
+  documentUrls          String[]        @default([])
+
+  // Etape 7 - consentement
+  consentGiven         Boolean         @default(false)
+
+  status               CandidacyStatus @default(PENDING)
+  adminNote            String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  player               Player?
+
+  @@index([status])
+  @@map("candidacies")
+}
+
+// ---------------------------------------------------------------------------
+// Events
+// ---------------------------------------------------------------------------
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  RESULTS_PUBLISHED
+}
+
+model Event {
+  id                     String       @id @default(cuid())
+  name                   String
+  slug                   String       @unique
+  date                   DateTime
+  location               String
+  price                  String?
+  registrationConditions String?
+  contact                String?
+  poster                 String?
+  photos                 String[]     @default([])
+  videos                 String[]     @default([])
+  results                String?
+  status                 EventStatus  @default(DRAFT)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  deletedAt              DateTime?
+
+  registrations          EventRegistration[]
+
+  @@map("events")
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fullName  String
+  email     String
+  phone     String
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
+  @@map("event_registrations")
+}
+
+// ---------------------------------------------------------------------------
+// Advertisements / Partners
+// ---------------------------------------------------------------------------
+
+enum AdFormat {
+  BANNER
+  IMAGE
+  VIDEO
+  SPONSORED_ARTICLE
+}
+
+enum AdPlacement {
+  HOME
+  ACTUALITES
+  ARTICLE
+  VIDEOS
+  TALENTS
+  FOOTER
+}
+
+model Advertisement {
+  id         String      @id @default(cuid())
+  title      String
+  format     AdFormat
+  placement  AdPlacement
+  mediaUrl   String
+  linkUrl    String?
+  active     Boolean     @default(false)
+  startDate  DateTime?
+  endDate    DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+
+  @@index([placement, active])
+  @@map("advertisements")
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String?
+  website   String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("partners")
+}
+
+// ---------------------------------------------------------------------------
+// Contact messages
+// ---------------------------------------------------------------------------
+
+enum MessageType {
+  CONTACT
+  PARTNERSHIP
+  MEDIA
+  PLAYER
+}
+
+model ContactMessage {
+  id        String      @id @default(cuid())
+  type      MessageType @default(CONTACT)
+  fullName  String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  read      Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  deletedAt DateTime?
+
+  @@index([type, read])
+  @@map("contact_messages")
+}

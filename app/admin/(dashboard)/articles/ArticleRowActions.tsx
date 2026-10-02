@@ -1,0 +1,66 @@
+"use client";
+
+import { useTransition } from "react";
+import { Button } from "@/components/ui/Button";
+import { deleteArticle, restoreArticle, toggleArticleStatus } from "@/app/actions/admin/articles";
+
+export function DeleteArticleButton({ id }: { id: string }) {
+  const [isPending, startTransition] = useTransition();
+
+  return (
+    <Button
+      type="button"
+      variant="destructive"
+      size="sm"
+      disabled={isPending}
+      onClick={() => {
+        if (confirm("Déplacer cet article vers la corbeille ?")) {
+          startTransition(() => deleteArticle(id));
+        }
+      }}
+    >
+      Supprimer
+    </Button>
+  );
+}
+
+export function RestoreArticleButton({ id }: { id: string }) {
+  const [isPending, startTransition] = useTransition();
+
+  return (
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      disabled={isPending}
+      onClick={() => startTransition(() => restoreArticle(id))}
+    >
+      Restaurer
+    </Button>
+  );
+}
+
+export function TogglePublishButton({
+  id,
+  status,
+}: {
+  id: string;
+  status: string;
+}) {
+  const [isPending, startTransition] = useTransition();
+  const isPublished = status === "PUBLISHED";
+
+  return (
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      disabled={isPending}
+      onClick={() =>
+        startTransition(() => toggleArticleStatus(id, isPublished ? "DRAFT" : "PUBLISHED"))
+      }
+    >
+      {isPublished ? "Dépublier" : "Publier"}
+    </Button>
+  );
+}

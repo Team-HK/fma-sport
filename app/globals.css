@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  /* FMA Sport design system v2 — Bleu royal / Or */
+  --color-primary: #0a14e6; /* Bleu royal */
+  --color-on-primary: #ffffff;
+  --color-secondary: #2f5bff; /* Électrique (hover) */
+  --color-on-secondary: #ffffff;
+  --color-accent: #e8b923; /* Or */
+  --color-on-accent: #3d2e00;
+  --color-background: #f7f9ff; /* Fond */
+  --color-foreground: #0b1b5c; /* Bleu profond */
+  --color-card: #ffffff;
+  --color-card-foreground: #0b1b5c;
+  --color-muted: #eaf0ff; /* Section */
+  --color-muted-foreground: #4a5578; /* Texte 2 */
+  --color-border: #c9d6ff; /* Argent */
+  --color-success: #1f9d61;
+  --color-on-success: #ffffff;
+  --color-success-soft: #ddf3e8;
+  --color-success-soft-foreground: #14633e;
+  --color-warning-soft: #fff4cc;
+  --color-warning-soft-foreground: #5c4500;
+  --color-destructive: #d64545; /* Erreur */
+  --color-on-destructive: #ffffff;
+  --color-destructive-soft: #fbe4e4;
+  --color-destructive-soft-foreground: #8a1f1f;
+  --color-neutral-soft: #eaf0ff;
+  --color-neutral-soft-foreground: #0b1b5c;
+  --color-ring: #0a14e6;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  --shadow-sm: 0 1px 2px rgba(11, 27, 92, 0.05);
+  --shadow-md: 0 4px 6px rgba(11, 27, 92, 0.08);
+  --shadow-lg: 0 10px 15px rgba(11, 27, 92, 0.1);
+  --shadow-xl: 0 20px 25px rgba(11, 27, 92, 0.12);
+
+  --font-heading: "Poppins", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-on-primary: var(--color-on-primary);
+  --color-secondary: var(--color-secondary);
+  --color-on-secondary: var(--color-on-secondary);
+  --color-accent: var(--color-accent);
+  --color-on-accent: var(--color-on-accent);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-border: var(--color-border);
+  --color-success: var(--color-success);
+  --color-on-success: var(--color-on-success);
+  --color-success-soft: var(--color-success-soft);
+  --color-success-soft-foreground: var(--color-success-soft-foreground);
+  --color-warning-soft: var(--color-warning-soft);
+  --color-warning-soft-foreground: var(--color-warning-soft-foreground);
+  --color-destructive: var(--color-destructive);
+  --color-on-destructive: var(--color-on-destructive);
+  --color-destructive-soft: var(--color-destructive-soft);
+  --color-destructive-soft-foreground: var(--color-destructive-soft-foreground);
+  --color-neutral-soft: var(--color-neutral-soft);
+  --color-neutral-soft-foreground: var(--color-neutral-soft-foreground);
+  --color-ring: var(--color-ring);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
