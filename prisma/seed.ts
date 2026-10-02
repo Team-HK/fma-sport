@@ -5,6 +5,7 @@ import {
   VIDEO_THUMBNAILS,
   EVENT_POSTER_IMAGES,
   pickImage,
+  unsplash,
 } from "../lib/stock-images";
 
 const prisma = new PrismaClient();
@@ -196,20 +197,20 @@ async function main() {
       bio: "Milieu de terrain complet, reconnu pour sa vision de jeu et sa qualité de passe au sein de l'effectif de Diambars FC.",
     },
     {
-      firstName: "Fatou",
-      lastName: "Ndiaye",
+      firstName: "Adama",
+      lastName: "Kone",
       nationality: "Sénégalaise",
       flag: "🇸🇳",
       birthDate: new Date("2008-05-21"),
       position: "AILIER_GAUCHE" as const,
       secondaryPosition: null,
       strongFoot: "DROIT" as const,
-      height: 165,
-      weight: 58,
+      height: 173,
+      weight: 64,
       club: "ASC Linguère",
       previousClub: null,
       number: 11,
-      bio: "Ailière rapide et technique, l'une des grandes promesses du football féminin sénégalais formée à Saint-Louis.",
+      bio: "Ailier rapide et technique, l'une des grandes promesses du football sénégalais formé à Saint-Louis.",
     },
     {
       firstName: "Cheikh",
@@ -426,7 +427,18 @@ async function main() {
   // ---------------------------------------------------------------------
   // Advertisements (demo)
   // ---------------------------------------------------------------------
-  const adsData: { title: string; placement: "HOME" | "ACTUALITES" | "FOOTER" }[] = [
+  const adsData: {
+    title: string;
+    placement: "HOME" | "ACTUALITES" | "FOOTER" | "VIDEOS";
+    mediaUrl?: string;
+    linkUrl?: string;
+  }[] = [
+    {
+      title: "JOJ Dakar 2026 — Les Jeux Olympiques de la Jeunesse arrivent au Sénégal",
+      placement: "HOME",
+      mediaUrl: unsplash("photo-1570651403445-54c2b0f568c0", 1200, 675),
+      linkUrl: "https://www.dakar2026.sn",
+    },
     { title: "Orange Sénégal — Partenaire officiel", placement: "HOME" },
     { title: "Sonatel Academy — Formation digitale des jeunes talents", placement: "ACTUALITES" },
     { title: "Air Sénégal — Voyagez avec les Lions", placement: "FOOTER" },
@@ -439,8 +451,8 @@ async function main() {
           title: ad.title,
           format: "BANNER",
           placement: ad.placement,
-          mediaUrl: pickImage(ARTICLE_COVER_IMAGES, ad.title.length),
-          linkUrl: "https://fmasport.com/publicite",
+          mediaUrl: ad.mediaUrl ?? pickImage(ARTICLE_COVER_IMAGES, ad.title.length),
+          linkUrl: ad.linkUrl ?? "https://fmasport.com/publicite",
           active: true,
         },
       });
