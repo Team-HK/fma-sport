@@ -85,7 +85,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlideContent[] }) {
                 </>
               )}
               <p className="mx-auto mt-4 max-w-2xl text-lg italic text-white/90 sm:text-xl">
-                {slide.subtitle || "« L'information football & les talents de demain. »"}
+                {slide.subtitle || "« Le Média qui vit le foot. »"}
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 {slide.ctaLabel && slide.ctaHref ? (

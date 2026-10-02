@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
-import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, Settings2, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, Settings2, ShieldCheck, UserCog } from "lucide-react";
 import { AdminSidebarLink } from "@/components/admin/AdminSidebarLink";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { Logo } from "@/components/ui/Logo";
@@ -18,6 +18,10 @@ const ADMIN_NAV = [
   { href: "/admin/securite", label: "Sécurité", icon: ShieldCheck },
 ] as const;
 
+const SUPER_ADMIN_NAV = [
+  { href: "/admin/utilisateurs", label: "Utilisateurs", icon: UserCog },
+] as const;
+
 export default async function AdminDashboardLayout({
   children,
 }: {
@@ -25,6 +29,9 @@ export default async function AdminDashboardLayout({
 }) {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
+
+  const isSuperAdmin = (session.user as { role?: string }).role === "SUPER_ADMIN";
+  const navItems = isSuperAdmin ? [...ADMIN_NAV, ...SUPER_ADMIN_NAV] : ADMIN_NAV;
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -68,11 +75,11 @@ export default async function AdminDashboardLayout({
       </header>
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-start lg:gap-6 lg:px-8 lg:py-8">
-        <AdminMobileNav items={ADMIN_NAV.map(({ href, label }) => ({ href, label }))} />
+        <AdminMobileNav items={navItems.map(({ href, label }) => ({ href, label }))} />
 
         <aside className="sticky top-24 hidden h-[calc(100dvh-7rem)] w-60 shrink-0 self-start overflow-y-auto rounded-xl border border-border bg-muted p-3 md:block">
           <nav aria-label="Navigation admin" className="space-y-1">
-            {ADMIN_NAV.map((item) => (
+            {navItems.map((item) => (
               <AdminSidebarLink
                 key={item.href}
                 href={item.href}

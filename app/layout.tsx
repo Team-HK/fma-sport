@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "FMA SPORT — L'information football. Les talents de demain.",
+    default: "FMA SPORT — Le Média qui vit le foot",
     template: "%s | FMA SPORT",
   },
   description:

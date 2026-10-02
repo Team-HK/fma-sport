@@ -24,6 +24,7 @@ model AdminUser {
   role         AdminRole @default(EDITOR)
   totpSecret   String?
   totpEnabled  Boolean  @default(false)
+  active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -397,6 +398,7 @@ model HeroSlide {
 model SiteSettings {
   id          String   @id @default("singleton")
   phone       String?
+  phone2      String?
   whatsapp    String?
   email       String?
   address     String?

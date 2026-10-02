@@ -16,7 +16,7 @@ export async function Footer() {
           <div>
             <Logo size={48} />
             <p className="mt-3 max-w-xs text-sm italic text-muted-foreground">
-              « L&apos;information football. Les talents de demain. »
+              « Le Média qui vit le foot. »
             </p>
             <SocialLinks
               className="mt-5"
@@ -78,6 +78,14 @@ export async function Footer() {
                 className="block text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 {settings.phone}
+              </a>
+            )}
+            {settings?.phone2 && (
+              <a
+                href={`tel:${settings.phone2.replace(/\s+/g, "")}`}
+                className="block text-sm text-muted-foreground transition-colors hover:text-primary"
+              >
+                {settings.phone2}
               </a>
             )}
           </div>

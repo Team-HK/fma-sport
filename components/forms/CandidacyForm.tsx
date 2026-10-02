@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { Input, Label, Textarea, FieldError } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CANDIDACY_STEPS } from "@/lib/validations/candidacy";
-import { POSITION_LABELS, STRONG_FOOT_LABELS } from "@/lib/constants";
+import { POSITION_LABELS, STRONG_FOOT_LABELS, COUNTRIES } from "@/lib/constants";
 import { submitCandidacy, type CandidacyActionState } from "@/app/actions/candidacy";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
@@ -104,12 +104,36 @@ export function CandidacyForm() {
           </div>
           <div>
             <Label htmlFor="nationality">Nationalité *</Label>
-            <Input id="nationality" name="nationality" required />
+            <select
+              id="nationality"
+              name="nationality"
+              required
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30"
+            >
+              <option value="">Sélectionner...</option>
+              {COUNTRIES.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
             {errors.includes("nationality") && <FieldError>Ce champ est requis</FieldError>}
           </div>
           <div>
             <Label htmlFor="residenceCountry">Pays de résidence *</Label>
-            <Input id="residenceCountry" name="residenceCountry" required />
+            <select
+              id="residenceCountry"
+              name="residenceCountry"
+              required
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30"
+            >
+              <option value="">Sélectionner...</option>
+              {COUNTRIES.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
             {errors.includes("residenceCountry") && <FieldError>Ce champ est requis</FieldError>}
           </div>
           <div>
@@ -237,7 +261,18 @@ export function CandidacyForm() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="passportCountry">Pays du passeport</Label>
-              <Input id="passportCountry" name="passportCountry" />
+              <select
+                id="passportCountry"
+                name="passportCountry"
+                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-base text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30"
+              >
+                <option value="">Sélectionner...</option>
+                {COUNTRIES.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <Label htmlFor="passportExpiry">Date d&apos;expiration</Label>

@@ -32,6 +32,11 @@ export default async function ContactPage() {
                 {settings.phone}
               </a>
             )}
+            {settings?.phone2 && (
+              <a href={`tel:${settings.phone2.replace(/\s+/g, "")}`} className="mt-1 block text-primary hover:underline">
+                {settings.phone2}
+              </a>
+            )}
             {settings?.whatsapp && (
               <a
                 href={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}

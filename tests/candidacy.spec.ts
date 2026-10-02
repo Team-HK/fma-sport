@@ -14,8 +14,8 @@ test.describe("Formulaire Devenir joueur", () => {
     await page.getByLabel("Prénom *").fill("Ousmane");
     await page.getByLabel("Nom *", { exact: true }).fill("Sy");
     await page.getByLabel("Date de naissance *").fill("2008-04-12");
-    await page.getByLabel("Nationalité *").fill("Sénégalaise");
-    await page.getByLabel("Pays de résidence *").fill("Sénégal");
+    await page.getByLabel("Nationalité *").selectOption("Sénégal");
+    await page.getByLabel("Pays de résidence *").selectOption("Sénégal");
     await page.getByLabel("Téléphone *").fill("+221771234567");
     await page.getByLabel("Email *").fill(`ousmane.sy.${Date.now()}@example.com`);
     await page.getByRole("button", { name: "Suivant" }).click();
@@ -50,8 +50,8 @@ test.describe("Formulaire Devenir joueur", () => {
     await page.getByLabel("Prénom *").fill("Test");
     await page.getByLabel("Nom *", { exact: true }).fill("Retour");
     await page.getByLabel("Date de naissance *").fill("2007-01-01");
-    await page.getByLabel("Nationalité *").fill("Sénégalaise");
-    await page.getByLabel("Pays de résidence *").fill("Sénégal");
+    await page.getByLabel("Nationalité *").selectOption("Sénégal");
+    await page.getByLabel("Pays de résidence *").selectOption("Sénégal");
     await page.getByLabel("Téléphone *").fill("+221770000000");
     await page.getByLabel("Email *").fill("test.retour@example.com");
     await page.getByRole("button", { name: "Suivant" }).click();

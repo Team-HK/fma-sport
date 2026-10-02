@@ -7,3 +7,11 @@ export async function requireAdmin() {
   }
   return session.user as { id: string; email: string; name: string; role: string };
 }
+
+export async function requireSuperAdmin() {
+  const admin = await requireAdmin();
+  if (admin.role !== "SUPER_ADMIN") {
+    throw new Error("Réservé au super administrateur.");
+  }
+  return admin;
+}

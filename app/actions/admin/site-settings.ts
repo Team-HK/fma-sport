@@ -8,6 +8,7 @@ import { logAdminAction } from "@/lib/audit-log";
 
 const siteSettingsSchema = z.object({
   phone: z.string().optional(),
+  phone2: z.string().optional(),
   whatsapp: z.string().optional(),
   email: z.string().optional(),
   address: z.string().optional(),
@@ -35,6 +36,7 @@ export async function upsertSiteSettings(
 
   const payload = {
     phone: data.phone || null,
+    phone2: data.phone2 || null,
     whatsapp: data.whatsapp || null,
     email: data.email || null,
     address: data.address || null,

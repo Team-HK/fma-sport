@@ -26,8 +26,12 @@ export function SiteSettingsForm({ settings }: { settings: SiteSettings | null }
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="phone">Téléphone</Label>
-            <Input id="phone" name="phone" defaultValue={settings?.phone ?? ""} placeholder="+221 77 123 45 67" />
+            <Label htmlFor="phone">Téléphone (Sénégal)</Label>
+            <Input id="phone" name="phone" defaultValue={settings?.phone ?? ""} placeholder="+221 77 608 23 62" />
+          </div>
+          <div>
+            <Label htmlFor="phone2">Téléphone (Guinée)</Label>
+            <Input id="phone2" name="phone2" defaultValue={settings?.phone2 ?? ""} placeholder="+224 623 09 48 32" />
           </div>
           <div>
             <Label htmlFor="whatsapp">WhatsApp</Label>
