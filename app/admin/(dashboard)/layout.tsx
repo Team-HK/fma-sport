@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
-import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, GalleryHorizontal } from "lucide-react";
 import { AdminSidebarLink } from "@/components/admin/AdminSidebarLink";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { Logo } from "@/components/ui/Logo";
 
 const ADMIN_NAV = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/admin/accueil", label: "Carousel d'accueil", icon: GalleryHorizontal },
   { href: "/admin/articles", label: "Articles", icon: Newspaper },
   { href: "/admin/joueurs", label: "Joueurs", icon: Users },
   { href: "/admin/videos", label: "Vidéos", icon: Video },

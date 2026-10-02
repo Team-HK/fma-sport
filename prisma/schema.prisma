@@ -375,6 +375,23 @@ model Advertisement {
   @@map("advertisements")
 }
 
+model HeroSlide {
+  id          String    @id @default(cuid())
+  imageUrl    String
+  title       String?
+  subtitle    String?
+  ctaLabel    String?
+  ctaHref     String?
+  order       Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([active, order])
+  @@map("hero_slides")
+}
+
 model Partner {
   id        String   @id @default(cuid())
   name      String

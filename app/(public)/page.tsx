@@ -5,57 +5,36 @@ import { ArticleCard } from "@/components/sections/ArticleCard";
 import { PlayerCard } from "@/components/sections/PlayerCard";
 import { VideoCard } from "@/components/sections/VideoCard";
 import { HeroCarousel } from "@/components/sections/HeroCarousel";
-import { getPublishedArticles, getPublishedPlayers, getPublishedVideos } from "@/lib/queries";
+import {
+  getPublishedArticles,
+  getPublishedPlayers,
+  getPublishedVideos,
+  getActiveHeroSlides,
+} from "@/lib/queries";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { HERO_IMAGES } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
-import { Logo } from "@/components/ui/Logo";
 
 export const revalidate = 300;
 
+const DEFAULT_HERO_SLIDES = HERO_IMAGES.map((imageUrl) => ({ imageUrl }));
+
 export default async function HomePage() {
-  const [articles, players, videos] = await Promise.all([
+  const [articles, players, videos, heroSlides] = await Promise.all([
     getPublishedArticles({ take: 5 }).catch(() => []),
     getPublishedPlayers(4).catch(() => []),
     getPublishedVideos({ take: 3 }).catch(() => []),
+    getActiveHeroSlides().catch(() => []),
   ]);
 
   const [featured, ...secondary] = articles;
+  const slides = heroSlides.length > 0 ? heroSlides : DEFAULT_HERO_SLIDES;
 
   return (
     <>
       {/* Hero */}
       <section className="relative flex min-h-[560px] items-center overflow-hidden text-white sm:min-h-[640px]">
-        <HeroCarousel images={HERO_IMAGES} />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-accent/20"
-        />
-        <div className="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center sm:px-6">
-          <Logo size={88} className="mx-auto mb-4" />
-          <h1 className="font-heading text-4xl font-medium tracking-tight sm:text-6xl">FMA SPORT</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg italic text-white/90 sm:text-xl">
-            « L&apos;information football &amp; les talents de demain. »
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              href="/actualites"
-              size="lg"
-              variant="ghost"
-              className="bg-white text-primary hover:bg-white/90"
-            >
-              Voir les actualités
-            </Button>
-            <Button
-              href="/devenir-joueur"
-              size="lg"
-              variant="ghost"
-              className="border-2 border-white text-white hover:bg-white/15"
-            >
-              Devenir joueur FMA SPORT
-            </Button>
-          </div>
-        </div>
+        <HeroCarousel slides={slides} />
       </section>
 
       {/* A la Une */}
@@ -85,7 +64,7 @@ export default async function HomePage() {
                     {article.coverImage && (
                       <Image
                         src={article.coverImage}
-                        alt=""
+                        alt={article.title}
                         fill
                         sizes="112px"
                         className="object-cover"

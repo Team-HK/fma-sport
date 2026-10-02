@@ -39,7 +39,7 @@ export default async function EventDetailPage({ params }: { params: Promise<Para
               <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
                 <Image
                   src={event.poster}
-                  alt=""
+                  alt={event.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 480px"
                   className="object-cover"

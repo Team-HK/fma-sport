@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { VideoCard } from "@/components/sections/VideoCard";
 import { formatDate } from "@/lib/utils";
 import { FileText } from "lucide-react";
+import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 300;
 
@@ -21,9 +22,25 @@ export async function generateMetadata({
   const { slug } = await params;
   const player = await getPlayerBySlug(slug);
   if (!player) return {};
+  const title = `${player.firstName} ${player.lastName} — ${POSITION_LABELS[player.position] ?? player.position}`;
+  const description =
+    player.bio ??
+    `${player.firstName} ${player.lastName}, joueur ${player.nationality}${player.club ? ` à ${player.club}` : ""}. Profil, statistiques et actualités sur FMA SPORT.`;
   return {
-    title: `${player.firstName} ${player.lastName}`,
-    description: player.bio ?? undefined,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      images: player.photo ? [{ url: player.photo, alt: `${player.firstName} ${player.lastName}` }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: player.photo ? [player.photo] : undefined,
+    },
   };
 }
 
@@ -39,8 +56,25 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
     (Date.now() - new Date(player.birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
   );
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: `${player.firstName} ${player.lastName}`,
+    url: `${SITE_URL}/joueurs/${player.slug}`,
+    image: player.photo ?? undefined,
+    description: player.bio ?? undefined,
+    nationality: player.nationality,
+    jobTitle: POSITION_LABELS[player.position] ?? player.position,
+    affiliation: player.club ? { "@type": "SportsTeam", name: player.club } : undefined,
+    birthDate: player.birthDate.toISOString().slice(0, 10),
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row lg:px-8">
           <div className="relative aspect-[4/5] w-full max-w-xs shrink-0 overflow-hidden rounded-xl bg-muted">

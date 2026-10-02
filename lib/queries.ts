@@ -104,6 +104,13 @@ export async function getActiveAd(placement: AdPlacement) {
   });
 }
 
+export function getActiveHeroSlides() {
+  return prisma.heroSlide.findMany({
+    where: { active: true, deletedAt: null },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
+}
+
 export async function searchSite(query: string) {
   const [articles, players, videos] = await Promise.all([
     prisma.article.findMany({

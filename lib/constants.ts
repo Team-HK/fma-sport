@@ -1,3 +1,5 @@
+export const SITE_URL = "https://fmasport.com";
+
 export const NAV_LINKS = [
   { href: "/", label: "Accueil" },
   { href: "/actualites", label: "Actualités" },

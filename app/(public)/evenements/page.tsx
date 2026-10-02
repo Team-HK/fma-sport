@@ -37,7 +37,7 @@ export default async function EvenementsPage() {
                   {event.poster && (
                     <Image
                       src={event.poster}
-                      alt=""
+                      alt={event.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover"

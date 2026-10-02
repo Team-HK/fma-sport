@@ -10,6 +10,7 @@ import { getArticleBySlug, getRelatedArticles } from "@/lib/queries";
 import { prisma } from "@/lib/prisma";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
+import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 300;
 
@@ -46,8 +47,24 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
 
   const related = await getRelatedArticles(article.category, article.slug);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: article.title,
+    description: article.excerpt,
+    image: article.coverImage ? [article.coverImage] : undefined,
+    datePublished: article.publishedAt?.toISOString(),
+    dateModified: article.updatedAt.toISOString(),
+    mainEntityOfPage: `${SITE_URL}/actualites/${article.slug}`,
+    publisher: { "@type": "Organization", name: "FMA SPORT", url: SITE_URL },
+  };
+
   return (
     <article>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <PageHeader
         title={article.title}
         description={`${ARTICLE_CATEGORY_LABELS[article.category] ?? article.category} · ${
@@ -62,7 +79,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
           <div className="relative mt-6 aspect-video overflow-hidden rounded-xl bg-muted">
             <Image
               src={article.coverImage}
-              alt=""
+              alt={article.title}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 768px"
