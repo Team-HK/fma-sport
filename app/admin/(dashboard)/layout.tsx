@@ -54,8 +54,8 @@ export default async function AdminDashboardLayout({
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-start lg:gap-6 lg:px-8 lg:py-8">
         <AdminMobileNav items={ADMIN_NAV.map(({ href, label }) => ({ href, label }))} />
 
-        <aside className="hidden w-60 shrink-0 rounded-xl border border-border bg-muted p-3 md:block">
-          <nav aria-label="Navigation admin" className="sticky top-24 space-y-1">
+        <aside className="sticky top-24 hidden h-[calc(100dvh-7rem)] w-60 shrink-0 self-start overflow-y-auto rounded-xl border border-border bg-muted p-3 md:block">
+          <nav aria-label="Navigation admin" className="space-y-1">
             {ADMIN_NAV.map((item) => (
               <AdminSidebarLink
                 key={item.href}

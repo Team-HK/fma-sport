@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/Button";
 import { ArticleCard } from "@/components/sections/ArticleCard";
 import { PlayerCard } from "@/components/sections/PlayerCard";
 import { VideoCard } from "@/components/sections/VideoCard";
+import { HeroCarousel } from "@/components/sections/HeroCarousel";
 import { getPublishedArticles, getPublishedPlayers, getPublishedVideos } from "@/lib/queries";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
-import { HERO_IMAGE } from "@/lib/stock-images";
+import { HERO_IMAGES } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { Logo } from "@/components/ui/Logo";
 
@@ -25,14 +26,7 @@ export default async function HomePage() {
     <>
       {/* Hero */}
       <section className="relative flex min-h-[560px] items-center overflow-hidden text-white sm:min-h-[640px]">
-        <Image
-          src={HERO_IMAGE}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <HeroCarousel images={HERO_IMAGES} />
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-accent/20"

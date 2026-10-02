@@ -28,7 +28,12 @@ export const EVENT_POSTER_IMAGES = [
   "photo-1570651403445-54c2b0f568c0",
 ].map((id) => unsplash(id, 800, 1000));
 
-export const HERO_IMAGE = unsplash("photo-1722978687695-212eecfa4cbe", 1920, 1080);
+export const HERO_IMAGES = [
+  "photo-1722978687695-212eecfa4cbe", // group of young African men playing football
+  "photo-1652665314612-c48e10a01598", // African players, match action (unity theme)
+  "photo-1652664845183-c6083bc286fc", // youth football team, Conakry, Guinée
+  "photo-1570651403445-54c2b0f568c0", // drapeau du Sénégal, Dakar
+].map((id) => unsplash(id, 1920, 1080));
 
 export function pickImage(images: string[], seed: number) {
   return images[Math.abs(seed) % images.length];
