@@ -66,7 +66,7 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
             </p>
             {player.bio && <p className="mt-4 max-w-2xl text-foreground">{player.bio}</p>}
             <Button href="/contact" className="mt-6">
-              Contacter FMA.SPORT au sujet de ce joueur
+              Contacter FMA SPORT au sujet de ce joueur
             </Button>
           </div>
         </div>

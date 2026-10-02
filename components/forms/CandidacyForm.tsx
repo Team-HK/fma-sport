@@ -337,7 +337,7 @@ export function CandidacyForm() {
           <input type="checkbox" name="consentGiven" value="true" required className="mt-1" />
           <span className="text-sm text-foreground">
             Je confirme mon accord concernant l&apos;utilisation de mes informations personnelles
-            pour l&apos;étude de ma candidature par FMA.SPORT. *
+            pour l&apos;étude de ma candidature par FMA SPORT. *
           </span>
         </label>
         {errors.includes("consentGiven") && (

@@ -10,7 +10,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Vidéos",
-  description: "Interviews, micro-trottoirs, reportages et highlights de FMA.SPORT.",
+  description: "Interviews, micro-trottoirs, reportages et highlights de FMA SPORT.",
 };
 
 export default async function VideosPage({

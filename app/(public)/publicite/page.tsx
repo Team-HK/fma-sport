@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Publicité et partenariats",
-  description: "Les possibilités de collaboration avec FMA.SPORT.",
+  description: "Les possibilités de collaboration avec FMA SPORT.",
 };
 
 const FORMATS = [
@@ -32,7 +32,7 @@ export default function PublicitePage() {
     <>
       <PageHeader
         title="Publicité et partenariats"
-        description="Les possibilités de collaboration avec FMA.SPORT."
+        description="Les possibilités de collaboration avec FMA SPORT."
       />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

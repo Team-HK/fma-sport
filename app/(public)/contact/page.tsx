@@ -5,7 +5,7 @@ import { SocialLinks } from "@/components/layout/SocialLinks";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contactez FMA.SPORT à Dakar, Sénégal.",
+  description: "Contactez FMA SPORT à Dakar, Sénégal.",
 };
 
 export default function ContactPage() {
@@ -16,7 +16,7 @@ export default function ContactPage() {
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="grid gap-10 md:grid-cols-2">
           <div>
-            <h2 className="font-heading text-lg font-semibold text-foreground">FMA.SPORT</h2>
+            <h2 className="font-heading text-lg font-semibold text-foreground">FMA SPORT</h2>
             <p className="mt-2 text-muted-foreground">Dakar, Sénégal</p>
             <a
               href="mailto:footballmediaafriquesport@gmail.com"

@@ -16,7 +16,7 @@ export default async function AdminLoginPage({
         Espace administrateur
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Connectez-vous pour accéder au tableau de bord FMA.SPORT.
+        Connectez-vous pour accéder au tableau de bord FMA SPORT.
       </p>
       <LoginForm callbackUrl={callbackUrl ?? "/admin"} />
     </div>

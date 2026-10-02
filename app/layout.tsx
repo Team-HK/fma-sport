@@ -16,11 +16,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "FMA.SPORT — L'information football. Les talents de demain.",
-    template: "%s | FMA.SPORT",
+    default: "FMA SPORT — L'information football. Les talents de demain.",
+    template: "%s | FMA SPORT",
   },
   description:
-    "FMA.SPORT : actualités football du Sénégal, d'Afrique et du monde, vidéos, jeunes talents et management sportif.",
+    "FMA SPORT : actualités football du Sénégal, d'Afrique et du monde, vidéos, jeunes talents et management sportif.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

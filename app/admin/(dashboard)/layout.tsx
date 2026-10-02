@@ -4,6 +4,7 @@ import { auth, signOut } from "@/lib/auth";
 import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink } from "lucide-react";
 import { AdminSidebarLink } from "@/components/admin/AdminSidebarLink";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
+import { Logo } from "@/components/ui/Logo";
 
 const ADMIN_NAV = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
@@ -28,9 +29,7 @@ export default async function AdminDashboardLayout({
       <header className="sticky top-0 z-40 border-b border-border bg-card shadow-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link href="/admin" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-border bg-primary font-heading text-xs font-medium text-on-primary">
-              FMA
-            </span>
+            <Logo size={36} />
             <span className="font-heading text-sm font-medium tracking-tight text-foreground">
               Espace administrateur
             </span>

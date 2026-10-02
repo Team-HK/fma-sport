@@ -3,10 +3,10 @@ import { test, expect } from "@playwright/test";
 test.describe("Pages publiques", () => {
   test("la page d'accueil affiche le hero et la section À la une", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/FMA\.SPORT/);
-    await expect(page.getByRole("heading", { name: /FMA\.SPORT/i }).first()).toBeVisible();
+    await expect(page).toHaveTitle(/FMA SPORT/);
+    await expect(page.getByRole("heading", { name: /FMA SPORT/i }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Voir les actualités" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Devenir joueur FMA.SPORT" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Devenir joueur FMA SPORT" }).first()).toBeVisible();
   });
 
   test("la navigation principale mène aux bonnes pages", async ({ page }) => {
@@ -72,7 +72,7 @@ test.describe("Pages publiques", () => {
     await expect(page.getByRole("heading", { name: "Nos talents" })).toBeVisible();
     await page.getByRole("link", { name: "Voir le profil" }).first().click();
     await expect(page).toHaveURL(/\/joueurs\/.+/);
-    await expect(page.getByRole("link", { name: /Contacter FMA\.SPORT/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Contacter FMA SPORT/ })).toBeVisible();
   });
 
   test("le profil du joueur seedé Mamadou Diop est accessible", async ({ page }) => {
@@ -140,7 +140,7 @@ test.describe("Formulaire de contact", () => {
     await page.getByLabel("Nom complet *").fill("Aissatou Ba");
     await page.getByLabel("Email *").fill(`aissatou.${Date.now()}@example.com`);
     await page.getByLabel("Sujet *").fill("Question presse");
-    await page.getByLabel("Message *").fill("Bonjour, je souhaite en savoir plus sur FMA.SPORT.");
+    await page.getByLabel("Message *").fill("Bonjour, je souhaite en savoir plus sur FMA SPORT.");
     await page.getByRole("button", { name: "Envoyer le message" }).click();
     await expect(page.getByText(/bien été envoyé/)).toBeVisible({ timeout: 10_000 });
   });

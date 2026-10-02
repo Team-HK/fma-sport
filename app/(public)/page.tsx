@@ -8,6 +8,7 @@ import { getPublishedArticles, getPublishedPlayers, getPublishedVideos } from "@
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { HERO_IMAGE } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
+import { Logo } from "@/components/ui/Logo";
 
 export const revalidate = 300;
 
@@ -37,9 +38,8 @@ export default async function HomePage() {
           className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-accent/20"
         />
         <div className="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center sm:px-6">
-          <h1 className="font-heading text-4xl font-medium tracking-tight sm:text-6xl">
-            FMA<span className="text-accent">.SPORT</span>
-          </h1>
+          <Logo size={88} className="mx-auto mb-4" />
+          <h1 className="font-heading text-4xl font-medium tracking-tight sm:text-6xl">FMA SPORT</h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg italic text-white/90 sm:text-xl">
             « L&apos;information football &amp; les talents de demain. »
           </p>
@@ -58,7 +58,7 @@ export default async function HomePage() {
               variant="ghost"
               className="border-2 border-white text-white hover:bg-white/15"
             >
-              Devenir joueur FMA.SPORT
+              Devenir joueur FMA SPORT
             </Button>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default async function HomePage() {
             Détection, accompagnement, visibilité
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/90">
-            FMA.SPORT Management accompagne les jeunes talents du football dans leur parcours
+            FMA SPORT Management accompagne les jeunes talents du football dans leur parcours
             sportif et professionnel.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -173,7 +173,7 @@ export default async function HomePage() {
               Découvrir le management
             </Button>
             <Button href="/devenir-joueur" size="lg" variant="accent">
-              Devenir joueur FMA.SPORT
+              Devenir joueur FMA SPORT
             </Button>
           </div>
         </div>

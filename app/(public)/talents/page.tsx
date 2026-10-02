@@ -8,7 +8,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Nos talents",
-  description: "Découvrez les jeunes footballeurs mis en avant par FMA.SPORT.",
+  description: "Découvrez les jeunes footballeurs mis en avant par FMA SPORT.",
 };
 
 export default async function TalentsPage() {
@@ -18,7 +18,7 @@ export default async function TalentsPage() {
     <>
       <PageHeader
         title="Nos talents"
-        description="Les jeunes footballeurs mis en avant par FMA.SPORT."
+        description="Les jeunes footballeurs mis en avant par FMA SPORT."
       />
 
       <AdSlot placement="TALENTS" className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8" />

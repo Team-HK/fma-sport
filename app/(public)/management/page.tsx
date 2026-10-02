@@ -7,7 +7,7 @@ import { Search, UserCircle, Eye, Video, Compass, Handshake } from "lucide-react
 export const metadata: Metadata = {
   title: "Management sportif",
   description:
-    "FMA.SPORT Management accompagne et valorise les jeunes talents du football sénégalais et africain.",
+    "FMA SPORT Management accompagne et valorise les jeunes talents du football sénégalais et africain.",
 };
 
 const SERVICES = [
@@ -55,7 +55,7 @@ export default function ManagementPage() {
     <>
       <PageHeader
         title="Management sportif"
-        description="FMA.SPORT Management est l'espace consacré à l'accompagnement et à la valorisation des jeunes talents du football."
+        description="FMA SPORT Management est l'espace consacré à l'accompagnement et à la valorisation des jeunes talents du football."
       />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -80,7 +80,7 @@ export default function ManagementPage() {
 
         <div className="mt-12 text-center">
           <Button href="/devenir-joueur" size="lg">
-            Devenir joueur FMA.SPORT
+            Devenir joueur FMA SPORT
           </Button>
         </div>
       </div>

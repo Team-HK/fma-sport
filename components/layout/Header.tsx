@@ -5,18 +5,15 @@ import { SearchBox } from "./SearchBox";
 import { NavDropdown } from "./NavDropdown";
 import { DesktopNavLink } from "./DesktopNavLink";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
       <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-border bg-primary font-heading text-xs font-medium text-on-primary">
-            FMA
-          </span>
-          <span className="font-heading text-lg font-medium tracking-tight text-foreground">
-            FMA<span className="text-accent">.SPORT</span>
-          </span>
+          <Logo size={44} />
+          <span className="sr-only">FMA SPORT</span>
         </Link>
 
         <nav

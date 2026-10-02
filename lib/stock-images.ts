@@ -1,5 +1,5 @@
 // Curated, verified-reachable football photography from Unsplash (free license)
-// used as realistic placeholder media across the site until real FMA.SPORT
+// used as realistic placeholder media across the site until real FMA SPORT
 // photos/videos are uploaded by the editorial team.
 
 export function unsplash(id: string, w: number, h: number) {

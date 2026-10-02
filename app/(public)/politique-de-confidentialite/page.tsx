@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
       <PageHeader title="Politique de confidentialité" />
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-10 text-sm leading-relaxed text-foreground sm:px-6">
         <p>
-          FMA.SPORT collecte les données personnelles transmises volontairement via ses
+          FMA SPORT collecte les données personnelles transmises volontairement via ses
           formulaires (contact, candidature joueur, inscription événement) dans le seul but de
           traiter la demande correspondante.
         </p>

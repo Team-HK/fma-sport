@@ -20,14 +20,14 @@ function slugify(text: string): string {
 }
 
 async function main() {
-  console.log("Seeding FMA.SPORT (données fictives, contexte Sénégal)...");
+  console.log("Seeding FMA SPORT (données fictives, contexte Sénégal)...");
 
   const passwordHash = await bcrypt.hash("FmaSport2026!", 10);
   const admin = await prisma.adminUser.upsert({
     where: { email: "admin@fmasport.test" },
     update: {},
     create: {
-      name: "Admin FMA.SPORT",
+      name: "Admin FMA SPORT",
       email: "admin@fmasport.test",
       passwordHash,
       role: "SUPER_ADMIN",
@@ -146,7 +146,7 @@ async function main() {
         title: data.title,
         slug,
         excerpt: data.excerpt,
-        content: `<p>${data.excerpt}</p><p>Plus de détails à venir sur FMA.SPORT concernant cet évènement qui anime l'actualité du football. Notre rédaction suit la situation de près et reviendra avec des analyses complémentaires, des réactions des acteurs concernés et des statistiques clés.</p><p>Restez connectés pour ne rien manquer de l'actualité football sénégalaise, africaine et internationale.</p>`,
+        content: `<p>${data.excerpt}</p><p>Plus de détails à venir sur FMA SPORT concernant cet évènement qui anime l'actualité du football. Notre rédaction suit la situation de près et reviendra avec des analyses complémentaires, des réactions des acteurs concernés et des statistiques clés.</p><p>Restez connectés pour ne rien manquer de l'actualité football sénégalaise, africaine et internationale.</p>`,
         coverImage: pickImage(ARTICLE_COVER_IMAGES, index),
         category: data.category,
         tags: data.tags,
@@ -371,7 +371,7 @@ async function main() {
   // ---------------------------------------------------------------------
   const eventsData = [
     {
-      name: "Tournoi FMA.SPORT Édition 2026",
+      name: "Tournoi FMA SPORT Édition 2026",
       location: "Stade Iba Mar Diop, Dakar",
       price: "2000 FCFA",
       registrationConditions: "Ouvert aux joueurs U15 et U17 licenciés dans un club sénégalais.",
@@ -379,7 +379,7 @@ async function main() {
       date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 45),
     },
     {
-      name: "Détection FMA.SPORT — Thiès",
+      name: "Détection FMA SPORT — Thiès",
       location: "Stade Lat Dior, Thiès",
       price: "Gratuit",
       registrationConditions: "Ouvert aux joueurs de 14 à 19 ans, sur inscription préalable.",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 
 export default function AdminLoginLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,10 +20,10 @@ export default function AdminLoginLayout({ children }: { children: React.ReactNo
         <div className="mb-6 flex justify-center">
           <Link
             href="/"
-            className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/30 bg-white font-heading text-sm font-medium text-primary shadow-lg transition-transform hover:scale-105"
-            aria-label="Retour à l'accueil FMA.SPORT"
+            className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/30 shadow-lg transition-transform hover:scale-105"
+            aria-label="Retour à l'accueil FMA SPORT"
           >
-            FMA
+            <Logo size={60} />
           </Link>
         </div>
 

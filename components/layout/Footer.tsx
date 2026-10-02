@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FOOTER_LINKS, LEGAL_LINKS } from "@/lib/constants";
 import { SocialLinks } from "./SocialLinks";
 import { AdSlot } from "@/components/sections/AdSlot";
+import { Logo } from "@/components/ui/Logo";
 
 export function Footer() {
   return (
@@ -11,9 +12,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <p className="font-heading text-xl font-bold text-primary">
-              FMA<span className="text-accent">.SPORT</span>
-            </p>
+            <Logo size={48} />
             <p className="mt-3 max-w-xs text-sm italic text-muted-foreground">
               « L&apos;information football. Les talents de demain. »
             </p>
@@ -65,7 +64,7 @@ export function Footer() {
         </div>
 
         <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} FMA.SPORT — Tous droits réservés.
+          &copy; {new Date().getFullYear()} FMA SPORT — Tous droits réservés.
         </p>
       </div>
     </footer>
