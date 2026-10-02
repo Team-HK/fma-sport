@@ -179,6 +179,7 @@ async function main() {
       previousClub: "ASC Jeanne d'Arc",
       number: 9,
       bio: "Buteur prolifique formé à Déni Biram Ndao, considéré comme l'un des attaquants les plus prometteurs de sa génération au Sénégal.",
+      photo: unsplash("photo-1788182438366-83f4202ff0ea", 600, 750),
     },
     {
       firstName: "Ibrahima",
@@ -195,6 +196,7 @@ async function main() {
       previousClub: null,
       number: 8,
       bio: "Milieu de terrain complet, reconnu pour sa vision de jeu et sa qualité de passe au sein de l'effectif de Diambars FC.",
+      photo: unsplash("photo-1783012039560-5690190a9b9b", 600, 750),
     },
     {
       firstName: "Adama",
@@ -211,6 +213,7 @@ async function main() {
       previousClub: null,
       number: 11,
       bio: "Ailier rapide et technique, l'une des grandes promesses du football sénégalais formé à Saint-Louis.",
+      photo: unsplash("photo-1646658104783-2eec2433c1d1", 600, 750),
     },
     {
       firstName: "Cheikh",
@@ -227,6 +230,7 @@ async function main() {
       previousClub: "Jaraaf",
       number: 1,
       bio: "Gardien impressionnant par sa taille et ses réflexes, pilier de la défense du Casa Sports de Ziguinchor.",
+      photo: unsplash("photo-1734233388742-e6857e8a1e8c", 600, 750),
     },
     {
       firstName: "Aliou",
@@ -243,6 +247,7 @@ async function main() {
       previousClub: null,
       number: 4,
       bio: "Défenseur central solide dans les duels, capitaine de sa catégorie d'âge à Teungueth FC de Rufisque.",
+      photo: unsplash("photo-1522529599102-193c0d76b5b6", 600, 750),
     },
     {
       firstName: "Moussa",
@@ -259,6 +264,7 @@ async function main() {
       previousClub: null,
       number: 2,
       bio: "Latéral offensif malien détecté lors d'un tournoi régional, connu pour ses montées rapides sur le couloir droit.",
+      photo: unsplash("photo-1546525848-3ce03ca516f6", 600, 750),
     },
   ];
 
@@ -271,7 +277,6 @@ async function main() {
       create: {
         ...data,
         slug,
-        photo: `https://i.pravatar.cc/400?u=${slug}`,
         status: "PUBLISHED",
       },
     });
