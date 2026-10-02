@@ -104,6 +104,10 @@ export async function getActiveAd(placement: AdPlacement) {
   });
 }
 
+export function getSiteSettings() {
+  return prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+}
+
 export function getActiveHeroSlides() {
   return prisma.heroSlide.findMany({
     where: { active: true, deletedAt: null },

@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { Trash2, Archive } from "lucide-react";
-import { DeleteHeroSlideButton, RestoreHeroSlideButton } from "./RowActions";
-import { EditHeroSlideModal } from "./EditHeroSlideModal";
+import { DeleteHeroSlideButton, RestoreHeroSlideButton } from "../RowActions";
+import { EditHeroSlideModal } from "../EditHeroSlideModal";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -13,9 +15,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminHeroSlidesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, corbeille } = await searchParams;
+  const { q, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
   const where: Prisma.HeroSlideWhereInput = {
@@ -23,7 +25,11 @@ export default async function AdminHeroSlidesPage({
     ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
   };
 
-  const slides = await prisma.heroSlide.findMany({ where, orderBy: [{ order: "asc" }, { createdAt: "desc" }] });
+  const [total, slides] = await Promise.all([
+    prisma.heroSlide.count({ where }),
+    prisma.heroSlide.findMany({ where, orderBy: [{ order: "asc" }, { createdAt: "desc" }], ...paginationArgs(page) }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -36,7 +42,7 @@ export default async function AdminHeroSlidesPage({
         </div>
         <div className="flex items-center gap-2">
           <Button
-            href={showTrash ? "/admin/accueil" : "/admin/accueil?corbeille=1"}
+            href={showTrash ? "/admin/referentiels/carousel" : "/admin/referentiels/carousel?corbeille=1"}
             variant="ghost"
             size="sm"
           >
@@ -50,7 +56,7 @@ export default async function AdminHeroSlidesPage({
               </>
             )}
           </Button>
-          {!showTrash && <Button href="/admin/accueil/new">Nouvelle diapositive</Button>}
+          {!showTrash && <Button href="/admin/referentiels/carousel/new">Nouvelle diapositive</Button>}
         </div>
       </div>
 
@@ -95,6 +101,7 @@ export default async function AdminHeroSlidesPage({
           </p>
         )}
       </div>
+      <AdminPagination currentPage={parsePage(page)} totalPages={totalPages} />
     </div>
   );
 }

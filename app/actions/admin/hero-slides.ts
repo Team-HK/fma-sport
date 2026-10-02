@@ -51,7 +51,7 @@ export async function upsertHeroSlide(
         entityType: "hero_slide",
         entityId: id,
       });
-      revalidatePath("/admin/accueil");
+      revalidatePath("/admin/referentiels/carousel");
       revalidatePath("/");
       return { success: true, message: "Diapositive mise à jour." };
     }
@@ -68,16 +68,16 @@ export async function upsertHeroSlide(
     return { success: false, message: "Une erreur est survenue lors de l'enregistrement." };
   }
 
-  revalidatePath("/admin/accueil");
+  revalidatePath("/admin/referentiels/carousel");
   revalidatePath("/");
-  redirect("/admin/accueil");
+  redirect("/admin/referentiels/carousel");
 }
 
 export async function deleteHeroSlide(id: string) {
   const admin = await requireAdmin();
   await prisma.heroSlide.update({ where: { id }, data: { deletedAt: new Date() } });
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "hero_slide", entityId: id });
-  revalidatePath("/admin/accueil");
+  revalidatePath("/admin/referentiels/carousel");
   revalidatePath("/");
 }
 
@@ -85,6 +85,6 @@ export async function restoreHeroSlide(id: string) {
   const admin = await requireAdmin();
   await prisma.heroSlide.update({ where: { id }, data: { deletedAt: null } });
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "hero_slide", entityId: id });
-  revalidatePath("/admin/accueil");
+  revalidatePath("/admin/referentiels/carousel");
   revalidatePath("/");
 }

@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { verifyTotpCode } from "@/lib/totp";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -12,10 +13,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Mot de passe", type: "password" },
+        totpCode: { label: "Code d'authentification", type: "text" },
       },
       async authorize(credentials) {
         const email = credentials?.email as string | undefined;
         const password = credentials?.password as string | undefined;
+        const totpCode = credentials?.totpCode as string | undefined;
         if (!email || !password) return null;
 
         const admin = await prisma.adminUser.findUnique({ where: { email } });
@@ -23,6 +26,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const valid = await bcrypt.compare(password, admin.passwordHash);
         if (!valid) return null;
+
+        if (admin.totpEnabled) {
+          if (!totpCode || !admin.totpSecret || !verifyTotpCode(admin.totpSecret, admin.email, totpCode)) {
+            return null;
+          }
+        }
 
         return { id: admin.id, email: admin.email, name: admin.name, role: admin.role };
       },

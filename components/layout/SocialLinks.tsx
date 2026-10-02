@@ -18,15 +18,22 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   x: XIcon,
 };
 
-export function SocialLinks({ className }: { className?: string }) {
+export function SocialLinks({
+  className,
+  overrides,
+}: {
+  className?: string;
+  overrides?: Partial<Record<string, string | null | undefined>>;
+}) {
   return (
     <ul className={cn("flex items-center gap-2", className)}>
       {SOCIAL_LINKS.map((link) => {
         const Icon = ICONS[link.key];
+        const href = overrides?.[link.key] || link.href;
         return (
           <li key={link.key}>
             <a
-              href={link.href}
+              href={href}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={link.label}

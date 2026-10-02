@@ -1,20 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
-import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, GalleryHorizontal } from "lucide-react";
+import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, Settings2, ShieldCheck } from "lucide-react";
 import { AdminSidebarLink } from "@/components/admin/AdminSidebarLink";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { Logo } from "@/components/ui/Logo";
 
 const ADMIN_NAV = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
-  { href: "/admin/accueil", label: "Carousel d'accueil", icon: GalleryHorizontal },
+  { href: "/admin/referentiels", label: "Référentiels", icon: Settings2 },
   { href: "/admin/articles", label: "Articles", icon: Newspaper },
   { href: "/admin/joueurs", label: "Joueurs", icon: Users },
   { href: "/admin/videos", label: "Vidéos", icon: Video },
   { href: "/admin/evenements", label: "Événements", icon: CalendarDays },
   { href: "/admin/publicites", label: "Publicités", icon: Megaphone },
   { href: "/admin/messages", label: "Messages", icon: Mail },
+  { href: "/admin/securite", label: "Sécurité", icon: ShieldCheck },
 ] as const;
 
 export default async function AdminDashboardLayout({
@@ -45,9 +46,23 @@ export default async function AdminDashboardLayout({
               target="_blank"
               className="flex cursor-pointer items-center gap-1.5 rounded-[10px] px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
-              Voir le site
+              <span className="hidden sm:inline">Voir le site</span>
               <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/admin/login" });
+              }}
+            >
+              <button
+                type="submit"
+                className="flex cursor-pointer items-center gap-1.5 rounded-[10px] px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive-soft"
+              >
+                <span className="hidden sm:inline">Déconnexion</span>
+                <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </form>
           </div>
         </div>
       </header>

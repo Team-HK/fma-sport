@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
+import { Trash2, RotateCcw, Power, PowerOff } from "lucide-react";
 import { deleteAd, restoreAd, toggleAdActive } from "@/app/actions/admin/ads";
 
 export function DeleteAdButton({ id }: { id: string }) {
@@ -18,6 +19,7 @@ export function DeleteAdButton({ id }: { id: string }) {
         }
       }}
     >
+      <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
       Supprimer
     </Button>
   );
@@ -33,6 +35,7 @@ export function RestoreAdButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => startTransition(() => restoreAd(id))}
     >
+      <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer
     </Button>
   );
@@ -48,6 +51,11 @@ export function ToggleAdButton({ id, active }: { id: string; active: boolean }) 
       disabled={isPending}
       onClick={() => startTransition(() => toggleAdActive(id, !active))}
     >
+      {active ? (
+        <PowerOff className="h-3.5 w-3.5" aria-hidden="true" />
+      ) : (
+        <Power className="h-3.5 w-3.5" aria-hidden="true" />
+      )}
       {active ? "Désactiver" : "Activer"}
     </Button>
   );

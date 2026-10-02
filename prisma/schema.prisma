@@ -22,6 +22,8 @@ model AdminUser {
   email        String   @unique
   passwordHash String
   role         AdminRole @default(EDITOR)
+  totpSecret   String?
+  totpEnabled  Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -390,6 +392,23 @@ model HeroSlide {
 
   @@index([active, order])
   @@map("hero_slides")
+}
+
+model SiteSettings {
+  id          String   @id @default("singleton")
+  phone       String?
+  whatsapp    String?
+  email       String?
+  address     String?
+  facebookUrl String?
+  instagramUrl String?
+  tiktokUrl   String?
+  youtubeUrl  String?
+  snapchatUrl String?
+  xUrl        String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings")
 }
 
 model Partner {

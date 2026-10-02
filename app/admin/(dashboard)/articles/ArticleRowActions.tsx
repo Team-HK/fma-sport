@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
+import { Trash2, RotateCcw, Eye, EyeOff } from "lucide-react";
 import { deleteArticle, restoreArticle, toggleArticleStatus } from "@/app/actions/admin/articles";
 
 export function DeleteArticleButton({ id }: { id: string }) {
@@ -19,6 +20,7 @@ export function DeleteArticleButton({ id }: { id: string }) {
         }
       }}
     >
+      <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
       Supprimer
     </Button>
   );
@@ -35,6 +37,7 @@ export function RestoreArticleButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => startTransition(() => restoreArticle(id))}
     >
+      <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer
     </Button>
   );
@@ -60,6 +63,11 @@ export function TogglePublishButton({
         startTransition(() => toggleArticleStatus(id, isPublished ? "DRAFT" : "PUBLISHED"))
       }
     >
+      {isPublished ? (
+        <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+      ) : (
+        <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+      )}
       {isPublished ? "Dépublier" : "Publier"}
     </Button>
   );

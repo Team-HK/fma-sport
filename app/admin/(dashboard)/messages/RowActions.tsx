@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
+import { Trash2, RotateCcw, Mail, MailOpen } from "lucide-react";
 import { markMessageRead, deleteMessage, restoreMessage } from "@/app/actions/admin/messages";
 
 export function MessageRowActions({ id, read }: { id: string; read: boolean }) {
@@ -15,6 +16,11 @@ export function MessageRowActions({ id, read }: { id: string; read: boolean }) {
         disabled={isPending}
         onClick={() => startTransition(() => markMessageRead(id, !read))}
       >
+        {read ? (
+          <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+        ) : (
+          <MailOpen className="h-3.5 w-3.5" aria-hidden="true" />
+        )}
         {read ? "Marquer non lu" : "Marquer lu"}
       </Button>
       <Button
@@ -28,6 +34,7 @@ export function MessageRowActions({ id, read }: { id: string; read: boolean }) {
           }
         }}
       >
+        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
         Supprimer
       </Button>
     </div>
@@ -44,6 +51,7 @@ export function RestoreMessageButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => startTransition(() => restoreMessage(id))}
     >
+      <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer
     </Button>
   );

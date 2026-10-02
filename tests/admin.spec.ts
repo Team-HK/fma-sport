@@ -97,7 +97,7 @@ test.describe("Espace administrateur", () => {
 
   test("la déconnexion admin redirige vers la page de connexion", async ({ page }) => {
     await login(page);
-    await page.getByRole("button", { name: "Déconnexion" }).click();
+    await page.getByRole("button", { name: "Déconnexion" }).first().click();
     await expect(page).toHaveURL(/\/admin\/login/, { timeout: 15_000 });
     await page.goto("/admin");
     await expect(page).toHaveURL(/\/admin\/login/);

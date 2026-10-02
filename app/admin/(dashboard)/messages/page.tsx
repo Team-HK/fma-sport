@@ -3,7 +3,9 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { formatDate } from "@/lib/utils";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import { Trash2, Archive } from "lucide-react";
 import { MessageRowActions, RestoreMessageButton } from "./RowActions";
 import type { Prisma } from "@prisma/client";
@@ -20,9 +22,9 @@ const TYPE_LABELS: Record<string, string> = {
 export default async function AdminMessagesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; type?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, type, corbeille } = await searchParams;
+  const { q, type, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
   const where: Prisma.ContactMessageWhereInput = {
@@ -40,7 +42,11 @@ export default async function AdminMessagesPage({
     ...(type ? { type: type as never } : {}),
   };
 
-  const messages = await prisma.contactMessage.findMany({ where, orderBy: { createdAt: "desc" } });
+  const [total, messages] = await Promise.all([
+    prisma.contactMessage.count({ where }),
+    prisma.contactMessage.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -111,6 +117,7 @@ export default async function AdminMessagesPage({
           </p>
         )}
       </div>
+      <AdminPagination currentPage={parsePage(page)} totalPages={totalPages} />
     </div>
   );
 }

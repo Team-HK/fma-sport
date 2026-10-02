@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
+import { Trash2, RotateCcw } from "lucide-react";
 import { deleteEvent, restoreEvent } from "@/app/actions/admin/events";
 
 export function DeleteEventButton({ id }: { id: string }) {
@@ -18,6 +19,7 @@ export function DeleteEventButton({ id }: { id: string }) {
         }
       }}
     >
+      <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
       Supprimer
     </Button>
   );
@@ -33,6 +35,7 @@ export function RestoreEventButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => startTransition(() => restoreEvent(id))}
     >
+      <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer
     </Button>
   );

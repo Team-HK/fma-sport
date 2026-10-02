@@ -24,6 +24,7 @@ export function AdminListToolbar({
     } else {
       params.delete(key);
     }
+    params.delete("page");
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });

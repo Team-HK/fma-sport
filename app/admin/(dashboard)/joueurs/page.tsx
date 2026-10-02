@@ -4,8 +4,10 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Tabs } from "@/components/ui/Tabs";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { statusMeta } from "@/lib/admin-ui";
 import { formatDate } from "@/lib/utils";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import { Trash2, Archive } from "lucide-react";
 import { CandidacyRowActions } from "./CandidacyRowActions";
 import { DeletePlayerButton, RestorePlayerButton } from "./PlayerRowActions";
@@ -17,33 +19,38 @@ export const dynamic = "force-dynamic";
 export default async function AdminPlayersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, status, corbeille } = await searchParams;
+  const { q, status, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
-  const [candidacies, players] = await Promise.all([
+  const playerWhere = {
+    deletedAt: showTrash ? { not: null } : null,
+    ...(q
+      ? {
+          OR: [
+            { firstName: { contains: q, mode: "insensitive" } },
+            { lastName: { contains: q, mode: "insensitive" } },
+            { club: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+    ...(status ? { status: status as never } : {}),
+  } satisfies Prisma.PlayerWhereInput;
+
+  const [candidacies, totalPlayers, players] = await Promise.all([
     prisma.candidacy.findMany({
       where: { status: { in: ["PENDING", "INFO_REQUESTED"] } },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.player.count({ where: playerWhere }),
     prisma.player.findMany({
-      where: {
-        deletedAt: showTrash ? { not: null } : null,
-        ...(q
-          ? {
-              OR: [
-                { firstName: { contains: q, mode: "insensitive" } },
-                { lastName: { contains: q, mode: "insensitive" } },
-                { club: { contains: q, mode: "insensitive" } },
-              ],
-            }
-          : {}),
-        ...(status ? { status: status as never } : {}),
-      } satisfies Prisma.PlayerWhereInput,
+      where: playerWhere,
       orderBy: { createdAt: "desc" },
+      ...paginationArgs(page),
     }),
   ]);
+  const totalPlayerPages = Math.max(1, Math.ceil(totalPlayers / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -153,6 +160,7 @@ export default async function AdminPlayersPage({
                       </p>
                     )}
                   </div>
+                  <AdminPagination currentPage={parsePage(page)} totalPages={totalPlayerPages} />
                 </div>
               ),
             },

@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { Trash2, Archive } from "lucide-react";
 import { DeleteAdButton, RestoreAdButton, ToggleAdButton } from "./RowActions";
 import { EditAdModal } from "./EditAdModal";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -15,9 +17,9 @@ const PLACEMENTS = ["HOME", "ACTUALITES", "ARTICLE", "VIDEOS", "TALENTS", "FOOTE
 export default async function AdminAdsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; placement?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; placement?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, placement, corbeille } = await searchParams;
+  const { q, placement, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
   const where: Prisma.AdvertisementWhereInput = {
@@ -26,7 +28,11 @@ export default async function AdminAdsPage({
     ...(placement ? { placement: placement as never } : {}),
   };
 
-  const ads = await prisma.advertisement.findMany({ where, orderBy: { createdAt: "desc" } });
+  const [total, ads] = await Promise.all([
+    prisma.advertisement.count({ where }),
+    prisma.advertisement.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -101,6 +107,7 @@ export default async function AdminAdsPage({
           </p>
         )}
       </div>
+      <AdminPagination currentPage={parsePage(page)} totalPages={totalPages} />
     </div>
   );
 }

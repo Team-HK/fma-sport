@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { statusMeta } from "@/lib/admin-ui";
 import { formatDate } from "@/lib/utils";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import { Trash2, Archive } from "lucide-react";
 import { DeleteArticleButton, RestoreArticleButton, TogglePublishButton } from "./ArticleRowActions";
 import { EditArticleModal } from "./EditArticleModal";
@@ -16,9 +18,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminArticlesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; category?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; category?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, status, category, corbeille } = await searchParams;
+  const { q, status, category, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
   const where: Prisma.ArticleWhereInput = {
@@ -28,7 +30,11 @@ export default async function AdminArticlesPage({
     ...(category ? { category: category as never } : {}),
   };
 
-  const articles = await prisma.article.findMany({ where, orderBy: { createdAt: "desc" } });
+  const [total, articles] = await Promise.all([
+    prisma.article.count({ where }),
+    prisma.article.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -123,6 +129,7 @@ export default async function AdminArticlesPage({
           </p>
         )}
       </div>
+      <AdminPagination currentPage={parsePage(page)} totalPages={totalPages} />
     </div>
   );
 }

@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { VIDEO_CATEGORY_LABELS, VIDEO_PLATFORM_LABELS } from "@/lib/constants";
 import { statusMeta } from "@/lib/admin-ui";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import { Trash2, Archive } from "lucide-react";
 import { DeleteVideoButton, RestoreVideoButton } from "./RowActions";
 import { EditVideoModal } from "./EditVideoModal";
@@ -15,9 +17,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminVideosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; category?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; category?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, status, category, corbeille } = await searchParams;
+  const { q, status, category, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
   const where: Prisma.VideoWhereInput = {
@@ -27,7 +29,11 @@ export default async function AdminVideosPage({
     ...(category ? { category: category as never } : {}),
   };
 
-  const videos = await prisma.video.findMany({ where, orderBy: { createdAt: "desc" } });
+  const [total, videos] = await Promise.all([
+    prisma.video.count({ where }),
+    prisma.video.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -111,6 +117,7 @@ export default async function AdminVideosPage({
           </p>
         )}
       </div>
+      <AdminPagination currentPage={parsePage(page)} totalPages={totalPages} />
     </div>
   );
 }

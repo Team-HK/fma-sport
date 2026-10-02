@@ -3,8 +3,10 @@ import { FOOTER_LINKS, LEGAL_LINKS } from "@/lib/constants";
 import { SocialLinks } from "./SocialLinks";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { Logo } from "@/components/ui/Logo";
+import { getSiteSettings } from "@/lib/queries";
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings().catch(() => null);
   return (
     <footer className="mt-auto border-t border-border bg-card">
       <AdSlot placement="FOOTER" className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8" />
@@ -16,7 +18,17 @@ export function Footer() {
             <p className="mt-3 max-w-xs text-sm italic text-muted-foreground">
               « L&apos;information football. Les talents de demain. »
             </p>
-            <SocialLinks className="mt-5" />
+            <SocialLinks
+              className="mt-5"
+              overrides={{
+                facebook: settings?.facebookUrl,
+                instagram: settings?.instagramUrl,
+                tiktok: settings?.tiktokUrl,
+                youtube: settings?.youtubeUrl,
+                snapchat: settings?.snapchatUrl,
+                x: settings?.xUrl,
+              }}
+            />
           </div>
 
           <div>
@@ -53,13 +65,21 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-sm text-muted-foreground">Dakar, Sénégal</p>
+            <p className="mt-4 text-sm text-muted-foreground">{settings?.address || "Dakar, Sénégal"}</p>
             <a
-              href="mailto:footballmediaafriquesport@gmail.com"
+              href={`mailto:${settings?.email || "footballmediaafriquesport@gmail.com"}`}
               className="text-sm text-muted-foreground transition-colors hover:text-primary"
             >
-              footballmediaafriquesport@gmail.com
+              {settings?.email || "footballmediaafriquesport@gmail.com"}
             </a>
+            {settings?.phone && (
+              <a
+                href={`tel:${settings.phone.replace(/\s+/g, "")}`}
+                className="block text-sm text-muted-foreground transition-colors hover:text-primary"
+              >
+                {settings.phone}
+              </a>
+            )}
           </div>
         </div>
 

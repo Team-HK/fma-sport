@@ -1,4 +1,4 @@
-import { HeroSlideForm } from "../HeroSlideForm";
+import { HeroSlideForm } from "../../HeroSlideForm";
 
 export default function NewHeroSlidePage() {
   return (

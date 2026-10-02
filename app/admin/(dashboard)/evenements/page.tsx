@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { statusMeta } from "@/lib/admin-ui";
+import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import { formatDate } from "@/lib/utils";
 import { Trash2, Archive } from "lucide-react";
 import { DeleteEventButton, RestoreEventButton } from "./RowActions";
@@ -16,9 +18,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminEventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; corbeille?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; corbeille?: string; page?: string }>;
 }) {
-  const { q, status, corbeille } = await searchParams;
+  const { q, status, corbeille, page } = await searchParams;
   const showTrash = corbeille === "1";
 
   const where: Prisma.EventWhereInput = {
@@ -27,11 +29,16 @@ export default async function AdminEventsPage({
     ...(status ? { status: status as never } : {}),
   };
 
-  const events = await prisma.event.findMany({
-    where,
-    orderBy: { date: "desc" },
-    include: { registrations: { orderBy: { createdAt: "desc" } } },
-  });
+  const [total, events] = await Promise.all([
+    prisma.event.count({ where }),
+    prisma.event.findMany({
+      where,
+      orderBy: { date: "desc" },
+      include: { registrations: { orderBy: { createdAt: "desc" } } },
+      ...paginationArgs(page),
+    }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   return (
     <div>
@@ -110,6 +117,7 @@ export default async function AdminEventsPage({
           </p>
         )}
       </div>
+      <AdminPagination currentPage={parsePage(page)} totalPages={totalPages} />
     </div>
   );
 }
