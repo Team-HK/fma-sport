@@ -30,9 +30,14 @@ export default async function AdminArticlesPage({
     ...(category ? { category: category as never } : {}),
   };
 
-  const [total, articles] = await Promise.all([
+  const [total, articles, writers] = await Promise.all([
     prisma.article.count({ where }),
     prisma.article.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+    prisma.teamMember.findMany({
+      where: { deletedAt: null },
+      select: { id: true, name: true, role: true },
+      orderBy: [{ order: "asc" }, { name: "asc" }],
+    }),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
@@ -115,7 +120,7 @@ export default async function AdminArticlesPage({
                 ) : (
                   <>
                     <TogglePublishButton id={article.id} status={article.status} />
-                    <EditArticleModal article={article} />
+                    <EditArticleModal article={article} writers={writers} />
                     <DeleteArticleButton id={article.id} />
                   </>
                 )

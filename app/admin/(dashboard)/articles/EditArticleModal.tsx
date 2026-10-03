@@ -4,10 +4,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Pencil } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
-import { ArticleForm } from "./ArticleForm";
+import { ArticleForm, type ArticleWriterOption } from "./ArticleForm";
 import type { Article } from "@prisma/client";
 
-export function EditArticleModal({ article }: { article: Article }) {
+export function EditArticleModal({
+  article,
+  writers,
+}: {
+  article: Article;
+  writers: ArticleWriterOption[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -17,7 +23,7 @@ export function EditArticleModal({ article }: { article: Article }) {
         Modifier
       </Button>
       <Modal open={open} onClose={() => setOpen(false)} title="Modifier l'article" maxWidth="max-w-2xl">
-        <ArticleForm article={article} onSuccess={() => setOpen(false)} />
+        <ArticleForm article={article} writers={writers} onSuccess={() => setOpen(false)} />
       </Modal>
     </>
   );

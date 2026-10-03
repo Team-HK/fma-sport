@@ -31,7 +31,14 @@ export function getPublishedArticles(options?: {
 }
 
 export async function getArticleBySlug(slug: string) {
-  const article = await prisma.article.findUnique({ where: { slug } });
+  const article = await prisma.article.findUnique({
+    where: { slug },
+    include: {
+      writer: {
+        select: { id: true, name: true, role: true, photo: true, visible: true, deletedAt: true },
+      },
+    },
+  });
   if (!article || article.deletedAt) return null;
   const isVisible =
     article.status === "PUBLISHED" ||
@@ -113,6 +120,10 @@ export function getActiveHeroSlides() {
     where: { active: true, deletedAt: null },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
+}
+
+export function getVisibleTeamMember(id: string) {
+  return prisma.teamMember.findFirst({ where: { id, visible: true, deletedAt: null } });
 }
 
 export function getVisibleTeamMembers(take?: number) {

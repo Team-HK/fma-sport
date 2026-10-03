@@ -4,13 +4,12 @@ import { MobileNav } from "./MobileNav";
 import { SearchBox } from "./SearchBox";
 import { NavDropdown } from "./NavDropdown";
 import { DesktopNavLink } from "./DesktopNavLink";
-import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 bg-card/90 shadow-[0_1px_0_0_var(--color-border)] backdrop-blur-md">
-      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 bg-card/95 shadow-[0_1px_0_0_var(--color-border)] backdrop-blur-md">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Logo size={44} />
           <span className="sr-only">FMA SPORT</span>
@@ -20,7 +19,7 @@ export function Header() {
           aria-label="Navigation principale"
           className="hidden min-w-0 flex-1 justify-center lg:flex"
         >
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center gap-6 xl:gap-8">
             {DESKTOP_NAV_ITEMS.map((item) =>
               item.type === "dropdown" ? (
                 <li key={item.label}>
@@ -35,10 +34,13 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1">
-          <Button href="/devenir-joueur" size="sm" className="hidden lg:inline-flex">
+        <div className="flex shrink-0 items-center gap-3">
+          <Link
+            href="/devenir-joueur"
+            className="hidden text-[13px] font-semibold uppercase tracking-wide text-accent transition-colors hover:text-foreground lg:inline"
+          >
             Devenir joueur
-          </Button>
+          </Link>
           <SearchBox />
           <MobileNav />
         </div>

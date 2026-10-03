@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getVisibleTeamMembers } from "@/lib/queries";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { TeamDepartmentsOverview } from "@/components/sections/TeamDepartmentsOverview";
-import { Card } from "@/components/ui/Card";
-import { UserRound } from "lucide-react";
+import { TeamMemberCard } from "@/components/sections/TeamMemberCard";
 
 export const revalidate = 300;
 
@@ -46,22 +44,9 @@ export default async function TeamPage() {
             {[...groups.entries()].map(([department, people]) => (
               <section key={department}>
                 <h2 className="font-heading text-xl font-semibold text-foreground">{department}</h2>
-                <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
                   {people.map((person) => (
-                    <Card key={person.id} className="p-6 text-center">
-                      <div className="relative mx-auto h-24 w-24 overflow-hidden rounded-full border border-border bg-muted">
-                        {person.photo ? (
-                          <Image src={person.photo} alt="" fill sizes="96px" className="object-cover" unoptimized />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                            <UserRound className="h-10 w-10" aria-hidden="true" />
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">{person.name}</h3>
-                      <p className="text-sm font-medium text-accent">{person.role}</p>
-                      {person.bio && <p className="mt-2 text-sm text-muted-foreground">{person.bio}</p>}
-                    </Card>
+                    <TeamMemberCard key={person.id} member={person} />
                   ))}
                 </div>
               </section>

@@ -72,21 +72,26 @@ export async function Footer() {
             >
               {settings?.email || "footballmediaafriquesport@gmail.com"}
             </a>
-            {settings?.phone && (
-              <a
-                href={`tel:${settings.phone.replace(/\s+/g, "")}`}
-                className="block text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                {settings.phone}
-              </a>
-            )}
-            {settings?.phone2 && (
-              <a
-                href={`tel:${settings.phone2.replace(/\s+/g, "")}`}
-                className="block text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                {settings.phone2}
-              </a>
+            {(settings?.phone || settings?.phone2) && (
+              <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+                {settings?.phone && (
+                  <a
+                    href={`tel:${settings.phone.replace(/\s+/g, "")}`}
+                    className="transition-colors hover:text-primary"
+                  >
+                    {settings.phone}
+                  </a>
+                )}
+                {settings?.phone && settings?.phone2 && <span>/</span>}
+                {settings?.phone2 && (
+                  <a
+                    href={`tel:${settings.phone2.replace(/\s+/g, "")}`}
+                    className="transition-colors hover:text-primary"
+                  >
+                    {settings.phone2}
+                  </a>
+                )}
+              </p>
             )}
           </div>
         </div>

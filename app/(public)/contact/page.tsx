@@ -49,23 +49,23 @@ export default async function ContactPage() {
                   <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
                   {settings?.email || "footballmediaafriquesport@gmail.com"}
                 </a>
-                {settings?.phone && (
-                  <a
-                    href={`tel:${settings.phone.replace(/\s+/g, "")}`}
-                    className="flex items-center gap-2.5 text-white/90 hover:text-white"
-                  >
+                {(settings?.phone || settings?.phone2) && (
+                  <span className="flex items-center gap-2.5 text-white/90">
                     <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    {settings.phone}
-                  </a>
-                )}
-                {settings?.phone2 && (
-                  <a
-                    href={`tel:${settings.phone2.replace(/\s+/g, "")}`}
-                    className="flex items-center gap-2.5 text-white/90 hover:text-white"
-                  >
-                    <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    {settings.phone2}
-                  </a>
+                    <span className="flex flex-wrap items-center gap-x-2">
+                      {settings?.phone && (
+                        <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="hover:text-white">
+                          {settings.phone}
+                        </a>
+                      )}
+                      {settings?.phone && settings?.phone2 && <span className="text-white/50">/</span>}
+                      {settings?.phone2 && (
+                        <a href={`tel:${settings.phone2.replace(/\s+/g, "")}`} className="hover:text-white">
+                          {settings.phone2}
+                        </a>
+                      )}
+                    </span>
+                  </span>
                 )}
                 {settings?.whatsapp && (
                   <a

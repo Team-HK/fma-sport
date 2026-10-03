@@ -7,6 +7,7 @@ import {
   pickImage,
   unsplash,
 } from "../lib/stock-images";
+import { EXTRA_EVENTS } from "./seed-events";
 
 const prisma = new PrismaClient();
 
@@ -391,6 +392,7 @@ async function main() {
       contact: "footballmediaafriquesport@gmail.com",
       date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 20),
     },
+    ...EXTRA_EVENTS,
   ];
 
   for (const [eventIndex, data] of eventsData.entries()) {
@@ -407,7 +409,8 @@ async function main() {
         registrationConditions: data.registrationConditions,
         contact: data.contact,
         poster: pickImage(EVENT_POSTER_IMAGES, eventIndex),
-        status: "PUBLISHED",
+        status: "results" in data && data.results ? "RESULTS_PUBLISHED" : "PUBLISHED",
+        results: "results" in data ? data.results : null,
       },
     });
   }

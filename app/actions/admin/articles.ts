@@ -19,6 +19,7 @@ const articleSchema = z.object({
   tags: z.string().optional(),
   status: z.enum(["DRAFT", "SCHEDULED", "PUBLISHED"]),
   publishedAt: z.string().optional(),
+  writerId: z.string().optional(),
 });
 
 export type ArticleActionState = { success: boolean; message: string };
@@ -64,6 +65,7 @@ export async function upsertArticle(
           tags,
           status: data.status,
           publishedAt,
+          writerId: data.writerId || null,
         },
       });
       await logAdminAction({
@@ -90,6 +92,7 @@ export async function upsertArticle(
           status: data.status,
           publishedAt,
           authorId: admin.id,
+          writerId: data.writerId || null,
         },
       });
       await logAdminAction({

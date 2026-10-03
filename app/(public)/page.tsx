@@ -16,8 +16,7 @@ import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { HERO_IMAGES } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { TeamDepartmentsOverview } from "@/components/sections/TeamDepartmentsOverview";
-import { Card } from "@/components/ui/Card";
-import { UserRound } from "lucide-react";
+import { TeamMemberCard } from "@/components/sections/TeamMemberCard";
 
 export const revalidate = 300;
 
@@ -144,23 +143,9 @@ export default async function HomePage() {
           </div>
 
           {teamMembers.length > 0 ? (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
               {teamMembers.map((member) => (
-                <Card key={member.id} className="p-5 text-center">
-                  <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full border border-border bg-muted">
-                    {member.photo ? (
-                      <Image src={member.photo} alt="" fill sizes="80px" className="object-cover" unoptimized />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                        <UserRound className="h-8 w-8" aria-hidden="true" />
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="mt-3 font-heading text-sm font-semibold text-foreground">
-                    {member.name}
-                  </h3>
-                  <p className="text-xs font-medium text-accent">{member.role}</p>
-                </Card>
+                <TeamMemberCard key={member.id} member={member} />
               ))}
             </div>
           ) : (

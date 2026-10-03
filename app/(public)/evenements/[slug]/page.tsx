@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { Card } from "@/components/ui/Card";
@@ -84,12 +85,25 @@ export default async function EventDetailPage({ params }: { params: Promise<Para
             )}
           </div>
 
-          <Card className="h-fit p-6">
-            <h2 className="mb-4 font-heading text-lg font-semibold text-foreground">
-              S&apos;inscrire à cet événement
-            </h2>
-            <EventRegistrationForm eventId={event.id} />
-          </Card>
+          {event.date >= new Date() ? (
+            <Card className="h-fit p-6">
+              <h2 className="mb-4 font-heading text-lg font-semibold text-foreground">
+                S&apos;inscrire à cet événement
+              </h2>
+              <EventRegistrationForm eventId={event.id} />
+            </Card>
+          ) : (
+            <Card className="h-fit p-6">
+              <h2 className="font-heading text-lg font-semibold text-foreground">Inscriptions closes</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Cet événement est terminé. Consultez nos{" "}
+                <Link href="/evenements" className="font-medium text-accent hover:underline">
+                  prochains rendez-vous
+                </Link>
+                .
+              </p>
+            </Card>
+          )}
         </div>
       </div>
     </>

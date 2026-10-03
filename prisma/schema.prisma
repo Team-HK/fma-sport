@@ -86,6 +86,8 @@ model Article {
   views         Int             @default(0)
   authorId      String?
   author        AdminUser?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  writerId      String?
+  writer        TeamMember?     @relation(fields: [writerId], references: [id], onDelete: SetNull)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
@@ -425,6 +427,8 @@ model TeamMember {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
+
+  articles   Article[]
 
   @@index([deletedAt, order])
   @@map("team_members")

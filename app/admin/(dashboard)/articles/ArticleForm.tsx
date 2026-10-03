@@ -11,11 +11,15 @@ import type { Article } from "@prisma/client";
 
 const initialState: ArticleActionState = { success: false, message: "" };
 
+export type ArticleWriterOption = { id: string; name: string; role: string };
+
 export function ArticleForm({
   article,
+  writers = [],
   onSuccess,
 }: {
   article?: Article;
+  writers?: ArticleWriterOption[];
   onSuccess?: () => void;
 }) {
   const action = upsertArticle.bind(null, article?.id ?? null);
@@ -51,6 +55,25 @@ export function ArticleForm({
                 <div>
                   <Label htmlFor="title">Titre *</Label>
                   <Input id="title" name="title" defaultValue={article?.title} required />
+                </div>
+                <div>
+                  <Label htmlFor="writerId">Rédacteur</Label>
+                  <select
+                    id="writerId"
+                    name="writerId"
+                    defaultValue={article?.writerId ?? ""}
+                    className="w-full rounded-[10px] border border-border bg-card px-4 py-3 text-base text-foreground"
+                  >
+                    <option value="">La Rédaction FMA SPORT</option>
+                    {writers.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.name} — {w.role}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Les rédacteurs se gèrent dans la section Équipe.
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="excerpt">Résumé *</Label>
