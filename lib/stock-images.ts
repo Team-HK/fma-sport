@@ -35,6 +35,8 @@ export const HERO_IMAGES = [
   "photo-1570651403445-54c2b0f568c0", // drapeau du Sénégal, Dakar
 ].map((id) => unsplash(id, 1920, 1080));
 
+export const CONTACT_IMAGE = unsplash("photo-1722978687695-212eecfa4cbe", 900, 1200);
+
 export function pickImage(images: string[], seed: number) {
   return images[Math.abs(seed) % images.length];
 }

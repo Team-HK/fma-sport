@@ -21,9 +21,12 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 export function SocialLinks({
   className,
   overrides,
+  onDark = false,
 }: {
   className?: string;
   overrides?: Partial<Record<string, string | null | undefined>>;
+  /** Use light icon/hover colors for use on dark or colored backgrounds. */
+  onDark?: boolean;
 }) {
   return (
     <ul className={cn("flex items-center gap-2", className)}>
@@ -37,7 +40,12 @@ export function SocialLinks({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={link.label}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-foreground transition-colors hover:bg-primary hover:text-on-primary"
+              className={cn(
+                "flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors",
+                onDark
+                  ? "text-white hover:bg-white/15 hover:text-white"
+                  : "text-foreground hover:bg-primary hover:text-on-primary"
+              )}
             >
               <Icon className="h-4.5 w-4.5" />
             </a>

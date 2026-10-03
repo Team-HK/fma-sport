@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* FMA Sport design system v2 — Bleu royal / Or */
-  --color-primary: #0a14e6; /* Bleu royal */
+  /* FMA Sport design system v3 — identité reprise du logo (noir & blanc) + rouge sport en accent */
+  --color-primary: #18181b; /* Noir encre du logo */
   --color-on-primary: #ffffff;
-  --color-secondary: #2f5bff; /* Électrique (hover) */
+  --color-secondary: #3f3f46; /* Gris anthracite (hover) */
   --color-on-secondary: #ffffff;
-  --color-accent: #e8b923; /* Or */
-  --color-on-accent: #3d2e00;
-  --color-background: #f7f9ff; /* Fond */
-  --color-foreground: #0b1b5c; /* Bleu profond */
+  --color-accent: #e01e2b; /* Rouge sport */
+  --color-on-accent: #ffffff;
+  --color-background: #fafafa; /* Fond neutre */
+  --color-foreground: #18181b; /* Texte principal, noir encre */
   --color-card: #ffffff;
-  --color-card-foreground: #0b1b5c;
-  --color-muted: #eaf0ff; /* Section */
-  --color-muted-foreground: #4a5578; /* Texte 2 */
-  --color-border: #c9d6ff; /* Argent */
+  --color-card-foreground: #18181b;
+  --color-muted: #f4f4f5; /* Section */
+  --color-muted-foreground: #6b7280; /* Texte 2 */
+  --color-border: #e4e4e7; /* Gris très léger */
   --color-success: #1f9d61;
   --color-on-success: #ffffff;
   --color-success-soft: #ddf3e8;
@@ -25,9 +25,9 @@
   --color-on-destructive: #ffffff;
   --color-destructive-soft: #fbe4e4;
   --color-destructive-soft-foreground: #8a1f1f;
-  --color-neutral-soft: #eaf0ff;
-  --color-neutral-soft-foreground: #0b1b5c;
-  --color-ring: #0a14e6;
+  --color-neutral-soft: #f4f4f5;
+  --color-neutral-soft-foreground: #18181b;
+  --color-ring: #18181b;
 
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -37,10 +37,10 @@
   --space-2xl: 3rem;
   --space-3xl: 4rem;
 
-  --shadow-sm: 0 1px 2px rgba(11, 27, 92, 0.05);
-  --shadow-md: 0 4px 6px rgba(11, 27, 92, 0.08);
-  --shadow-lg: 0 10px 15px rgba(11, 27, 92, 0.1);
-  --shadow-xl: 0 20px 25px rgba(11, 27, 92, 0.12);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.1);
 
   --font-heading: "Poppins", sans-serif;
   --font-body: "Inter", sans-serif;

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,10 @@ export function NavDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isActive = items.some((item) =>
+    item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
+  );
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -39,7 +44,10 @@ export function NavDropdown({
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen((v) => !v)}
-        className="flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted hover:text-primary xl:px-3"
+        className={cn(
+          "flex cursor-pointer items-center gap-1 rounded-full border-b-2 border-transparent px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted xl:px-3.5",
+          isActive && "border-accent text-accent"
+        )}
       >
         {label}
         <ChevronDown
@@ -50,13 +58,13 @@ export function NavDropdown({
       </button>
 
       {open && (
-        <ul className="absolute left-0 top-full z-50 mt-1 min-w-48 rounded-lg border border-border bg-card p-1.5 shadow-lg">
+        <ul className="absolute left-0 top-full z-50 mt-2 min-w-52 rounded-xl border border-border/60 bg-card p-1.5 shadow-md">
           {items.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="block rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted hover:text-primary"
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted hover:text-accent"
               >
                 {item.label}
               </Link>

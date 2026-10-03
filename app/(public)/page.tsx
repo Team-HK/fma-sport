@@ -10,21 +10,26 @@ import {
   getPublishedPlayers,
   getPublishedVideos,
   getActiveHeroSlides,
+  getVisibleTeamMembers,
 } from "@/lib/queries";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { HERO_IMAGES } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
+import { TeamDepartmentsOverview } from "@/components/sections/TeamDepartmentsOverview";
+import { Card } from "@/components/ui/Card";
+import { UserRound } from "lucide-react";
 
 export const revalidate = 300;
 
 const DEFAULT_HERO_SLIDES = HERO_IMAGES.map((imageUrl) => ({ imageUrl }));
 
 export default async function HomePage() {
-  const [articles, players, videos, heroSlides] = await Promise.all([
+  const [articles, players, videos, heroSlides, teamMembers] = await Promise.all([
     getPublishedArticles({ take: 5 }).catch(() => []),
     getPublishedPlayers(4).catch(() => []),
     getPublishedVideos({ take: 3 }).catch(() => []),
     getActiveHeroSlides().catch(() => []),
+    getVisibleTeamMembers(4).catch(() => []),
   ]);
 
   const [featured, ...secondary] = articles;
@@ -125,6 +130,44 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Équipe */}
+      <section className="bg-card py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+              Notre équipe
+            </h2>
+            <Link href="/equipe" className="text-sm font-semibold text-accent hover:underline">
+              Découvrir l&apos;équipe →
+            </Link>
+          </div>
+
+          {teamMembers.length > 0 ? (
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+              {teamMembers.map((member) => (
+                <Card key={member.id} className="p-5 text-center">
+                  <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full border border-border bg-muted">
+                    {member.photo ? (
+                      <Image src={member.photo} alt="" fill sizes="80px" className="object-cover" unoptimized />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                        <UserRound className="h-8 w-8" aria-hidden="true" />
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="mt-3 font-heading text-sm font-semibold text-foreground">
+                    {member.name}
+                  </h3>
+                  <p className="text-xs font-medium text-accent">{member.role}</p>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <TeamDepartmentsOverview compact />
+          )}
+        </div>
+      </section>
 
       {/* CTA Management */}
       <section className="bg-primary py-16 text-on-primary">

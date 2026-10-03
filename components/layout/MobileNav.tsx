@@ -53,7 +53,7 @@ export function MobileNav() {
           />
           <nav
             aria-label="Menu mobile"
-            className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border bg-card shadow-lg"
+            className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border/60 bg-card shadow-md"
           >
             <ul className="flex flex-col p-2">
               {NAV_LINKS.map((link) => (

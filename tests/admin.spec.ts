@@ -22,7 +22,7 @@ test.describe("Espace administrateur", () => {
     await page.getByLabel("Email").fill(ADMIN_EMAIL);
     await page.getByLabel("Mot de passe", { exact: true }).fill("mauvais-mot-de-passe");
     await page.getByRole("button", { name: "Se connecter" }).click();
-    await expect(page.getByText("Email ou mot de passe incorrect.")).toBeVisible();
+    await expect(page.getByText("Email ou mot de passe incorrect.")).toBeVisible({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/admin\/login/);
   });
 

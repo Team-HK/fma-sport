@@ -12,8 +12,8 @@ export function DesktopNavLink({ href, label }: { href: string; label: string })
     <Link
       href={href}
       className={cn(
-        "block rounded-[10px] border-b-2 border-transparent px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted",
-        isActive && "border-accent text-primary"
+        "block rounded-full border-b-2 border-transparent px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted",
+        isActive && "border-accent text-accent"
       )}
     >
       {label}

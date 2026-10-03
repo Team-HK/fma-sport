@@ -68,7 +68,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlideContent[] }) {
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-accent/20"
+            className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/5"
           />
           <div className="relative z-10 flex h-full items-center">
             <div className="mx-auto max-w-4xl px-4 py-24 text-center text-white sm:px-6">

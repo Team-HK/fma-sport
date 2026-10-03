@@ -55,7 +55,7 @@ export function SearchBox() {
         <form
           onSubmit={handleSubmit}
           role="search"
-          className="absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-border bg-card p-2 shadow-lg"
+          className="absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-border/60 bg-card p-2 shadow-md"
         >
           <label htmlFor="site-search" className="sr-only">
             Rechercher un joueur, une actualité...

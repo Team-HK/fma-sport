@@ -115,6 +115,14 @@ export function getActiveHeroSlides() {
   });
 }
 
+export function getVisibleTeamMembers(take?: number) {
+  return prisma.teamMember.findMany({
+    where: { visible: true, deletedAt: null },
+    orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+    take,
+  });
+}
+
 export async function searchSite(query: string) {
   const [articles, players, videos] = await Promise.all([
     prisma.article.findMany({
