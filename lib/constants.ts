@@ -8,6 +8,7 @@ export const NAV_LINKS = [
   { href: "/videos", label: "Vidéos" },
   { href: "/talents", label: "Nos talents" },
   { href: "/management", label: "Management sportif" },
+  { href: "/equipe", label: "Notre équipe" },
   { href: "/devenir-joueur", label: "Devenir joueur" },
   { href: "/evenements", label: "Événements" },
   { href: "/contact", label: "Contact" },
@@ -35,6 +36,7 @@ export const DESKTOP_NAV_ITEMS = [
     items: [
       { href: "/talents", label: "Nos talents" },
       { href: "/management", label: "Management sportif" },
+      { href: "/equipe", label: "Notre équipe" },
     ],
   },
   { type: "link", href: "/evenements", label: "Événements" },
@@ -46,6 +48,7 @@ export const FOOTER_LINKS = [
   { href: "/actualites", label: "Actualités" },
   { href: "/talents", label: "Nos talents" },
   { href: "/management", label: "Management sportif" },
+  { href: "/equipe", label: "Notre équipe" },
   { href: "/devenir-joueur", label: "Devenir joueur" },
   { href: "/contact", label: "Contact" },
 ] as const;
@@ -94,6 +97,16 @@ export const VIDEO_PLATFORM_LABELS: Record<string, string> = {
   FACEBOOK: "Facebook",
   INSTAGRAM: "Instagram",
 };
+
+// Free-text suggestions for the "département" field of l'équipe FMA SPORT
+// (not a strict enum, so the admin can type a custom value if needed).
+export const TEAM_DEPARTMENT_SUGGESTIONS = [
+  "Direction",
+  "Rédaction",
+  "Management & scouting",
+  "Production vidéo",
+  "Technique",
+] as const;
 
 export const POSITION_LABELS: Record<string, string> = {
   GARDIEN: "Gardien",
