@@ -78,7 +78,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlideContent[] }) {
                 </h1>
               ) : (
                 <>
-                  <Logo size={88} className="mx-auto mb-4" />
+                  <Logo size={88} className="mx-auto mb-4" onDark />
                   <h1 className="font-heading text-4xl font-medium tracking-tight sm:text-6xl">
                     FMA SPORT
                   </h1>

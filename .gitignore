@@ -48,3 +48,6 @@ next-env.d.ts
 pw-results.txt
 mobile-check.mjs
 mobile-check-screens/
+
+# Claude Code harness internal state (not part of the project)
+.claude/scheduled_tasks.lock

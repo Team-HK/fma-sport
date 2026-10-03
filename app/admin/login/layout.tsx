@@ -20,10 +20,10 @@ export default function AdminLoginLayout({ children }: { children: React.ReactNo
         <div className="mb-6 flex justify-center">
           <Link
             href="/"
-            className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/30 shadow-lg transition-transform hover:scale-105"
+            className="inline-flex transition-transform hover:scale-105"
             aria-label="Retour à l'accueil FMA SPORT"
           >
-            <Logo size={60} />
+            <Logo size={60} onDark />
           </Link>
         </div>
 
