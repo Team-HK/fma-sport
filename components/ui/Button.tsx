@@ -12,7 +12,8 @@ const variants = {
   soft: "bg-muted text-foreground hover:bg-border/60",
   accent: "bg-accent text-on-accent hover:brightness-95",
   ghost: "bg-transparent text-foreground hover:bg-muted",
-  destructive: "bg-destructive text-on-destructive hover:opacity-90",
+  destructive:
+    "bg-destructive-soft text-destructive-soft-foreground hover:bg-destructive hover:text-on-destructive",
 };
 
 const sizes = {

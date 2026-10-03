@@ -32,7 +32,12 @@ export default async function AdminArticlesPage({
 
   const [total, articles, writers] = await Promise.all([
     prisma.article.count({ where }),
-    prisma.article.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+    prisma.article.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { writer: { select: { name: true } } },
+      ...paginationArgs(page),
+    }),
     prisma.teamMember.findMany({
       where: { deletedAt: null },
       select: { id: true, name: true, role: true },
@@ -110,8 +115,9 @@ export default async function AdminArticlesPage({
               title={article.title}
               meta={
                 <>
+                  {article.writer?.name ?? "La Rédaction"} ·{" "}
                   {article.publishedAt ? formatDate(article.publishedAt) : "Non publié"} ·{" "}
-                  {article.views} vues
+                  {article.views.toLocaleString("fr-FR")} vues
                 </>
               }
               actions={
