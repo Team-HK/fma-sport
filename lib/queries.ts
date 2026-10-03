@@ -82,6 +82,19 @@ export async function getPlayerBySlug(slug: string) {
   return player?.deletedAt ? null : player;
 }
 
+export function getSimilarPlayers(player: { id: string; position: string; nationality: string }, take = 4) {
+  return prisma.player.findMany({
+    where: {
+      status: "PUBLISHED",
+      deletedAt: null,
+      id: { not: player.id },
+      OR: [{ position: player.position as never }, { nationality: player.nationality }],
+    },
+    orderBy: { updatedAt: "desc" },
+    take,
+  });
+}
+
 export function getPublishedEvents(take?: number) {
   return prisma.event.findMany({
     where: { status: { in: ["PUBLISHED", "RESULTS_PUBLISHED"] }, deletedAt: null },

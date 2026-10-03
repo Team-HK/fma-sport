@@ -75,6 +75,26 @@ export function PlayerForm({ player, onSuccess }: { player?: Player; onSuccess?:
                   <Textarea id="bio" name="bio" rows={4} defaultValue={player?.bio ?? ""} />
                 </div>
                 <div>
+                  <Label htmlFor="strengths">Points forts (un par ligne)</Label>
+                  <Textarea
+                    id="strengths"
+                    name="strengths"
+                    rows={4}
+                    defaultValue={player?.strengths.join("\n") ?? ""}
+                    placeholder={"Vitesse de projection\nQualité de centre\nEndurance"}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="careerHistory">Parcours (une étape par ligne)</Label>
+                  <Textarea
+                    id="careerHistory"
+                    name="careerHistory"
+                    rows={4}
+                    defaultValue={player?.careerHistory.join("\n") ?? ""}
+                    placeholder={"2021–2023 · Académie de quartier\n2023–2025 · Club formateur\n2025– · Club actuel"}
+                  />
+                </div>
+                <div>
                   <Label htmlFor="status">Statut *</Label>
                   <select
                     id="status"

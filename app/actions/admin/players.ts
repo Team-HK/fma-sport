@@ -81,6 +81,8 @@ const playerSchema = z.object({
   number: z.coerce.number().optional(),
   photo: z.string().optional(),
   bio: z.string().optional(),
+  strengths: z.string().optional(),
+  careerHistory: z.string().optional(),
   cvUrl: z.string().optional(),
   documentUrls: z.string().optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
@@ -104,9 +106,11 @@ export async function upsertPlayer(
     return { success: false, message: "Merci de vérifier les champs obligatoires." };
   }
   const data = parsed.data;
-  const documentUrls = data.documentUrls
-    ? data.documentUrls.split("\n").map((u) => u.trim()).filter(Boolean)
-    : [];
+  const toLines = (value?: string) =>
+    value ? value.split("\n").map((line) => line.trim()).filter(Boolean) : [];
+  const documentUrls = toLines(data.documentUrls);
+  const strengths = toLines(data.strengths);
+  const careerHistory = toLines(data.careerHistory);
 
   try {
     if (id) {
@@ -128,6 +132,8 @@ export async function upsertPlayer(
           number: data.number,
           photo: data.photo || null,
           bio: data.bio || null,
+          strengths,
+          careerHistory,
           cvUrl: data.cvUrl || null,
           documentUrls,
           status: data.status,
@@ -136,6 +142,7 @@ export async function upsertPlayer(
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "player", entityId: id });
       revalidatePath("/admin/joueurs");
       revalidatePath("/talents");
+      revalidatePath("/joueurs/[slug]", "page");
       return { success: true, message: "Profil mis à jour." };
     } else {
       const created = await prisma.player.create({
@@ -156,6 +163,8 @@ export async function upsertPlayer(
           number: data.number,
           photo: data.photo || null,
           bio: data.bio || null,
+          strengths,
+          careerHistory,
           cvUrl: data.cvUrl || null,
           documentUrls,
           status: data.status,

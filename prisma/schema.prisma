@@ -193,6 +193,8 @@ model Player {
   previousClub    String?
   number          Int?
   bio             String?
+  strengths       String[]       @default([])
+  careerHistory   String[]       @default([])
   cvUrl           String?
   documentUrls    String[]       @default([])
   status          PlayerStatus   @default(DRAFT)

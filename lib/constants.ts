@@ -121,6 +121,29 @@ export const POSITION_LABELS: Record<string, string> = {
   AVANT_CENTRE: "Avant-centre",
 };
 
+export const POSITION_ROLE_DESCRIPTIONS: Record<string, string> = {
+  GARDIEN:
+    "Dernier rempart de l'équipe, il organise la défense, maîtrise le jeu aérien et participe de plus en plus à la relance au pied.",
+  DEFENSEUR_CENTRAL:
+    "Pilier de l'axe défensif, il gagne les duels, couvre la profondeur et lance les premières phases de construction.",
+  LATERAL_DROIT:
+    "Il tient le couloir droit face aux ailiers adverses et apporte le surnombre offensif par ses montées et ses centres.",
+  LATERAL_GAUCHE:
+    "Il tient le couloir gauche face aux ailiers adverses et apporte le surnombre offensif par ses montées et ses centres.",
+  MILIEU_DEFENSIF:
+    "Sentinelle devant la défense, il récupère les ballons, protège l'axe et oriente le jeu vers l'avant.",
+  MILIEU_CENTRAL:
+    "Relayeur entre les lignes, il assure la circulation du ballon, le volume de jeu et l'équilibre de l'équipe.",
+  MILIEU_OFFENSIF:
+    "Créateur derrière les attaquants, il trouve les espaces entre les lignes et délivre les dernières passes.",
+  AILIER_DROIT:
+    "Joueur de couloir offensif, il provoque en un-contre-un, élimine et crée le danger par ses centres ou ses repiquages.",
+  AILIER_GAUCHE:
+    "Joueur de couloir offensif, il provoque en un-contre-un, élimine et crée le danger par ses centres ou ses repiquages.",
+  AVANT_CENTRE:
+    "Point d'appui de l'attaque, il fixe la défense, attaque la profondeur et a la responsabilité de conclure les actions.",
+};
+
 export const STRONG_FOOT_LABELS: Record<string, string> = {
   DROIT: "Droit",
   GAUCHE: "Gauche",
