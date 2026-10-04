@@ -78,7 +78,9 @@ test.describe("Pages publiques", () => {
   test("le profil du joueur seedé Mamadou Diop est accessible", async ({ page }) => {
     await page.goto("/joueurs/mamadou-diop");
     await expect(page.getByRole("heading", { level: 1, name: "Mamadou Diop" })).toBeVisible();
-    await expect(page.getByRole("definition").getByText("Génération Foot", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("complementary").getByRole("definition").getByText("Génération Foot", { exact: true })
+    ).toBeVisible();
   });
 
   test("la page management affiche les 6 services", async ({ page }) => {

@@ -4,13 +4,15 @@ import Link from "next/link";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { FilterTabs } from "@/components/sections/FilterTabs";
 import { ArticleCard } from "@/components/sections/ArticleCard";
-import { getPublishedArticles } from "@/lib/queries";
+import { getPublishedArticles, getPublishedArticleCount, getMostReadArticles } from "@/lib/queries";
+import { AdminPagination } from "@/components/admin/AdminPagination";
+import { parsePage } from "@/lib/pagination";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { formatDate } from "@/lib/utils";
 import type { ArticleCategory } from "@prisma/client";
 
-export const revalidate = 300;
+const PAGE_SIZE = 18;
 
 export const metadata: Metadata = {
   title: "Actualités football",
@@ -21,15 +23,24 @@ export const metadata: Metadata = {
 export default async function ActualitesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string }>;
+  searchParams: Promise<{ categorie?: string; page?: string }>;
 }) {
-  const { categorie } = await searchParams;
+  const { categorie, page } = await searchParams;
+  const currentPage = parsePage(page);
   const category =
     categorie && categorie in ARTICLE_CATEGORY_LABELS ? (categorie as ArticleCategory) : undefined;
 
-  const articles = await getPublishedArticles({ category });
-  const [lead, ...rest] = articles;
-  const mostRead = [...articles].sort((a, b) => b.views - a.views).slice(0, 5);
+  // Page 1 shows a lead story above the grid, so it takes one extra article.
+  const skip = currentPage === 1 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+  const take = currentPage === 1 ? PAGE_SIZE + 1 : PAGE_SIZE;
+  const [articles, total, mostRead] = await Promise.all([
+    getPublishedArticles({ category, skip, take }),
+    getPublishedArticleCount({ category }),
+    currentPage === 1 ? getMostReadArticles({ category, take: 5 }) : Promise.resolve([]),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(Math.max(0, total - 1) / PAGE_SIZE));
+  const lead = currentPage === 1 ? articles[0] : undefined;
+  const rest = currentPage === 1 ? articles.slice(1) : articles;
 
   return (
     <>
@@ -51,12 +62,13 @@ export default async function ActualitesPage({
           }))}
         />
 
-        {!lead ? (
+        {articles.length === 0 ? (
           <p className="mt-12 text-center text-muted-foreground">
             Aucun article dans cette catégorie pour le moment.
           </p>
         ) : (
           <>
+            {lead && (
             <div className="mt-8 grid gap-8 lg:grid-cols-3">
               <Link href={`/actualites/${lead.slug}`} className="group lg:col-span-2">
                 <article>
@@ -113,9 +125,10 @@ export default async function ActualitesPage({
                 </ol>
               </aside>
             </div>
+            )}
 
             {rest.length > 0 && (
-              <section className="mt-12 border-t border-border pt-8">
+              <section className={lead ? "mt-12 border-t border-border pt-8" : "mt-8"}>
                 <h2 className="border-l-4 border-accent pl-3 font-heading text-base font-bold uppercase tracking-wide text-foreground">
                   Toute l&apos;actualité
                 </h2>
@@ -126,6 +139,9 @@ export default async function ActualitesPage({
                 </div>
               </section>
             )}
+            <div className="mt-10">
+              <AdminPagination currentPage={currentPage} totalPages={totalPages} />
+            </div>
           </>
         )}
       </div>

@@ -4,6 +4,8 @@ import type { Player } from "@prisma/client";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { POSITION_LABELS, STRONG_FOOT_LABELS } from "@/lib/constants";
+import { PlayerPhotoPlaceholder } from "./PlayerPhotoPlaceholder";
+import { Flag } from "@/components/ui/Flag";
 
 export function PlayerCard({ player }: { player: Player }) {
   const age = Math.floor(
@@ -13,7 +15,7 @@ export function PlayerCard({ player }: { player: Player }) {
   return (
     <Card className="flex flex-col overflow-hidden p-0">
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-        {player.photo && (
+        {player.photo ? (
           <Image
             src={player.photo}
             alt={`${player.firstName} ${player.lastName}`}
@@ -21,12 +23,14 @@ export function PlayerCard({ player }: { player: Player }) {
             sizes="(max-width: 768px) 50vw, 25vw"
             className="object-cover"
           />
+        ) : (
+          <PlayerPhotoPlaceholder player={player} />
         )}
       </div>
       <div className="flex flex-1 flex-col p-4">
         <h3 className="font-heading text-lg font-semibold text-foreground">
           {player.firstName} {player.lastName}{" "}
-          {player.flag && <span aria-hidden="true">{player.flag}</span>}
+          <Flag emoji={player.flag} className="ml-1 h-3.5" />
         </h3>
         <dl className="mt-2 space-y-1 text-sm text-muted-foreground">
           <div className="flex justify-between">

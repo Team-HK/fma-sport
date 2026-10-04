@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/Button";
 import { VideoCard } from "@/components/sections/VideoCard";
 import { PlayerCard } from "@/components/sections/PlayerCard";
 import { PitchPosition } from "@/components/sections/PitchPosition";
+import { PlayerPhotoPlaceholder } from "@/components/sections/PlayerPhotoPlaceholder";
+import { Flag } from "@/components/ui/Flag";
 import { ShareButtons } from "@/components/sections/ShareButtons";
 import { formatDate } from "@/lib/utils";
 
@@ -51,16 +53,6 @@ export async function generateMetadata({
   };
 }
 
-// Flag emoji are two regional-indicator symbols; Windows can't render them, so map to an ISO code for an image.
-function flagEmojiToCode(flag: string | null) {
-  if (!flag) return null;
-  const letters = [...flag]
-    .map((c) => c.codePointAt(0)! - 0x1f1e6)
-    .filter((n) => n >= 0 && n < 26)
-    .map((n) => String.fromCharCode(97 + n));
-  return letters.length === 2 ? letters.join("") : null;
-}
-
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="border-l-4 border-accent pl-3 font-heading text-base font-bold uppercase tracking-wide text-foreground">
@@ -78,7 +70,6 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
   }
 
   const fullName = `${player.firstName} ${player.lastName}`;
-  const flagCode = flagEmojiToCode(player.flag);
   const positionLabel = POSITION_LABELS[player.position] ?? player.position;
   const age = Math.floor(
     (Date.now() - new Date(player.birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
@@ -159,7 +150,7 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
 
           <div className="mt-6 flex flex-col gap-8 md:flex-row md:items-end">
             <div className="relative aspect-[4/5] w-full max-w-[280px] shrink-0 overflow-hidden rounded-xl bg-white/5">
-              {player.photo && (
+              {player.photo ? (
                 <Image
                   src={player.photo}
                   alt={fullName}
@@ -168,6 +159,8 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
                   priority
                   className="object-cover"
                 />
+              ) : (
+                <PlayerPhotoPlaceholder player={player} className="bg-white/5" />
               )}
             </div>
 
@@ -178,16 +171,7 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
               </p>
               <h1 className="mt-2 font-heading text-4xl font-bold leading-tight sm:text-5xl">
                 {fullName}
-                {flagCode && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={`https://flagcdn.com/w80/${flagCode}.png`}
-                    alt=""
-                    width={40}
-                    height={30}
-                    className="ml-3 inline-block h-[0.6em] w-auto rounded-sm align-middle"
-                  />
-                )}
+                <Flag emoji={player.flag} className="ml-3 h-[0.6em]" />
               </h1>
               <p className="mt-1 text-white/70">{player.nationality} · Né le {formatDate(player.birthDate)}</p>
 

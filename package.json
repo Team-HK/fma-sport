@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed:demo": "tsx prisma/seed-demo.ts",
+    "seed:demo:clear": "tsx prisma/seed-demo.ts --clear"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

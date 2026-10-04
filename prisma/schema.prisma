@@ -88,6 +88,7 @@ model Article {
   author        AdminUser?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
   writerId      String?
   writer        TeamMember?     @relation(fields: [writerId], references: [id], onDelete: SetNull)
+  isDemo        Boolean         @default(false)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
@@ -197,6 +198,7 @@ model Player {
   careerHistory   String[]       @default([])
   cvUrl           String?
   documentUrls    String[]       @default([])
+  isDemo          Boolean        @default(false)
   status          PlayerStatus   @default(DRAFT)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt

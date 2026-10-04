@@ -106,7 +106,9 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         <p className="mt-6 text-xs font-bold uppercase tracking-widest text-accent">
           {categoryLabel}
           {article.competition && <span className="text-muted-foreground"> · {article.competition}</span>}
-          {article.country && <span className="text-muted-foreground"> · {article.country}</span>}
+          {article.country && article.country !== categoryLabel && (
+            <span className="text-muted-foreground"> · {article.country}</span>
+          )}
         </p>
         <h1 className="mt-3 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
           {article.title}
@@ -184,7 +186,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
             />
           </div>
           <figcaption className="mt-2 text-xs text-muted-foreground">
-            {article.title} — © FMA SPORT
+            {article.coverImage.includes("images.unsplash.com") ? "Photo : Unsplash" : "© FMA SPORT"}
           </figcaption>
         </figure>
       )}

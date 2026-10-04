@@ -4,29 +4,49 @@ import type { ArticleCategory, AdPlacement } from "@prisma/client";
 // An article counts as publicly visible once it's PUBLISHED, or once a
 // SCHEDULED article's publishedAt date has passed — there is no cron job to
 // flip the status automatically, so the public read path is the gate.
-const publiclyVisibleArticle = {
-  deletedAt: null,
-  OR: [
-    { status: "PUBLISHED" as const },
-    { status: "SCHEDULED" as const, publishedAt: { lte: new Date() } },
-  ],
-};
+function publiclyVisibleArticle() {
+  return {
+    deletedAt: null,
+    OR: [
+      { status: "PUBLISHED" as const },
+      { status: "SCHEDULED" as const, publishedAt: { lte: new Date() } },
+    ],
+  };
+}
 
-export function getPublishedArticles(options?: {
+type ArticleFilters = {
   category?: ArticleCategory;
   country?: string;
   competition?: string;
-  take?: number;
-}) {
+};
+
+function articleWhere(options?: ArticleFilters) {
+  return {
+    ...publiclyVisibleArticle(),
+    ...(options?.category ? { category: options.category } : {}),
+    ...(options?.country ? { country: options.country } : {}),
+    ...(options?.competition ? { competition: options.competition } : {}),
+  };
+}
+
+export function getPublishedArticles(options?: ArticleFilters & { take?: number; skip?: number }) {
   return prisma.article.findMany({
-    where: {
-      ...publiclyVisibleArticle,
-      ...(options?.category ? { category: options.category } : {}),
-      ...(options?.country ? { country: options.country } : {}),
-      ...(options?.competition ? { competition: options.competition } : {}),
-    },
+    where: articleWhere(options),
     orderBy: { publishedAt: "desc" },
     take: options?.take,
+    skip: options?.skip,
+  });
+}
+
+export function getPublishedArticleCount(options?: ArticleFilters) {
+  return prisma.article.count({ where: articleWhere(options) });
+}
+
+export function getMostReadArticles(options?: ArticleFilters & { take?: number }) {
+  return prisma.article.findMany({
+    where: articleWhere(options),
+    orderBy: { views: "desc" },
+    take: options?.take ?? 5,
   });
 }
 

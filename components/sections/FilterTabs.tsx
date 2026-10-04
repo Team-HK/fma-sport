@@ -6,11 +6,13 @@ export function FilterTabs({
   paramName,
   options,
   active,
+  allLabel = "Toutes",
 }: {
   basePath: string;
   paramName: string;
   options: { value: string; label: string }[];
   active?: string;
+  allLabel?: string;
 }) {
   return (
     <nav aria-label="Filtres" className="-mx-4 overflow-x-auto px-4 pb-1">
@@ -25,7 +27,7 @@ export function FilterTabs({
                 : "border-border bg-card text-foreground hover:border-primary"
             )}
           >
-            Toutes
+            {allLabel}
           </Link>
         </li>
         {options.map((opt) => (
