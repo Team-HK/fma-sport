@@ -40,6 +40,7 @@ test.describe("Espace administrateur", () => {
   test("créer, publier puis supprimer un article se répercute sur le site public", async ({
     page,
   }) => {
+    test.slow(); // multi-step flow; each fresh connection to the remote DB costs several seconds
     await login(page);
 
     const title = `Article E2E ${Date.now()}`;
