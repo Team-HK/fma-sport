@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
+export const revalidate = 3600;
+
 const BASE_URL = "https://fmasport.com";
+
+type SitemapRow = { slug: string; updatedAt: Date };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [articles, players, events] = await Promise.all([
@@ -20,7 +24,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { slug: true, updatedAt: true },
     }),
     prisma.event.findMany({ where: { deletedAt: null }, select: { slug: true, updatedAt: true } }),
-  ]);
+  ]).catch((error) => {
+    // Never fail the build because the database is briefly unreachable; the
+    // sitemap is regenerated hourly anyway.
+    console.error("sitemap: database unavailable, serving static routes only", error);
+    return [[], [], []] as [SitemapRow[], SitemapRow[], SitemapRow[]];
+  });
 
   const staticRoutes = [
     "",
