@@ -4,6 +4,7 @@ import { FilterTabs } from "@/components/sections/FilterTabs";
 import { ArticleCard } from "@/components/sections/ArticleCard";
 import { getPublishedArticles } from "@/lib/queries";
 import { INTERNATIONAL_COMPETITIONS } from "@/lib/constants";
+import { NewsWire } from "@/components/sections/NewsWire";
 
 export const revalidate = 300;
 
@@ -46,14 +47,20 @@ export default async function FootballInternationalPage({
         />
 
         {articles.length === 0 ? (
-          <p className="mt-12 text-center text-muted-foreground">
-            Aucun article pour cette sélection pour le moment.
-          </p>
+          <NewsWire
+            regions={["international", "mercato"]}
+            title="L'actu internationale en continu"
+            limit={20}
+            className="mt-8"
+          />
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
+          <div className="mt-8 grid gap-10 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:col-span-2">
+              {articles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+            <NewsWire regions={["international", "mercato"]} title="En continu" limit={12} />
           </div>
         )}
       </div>

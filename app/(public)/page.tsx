@@ -15,6 +15,7 @@ import {
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { HERO_IMAGES } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
+import { NewsWire } from "@/components/sections/NewsWire";
 import { TeamDepartmentsOverview } from "@/components/sections/TeamDepartmentsOverview";
 import { TeamMemberCard } from "@/components/sections/TeamMemberCard";
 
@@ -89,6 +90,14 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Fil d'actu (flux RSS des médias) */}
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <NewsWire regions={["senegal", "afrique"]} title="Sénégal & Afrique en continu" limit={6} />
+          <NewsWire regions={["international", "mercato"]} title="International & mercato" limit={6} />
+        </div>
+      </section>
 
       <AdSlot placement="HOME" />
 

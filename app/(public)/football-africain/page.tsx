@@ -3,6 +3,8 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { FilterTabs } from "@/components/sections/FilterTabs";
 import { ArticleCard } from "@/components/sections/ArticleCard";
 import { getPublishedArticles } from "@/lib/queries";
+import { NewsWire } from "@/components/sections/NewsWire";
+import Link from "next/link";
 import { AFRICAN_COUNTRIES } from "@/lib/constants";
 
 export const revalidate = 300;
@@ -23,8 +25,8 @@ export default async function FootballAfricainPage({
     : undefined;
 
   const allArticles = country
-    ? await getPublishedArticles({ country })
-    : await getPublishedArticles({ category: "AFRIQUE" });
+    ? await getPublishedArticles({ country, take: 24 })
+    : await getPublishedArticles({ category: "AFRIQUE", take: 24 });
 
   return (
     <>
@@ -42,14 +44,30 @@ export default async function FootballAfricainPage({
         />
 
         {allArticles.length === 0 ? (
-          <p className="mt-12 text-center text-muted-foreground">
-            Aucun article pour cette sélection pour le moment.
-          </p>
+          <NewsWire
+            regions={["senegal", "afrique"]}
+            title="Sénégal & Afrique : l'actu en continu"
+            limit={20}
+            className="mt-8"
+          />
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {allArticles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
+          <div className="mt-8 grid gap-10 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <div className="grid gap-6 sm:grid-cols-2">
+                {allArticles.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
+              </div>
+              {allArticles.length === 24 && (
+                <Link
+                  href="/actualites"
+                  className="mt-8 inline-block text-sm font-semibold text-accent hover:underline"
+                >
+                  Toutes les actualités →
+                </Link>
+              )}
+            </div>
+            <NewsWire regions={["senegal", "afrique"]} title="En continu" limit={12} />
           </div>
         )}
       </div>
