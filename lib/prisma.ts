@@ -5,16 +5,20 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 /**
- * On serverless every warm instance opens its own pool; Prisma's default pool
- * size (cpus * 2 + 1) quickly exhausts the database's connection slots under
- * crawler traffic. Cap each instance at one connection unless the URL already
- * sets a limit or points at an external pooler (pgbouncer).
+ * On serverless every warm instance opens its own pool, and concurrent requests
+ * spin up many instances at once. Even a small per-instance pool (e.g.
+ * connection_limit=5) quickly exhausts the database's connection slots, so on
+ * Vercel we force one connection per instance. Skipped when the URL goes
+ * through an external pooler (pgbouncer=true), which handles this itself.
  */
 function databaseUrl(): string | undefined {
   const url = process.env.DATABASE_URL;
-  if (!url || !process.env.VERCEL) return url;
-  if (/connection_limit=|pgbouncer=true/.test(url)) return url;
-  return `${url}${url.includes("?") ? "&" : "?"}connection_limit=1&pool_timeout=30`;
+  if (!url || !process.env.VERCEL || /pgbouncer=true/.test(url)) return url;
+  const [base, query = ""] = url.split("?");
+  const params = new URLSearchParams(query);
+  params.set("connection_limit", "1");
+  if (!params.has("pool_timeout")) params.set("pool_timeout", "30");
+  return `${base}?${params.toString()}`;
 }
 
 export const prisma =
