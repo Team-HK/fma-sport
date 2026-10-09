@@ -1,6 +1,7 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { getBlobToken } from "@/lib/blob-token";
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
     const json = await handleUpload({
       body,
       request,
+      token: getBlobToken(),
       onBeforeGenerateToken: async () => {
         const session = await auth();
         if (!session?.user) throw new Error("Non autorisé");

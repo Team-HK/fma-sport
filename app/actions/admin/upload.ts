@@ -5,6 +5,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { requireAdmin } from "@/lib/admin-auth";
+import { getBlobToken } from "@/lib/blob-token";
 
 export type UploadResult = { success: true; url: string } | { success: false; message: string };
 
@@ -53,10 +54,12 @@ export async function uploadAdminFile(formData: FormData): Promise<UploadResult>
     filename = normalized.filename;
   }
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  const blobToken = getBlobToken();
+  if (blobToken) {
     try {
       const blob = await put(`admin-uploads/${filename}`, bytes, {
         access: "public",
+        token: blobToken,
         contentType: filename.endsWith(".jpg") ? "image/jpeg" : file.type || undefined,
       });
       return { success: true, url: blob.url };
