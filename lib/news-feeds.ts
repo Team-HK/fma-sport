@@ -56,7 +56,7 @@ function parseRss(xml: string, source: string): NewsItem[] {
 async function fetchFeed(feed: (typeof FEEDS)[number]): Promise<NewsItem[]> {
   try {
     const res = await fetch(feed.url, {
-      headers: { "User-Agent": "FMA-SPORT/1.0 (+https://fmasport.com)" },
+      headers: { "User-Agent": "FMA-SPORT/1.0 (+https://www.fmasport.com)" },
       next: { revalidate: REVALIDATE_SECONDS },
       signal: AbortSignal.timeout(8000),
     });

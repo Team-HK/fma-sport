@@ -1,4 +1,4 @@
-export const SITE_URL = "https://fmasport.com";
+export const SITE_URL = "https://www.fmasport.com";
 
 export const NAV_LINKS = [
   { href: "/", label: "Accueil" },

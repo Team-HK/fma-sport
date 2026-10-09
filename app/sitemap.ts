@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 3600;
 
-const BASE_URL = "https://fmasport.com";
+const BASE_URL = SITE_URL;
 
 type SitemapRow = { slug: string; updatedAt: Date };
 
