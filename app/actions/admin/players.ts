@@ -193,6 +193,8 @@ export async function deletePlayer(id: string) {
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "player", entityId: id });
   revalidatePath("/admin/joueurs");
   revalidatePath("/talents");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restorePlayer(id: string) {
@@ -201,4 +203,6 @@ export async function restorePlayer(id: string) {
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "player", entityId: id });
   revalidatePath("/admin/joueurs");
   revalidatePath("/talents");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }

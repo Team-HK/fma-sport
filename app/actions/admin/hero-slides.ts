@@ -79,6 +79,8 @@ export async function deleteHeroSlide(id: string) {
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "hero_slide", entityId: id });
   revalidatePath("/admin/referentiels/carousel");
   revalidatePath("/");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restoreHeroSlide(id: string) {
@@ -87,4 +89,6 @@ export async function restoreHeroSlide(id: string) {
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "hero_slide", entityId: id });
   revalidatePath("/admin/referentiels/carousel");
   revalidatePath("/");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }

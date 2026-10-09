@@ -118,6 +118,8 @@ export async function deleteArticle(id: string) {
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "article", entityId: id });
   revalidatePath("/admin/articles");
   revalidatePath("/actualites");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restoreArticle(id: string) {
@@ -126,6 +128,8 @@ export async function restoreArticle(id: string) {
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "article", entityId: id });
   revalidatePath("/admin/articles");
   revalidatePath("/actualites");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function toggleArticleStatus(id: string, status: "DRAFT" | "PUBLISHED") {

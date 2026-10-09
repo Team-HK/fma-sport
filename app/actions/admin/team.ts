@@ -73,6 +73,8 @@ export async function deleteTeamMember(id: string) {
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "team_member", entityId: id });
   revalidatePath("/admin/equipe");
   revalidatePath("/equipe");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restoreTeamMember(id: string) {
@@ -81,4 +83,6 @@ export async function restoreTeamMember(id: string) {
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "team_member", entityId: id });
   revalidatePath("/admin/equipe");
   revalidatePath("/equipe");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }

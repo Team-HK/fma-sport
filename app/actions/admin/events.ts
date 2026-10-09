@@ -92,6 +92,8 @@ export async function deleteEvent(id: string) {
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "event", entityId: id });
   revalidatePath("/admin/evenements");
   revalidatePath("/evenements");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restoreEvent(id: string) {
@@ -100,4 +102,6 @@ export async function restoreEvent(id: string) {
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "event", entityId: id });
   revalidatePath("/admin/evenements");
   revalidatePath("/evenements");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }

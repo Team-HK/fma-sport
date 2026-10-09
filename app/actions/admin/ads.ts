@@ -78,6 +78,8 @@ export async function deleteAd(id: string) {
   await prisma.advertisement.update({ where: { id }, data: { deletedAt: new Date() } });
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "advertisement", entityId: id });
   revalidatePath("/admin/publicites");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restoreAd(id: string) {
@@ -85,6 +87,8 @@ export async function restoreAd(id: string) {
   await prisma.advertisement.update({ where: { id }, data: { deletedAt: null } });
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "advertisement", entityId: id });
   revalidatePath("/admin/publicites");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function toggleAdActive(id: string, active: boolean) {

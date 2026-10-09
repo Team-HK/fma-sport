@@ -86,6 +86,8 @@ export async function deleteVideo(id: string) {
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "video", entityId: id });
   revalidatePath("/admin/videos");
   revalidatePath("/videos");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
 
 export async function restoreVideo(id: string) {
@@ -94,4 +96,6 @@ export async function restoreVideo(id: string) {
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "video", entityId: id });
   revalidatePath("/admin/videos");
   revalidatePath("/videos");
+  // Public pages are ISR-cached: refresh them (lists, detail pages, home)
+  revalidatePath("/", "layout");
 }
