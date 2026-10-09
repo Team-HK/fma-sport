@@ -31,15 +31,28 @@ export async function generateMetadata({
   const { slug } = await params;
   const player = await getPlayerBySlug(slug);
   if (!player) return {};
-  const title = `${player.firstName} ${player.lastName} — ${POSITION_LABELS[player.position] ?? player.position}`;
+  const fullName = `${player.firstName} ${player.lastName}`;
+  const positionLabel = POSITION_LABELS[player.position] ?? player.position;
+  const title = `${fullName} — ${positionLabel}${player.club ? ` ${player.club}` : ""}, profil et stats`;
   const description =
     player.bio ??
     `${player.firstName} ${player.lastName}, joueur ${player.nationality}${player.club ? ` à ${player.club}` : ""}. Profil, statistiques et actualités sur FMA SPORT.`;
   return {
     title,
     description,
+    keywords: [
+      fullName,
+      `${player.lastName} ${player.firstName}`,
+      `${fullName} football`,
+      positionLabel,
+      player.nationality,
+      ...(player.club ? [player.club] : []),
+      "FMA SPORT",
+    ],
+    alternates: { canonical: `/joueurs/${player.slug}` },
     openGraph: {
       title,
+      url: `/joueurs/${player.slug}`,
       description,
       type: "profile",
       images: player.photo ? [{ url: player.photo, alt: `${player.firstName} ${player.lastName}` }] : undefined,
@@ -110,7 +123,12 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": `${SITE_URL}/joueurs/${player.slug}#person`,
     name: fullName,
+    givenName: player.firstName,
+    familyName: player.lastName,
+    alternateName: `${player.lastName} ${player.firstName}`,
+    knowsAbout: "Football",
     url: `${SITE_URL}/joueurs/${player.slug}`,
     image: player.photo ?? undefined,
     description: player.bio ?? undefined,
@@ -122,11 +140,21 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
     weight: player.weight ? `${player.weight} kg` : undefined,
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Nos talents", item: `${SITE_URL}/talents` },
+      { "@type": "ListItem", position: 3, name: fullName, item: `${SITE_URL}/joueurs/${player.slug}` },
+    ],
+  };
+
   return (
     <div>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbJsonLd]) }}
       />
 
       {/* Hero */}

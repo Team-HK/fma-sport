@@ -61,6 +61,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const playerRoutes = players.map((p) => ({
     url: `${BASE_URL}/joueurs/${p.slug}`,
     lastModified: p.updatedAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
   }));
 
   const eventRoutes = events.map((e) => ({
