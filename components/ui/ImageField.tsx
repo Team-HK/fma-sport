@@ -19,6 +19,28 @@ function detectKind(value: string, accept: string): "image" | "video" | "documen
   return "document";
 }
 
+const MAX_UPLOAD_BYTES = 3.5 * 1024 * 1024;
+const MAX_DIMENSION = 2000;
+
+/** Downscales big photos in the browser so they fit the serverless body limit. */
+async function shrinkImage(file: File): Promise<File> {
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml" || file.type === "image/gif") return file;
+  if (file.size <= MAX_UPLOAD_BYTES) return file;
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
+
 export function ImageField({
   id,
   name,
@@ -46,15 +68,23 @@ export function ImageField({
     if (!file) return;
     setError(null);
 
-    const fd = new FormData();
-    fd.set("file", file);
-
     startTransition(async () => {
-      const result = await uploadAdminFile(fd);
-      if (result.success) {
-        setValue(result.url);
-      } else {
-        setError(result.message);
+      try {
+        const prepared = await shrinkImage(file);
+        if (prepared.size > 4 * 1024 * 1024) {
+          setError("Fichier trop volumineux (4 Mo maximum). Compressez-le ou collez un lien.");
+          return;
+        }
+        const fd = new FormData();
+        fd.set("file", prepared);
+        const result = await uploadAdminFile(fd);
+        if (result.success) {
+          setValue(result.url);
+        } else {
+          setError(result.message);
+        }
+      } catch {
+        setError("Échec de l'envoi du fichier. Vérifiez votre connexion et réessayez.");
       }
     });
 

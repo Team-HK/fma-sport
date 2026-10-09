@@ -55,12 +55,25 @@ export async function uploadAdminFile(formData: FormData): Promise<UploadResult>
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
-      const blob = await put(`admin-uploads/${filename}`, bytes, { access: "public" });
+      const blob = await put(`admin-uploads/${filename}`, bytes, {
+        access: "public",
+        contentType: filename.endsWith(".jpg") ? "image/jpeg" : file.type || undefined,
+      });
       return { success: true, url: blob.url };
     } catch (error) {
       console.error("Admin file upload failed (Vercel Blob):", error);
-      return { success: false, message: "Échec de l'envoi du fichier. Merci de réessayer." };
+      const detail = error instanceof Error ? error.message : String(error);
+      return { success: false, message: `Échec de l'envoi du fichier (stockage) : ${detail}` };
     }
+  }
+
+  if (process.env.VERCEL) {
+    console.error("Admin file upload failed: BLOB_READ_WRITE_TOKEN is not set on Vercel");
+    return {
+      success: false,
+      message:
+        "Stockage de fichiers non configuré : ajoutez un store Vercel Blob au projet (variable BLOB_READ_WRITE_TOKEN) puis redéployez.",
+    };
   }
 
   // Dev/local fallback: no Blob token configured. Served dynamically through
