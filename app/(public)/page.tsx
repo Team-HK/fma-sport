@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +21,13 @@ import { TeamDepartmentsOverview } from "@/components/sections/TeamDepartmentsOv
 import { TeamMemberCard } from "@/components/sections/TeamMemberCard";
 
 export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: { absolute: "FMA SPORT (FMASPORT) — Actualité football Sénégal, Afrique et jeunes talents" },
+  description:
+    "FMA SPORT (fmasport.com), le média qui vit le foot : actualités du football sénégalais, africain et international, vidéos, jeunes talents et management sportif.",
+  alternates: { canonical: "/" },
+};
 
 const DEFAULT_HERO_SLIDES = HERO_IMAGES.map((imageUrl) => ({ imageUrl }));
 
@@ -161,6 +169,20 @@ export default async function HomePage() {
             <TeamDepartmentsOverview compact />
           )}
         </div>
+      </section>
+
+
+      {/* Présentation de la marque */}
+      <section className="mx-auto max-w-4xl px-4 py-14 text-center sm:px-6 lg:px-8">
+        <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+          FMA SPORT, le média qui vit le foot
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+          FMA SPORT (FMASPORT) est un média football basé au Sénégal. Retrouvez sur fmasport.com
+          l&apos;actualité du football sénégalais, africain et international, nos vidéos,
+          interviews et reportages, ainsi que les jeunes talents que nous détectons et
+          accompagnons grâce à FMA SPORT Management.
+        </p>
       </section>
 
       {/* CTA Management */}

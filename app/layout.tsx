@@ -18,13 +18,16 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "FMA SPORT — Le Média qui vit le foot",
+    default: "FMA SPORT (FMASPORT) — Le média qui vit le foot",
     template: "%s | FMA SPORT",
   },
   description:
-    "FMA SPORT : actualités football du Sénégal, d'Afrique et du monde, vidéos, jeunes talents et management sportif.",
+    "FMA SPORT (fmasport.com) : le média football du Sénégal et d'Afrique. Actualités, vidéos, jeunes talents et management sportif.",
   keywords: [
     "FMA SPORT",
+    "FMASPORT",
+    "fma sport sénégal",
+    "fmasport.com",
     "football Sénégal",
     "actualités football",
     "football africain",
@@ -34,6 +37,13 @@ export const metadata: Metadata = {
     "Lions de la Teranga",
   ],
   applicationName: "FMA SPORT",
+  // Set these in Vercel once Google Search Console / Bing Webmaster give you a code.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
+  },
   alternates: { canonical: "./" },
   robots: {
     index: true,
@@ -52,31 +62,6 @@ export const metadata: Metadata = {
   },
 };
 
-const siteJsonLd = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${SITE_URL}/#organization`,
-    name: "FMA SPORT",
-    url: SITE_URL,
-    logo: `${SITE_URL}/brand/logo.jpg`,
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": `${SITE_URL}/#website`,
-    name: "FMA SPORT",
-    url: SITE_URL,
-    inLanguage: "fr-FR",
-    publisher: { "@id": `${SITE_URL}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/recherche?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  },
-];
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -84,10 +69,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${poppins.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
-        />
         {children}
       </body>
     </html>
