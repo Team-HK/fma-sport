@@ -90,7 +90,7 @@ export default async function AdminPlayersPage({
             },
             {
               id: "profils",
-              label: `Profils joueurs (${players.length})`,
+              label: `Profils joueurs (${totalPlayers})`,
               content: (
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-3">
