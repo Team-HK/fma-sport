@@ -17,6 +17,8 @@ const eventSchema = z.object({
   contact: z.string().optional(),
   poster: z.string().optional(),
   results: z.string().optional(),
+  photos: z.string().optional(),
+  videos: z.string().optional(),
   status: z.enum(["DRAFT", "PUBLISHED", "RESULTS_PUBLISHED"]),
 });
 
@@ -33,6 +35,10 @@ export async function upsertEvent(
     return { success: false, message: "Merci de vérifier les champs obligatoires." };
   }
   const data = parsed.data;
+  const toLines = (value?: string) =>
+    value ? value.split("\n").map((line) => line.trim()).filter(Boolean) : [];
+  const photos = toLines(data.photos);
+  const videos = toLines(data.videos);
 
   try {
     if (id) {
@@ -47,6 +53,8 @@ export async function upsertEvent(
           contact: data.contact || null,
           poster: data.poster || null,
           results: data.results || null,
+          photos,
+          videos,
           status: data.status,
         },
       });
@@ -68,6 +76,8 @@ export async function upsertEvent(
         contact: data.contact || null,
         poster: data.poster || null,
         results: data.results || null,
+        photos,
+        videos,
         status: data.status,
       },
     });

@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { EventRegistrationForm } from "@/components/forms/EventRegistrationForm";
 import { getEventBySlug } from "@/lib/queries";
 import { formatDate } from "@/lib/utils";
+import { resolveVideoSource } from "@/lib/video-embed";
 
 export const revalidate = 300;
 
@@ -105,6 +106,77 @@ export default async function EventDetailPage({ params }: { params: Promise<Para
             </Card>
           )}
         </div>
+
+        {event.photos.length > 0 && (
+          <section className="mt-12" aria-labelledby="event-photos">
+            <h2 id="event-photos" className="font-heading text-xl font-semibold text-foreground">
+              Photos
+            </h2>
+            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {event.photos.map((src, index) => (
+                <li key={src} className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">
+                  <Image
+                    src={src}
+                    alt={`${event.name} — photo ${index + 1}`}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 320px"
+                    className="object-cover"
+                    // Photos pasted from other sites aren't in next/image's allow-list.
+                    unoptimized={!/^\/|\.public\.blob\.vercel-storage\.com\/|images\.unsplash\.com/.test(src)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {event.videos.length > 0 && (
+          <section className="mt-12" aria-labelledby="event-videos">
+            <h2 id="event-videos" className="font-heading text-xl font-semibold text-foreground">
+              Vidéos
+            </h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {event.videos.map((url) => {
+                const source = resolveVideoSource(url);
+                if (source.type === "embed") {
+                  return (
+                    <iframe
+                      key={url}
+                      src={source.src}
+                      title={`${event.name} — vidéo`}
+                      loading="lazy"
+                      allowFullScreen
+                      className="aspect-video w-full rounded-xl bg-muted"
+                    />
+                  );
+                }
+                if (source.type === "file") {
+                  return (
+                    // eslint-disable-next-line jsx-a11y/media-has-caption
+                    <video
+                      key={url}
+                      src={source.src}
+                      controls
+                      preload="metadata"
+                      className="aspect-video w-full rounded-xl bg-foreground"
+                    />
+                  );
+                }
+                return (
+                  <a
+                    key={url}
+                    href={source.src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex aspect-video items-center justify-center rounded-xl bg-muted px-4 text-center text-sm font-medium text-primary hover:underline"
+                  >
+                    Voir la vidéo
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </div>
     </>
   );

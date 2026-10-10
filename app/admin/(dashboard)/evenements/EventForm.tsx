@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { Input, Label, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageField } from "@/components/ui/ImageField";
+import { GalleryField } from "@/components/ui/GalleryField";
 import { upsertEvent, type EventActionState } from "@/app/actions/admin/events";
 import type { Event } from "@prisma/client";
 
@@ -67,6 +68,20 @@ export function EventForm({ event, onSuccess }: { event?: Event; onSuccess?: () 
         />
       </div>
       <ImageField id="poster" name="poster" label="Affiche" defaultValue={event?.poster} />
+      <GalleryField
+        name="photos"
+        label="Photos de l'événement"
+        kind="image"
+        defaultValue={event?.photos ?? []}
+        hint="Importez plusieurs photos : elles forment la galerie de la page publique."
+      />
+      <GalleryField
+        name="videos"
+        label="Vidéos de l'événement"
+        kind="video"
+        defaultValue={event?.videos ?? []}
+        hint="Lien YouTube ou fichier vidéo (20 Mo maximum)."
+      />
       <div>
         <Label htmlFor="results">Résultats</Label>
         <Textarea id="results" name="results" rows={2} defaultValue={event?.results ?? ""} />

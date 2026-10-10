@@ -5,8 +5,7 @@ import Image from "next/image";
 import { Upload, Link2, X, Loader2, FileText, ExternalLink } from "lucide-react";
 import { Label } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
-import { upload } from "@vercel/blob/client";
-import { uploadAdminFile } from "@/app/actions/admin/upload";
+import { uploadFile, MAX_FILE_BYTES } from "@/lib/upload-client";
 
 function detectKind(value: string, accept: string): "image" | "video" | "document" | "none" {
   if (!value) return "none";
@@ -18,34 +17,6 @@ function detectKind(value: string, accept: string): "image" | "video" | "documen
   if (accept.includes("image") && !accept.includes(",")) return "image";
   if (accept.includes("video") && !accept.includes(",")) return "video";
   return "document";
-}
-
-const MAX_FILE_BYTES = 20 * 1024 * 1024; // hard limit per file
-const SERVER_ACTION_BYTES = 3.5 * 1024 * 1024; // above this, upload straight to Blob
-const COMPRESS_ABOVE_BYTES = 800 * 1024;
-const MAX_DIMENSION = 2000;
-
-/**
- * Compresses photos in the browser (max 2000 px, JPEG 85%) before upload: faster
- * for the admin, lighter for visitors. Falls back to the original file when the
- * browser can't decode it (e.g. HEIC) or the result isn't smaller.
- */
-async function compressImage(file: File): Promise<File> {
-  if (!/^image\/(jpeg|png|webp|bmp)$/.test(file.type)) return file;
-  try {
-    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
-    if (scale === 1 && file.size <= COMPRESS_ABOVE_BYTES) return file;
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
-    if (!blob || blob.size >= file.size) return file;
-    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
-  } catch {
-    return file;
-  }
 }
 
 export function ImageField({
@@ -83,25 +54,9 @@ export function ImageField({
 
     startTransition(async () => {
       try {
-        const prepared = await compressImage(file);
-        if (prepared.size <= SERVER_ACTION_BYTES) {
-          const fd = new FormData();
-          fd.set("file", prepared);
-          const result = await uploadAdminFile(fd);
-          if (result.success) setValue(result.url);
-          else setError(result.message);
-          return;
-        }
-        const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-        const blob = await upload(`admin-uploads/${Date.now()}-${safeName}`, prepared, {
-          access: "public",
-          handleUploadUrl: "/api/admin/blob-upload",
-          contentType: prepared.type || undefined,
-        });
-        setValue(blob.url);
+        setValue(await uploadFile(file));
       } catch (err) {
-        const detail = err instanceof Error ? err.message : "";
-        setError(`Échec de l'envoi du fichier${detail ? ` : ${detail}` : ". Vérifiez votre connexion et réessayez."}`);
+        setError(err instanceof Error ? err.message : "Échec de l'envoi du fichier.");
       }
     });
 
