@@ -46,6 +46,7 @@ export default async function AdminPlayersPage({
     prisma.player.count({ where: playerWhere }),
     prisma.player.findMany({
       where: playerWhere,
+      include: { stats: true },
       orderBy: { createdAt: "desc" },
       ...paginationArgs(page),
     }),

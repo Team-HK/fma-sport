@@ -75,6 +75,7 @@ export async function upsertArticle(
         entityId: id,
       });
       revalidatePath("/admin/articles");
+      revalidatePath("/", "layout");
       revalidatePath("/actualites");
       return { success: true, message: "Article mis à jour." };
     } else {
@@ -108,6 +109,7 @@ export async function upsertArticle(
   }
 
   revalidatePath("/admin/articles");
+  revalidatePath("/", "layout");
   revalidatePath("/actualites");
   redirect("/admin/articles");
 }
@@ -145,5 +147,6 @@ export async function toggleArticleStatus(id: string, status: "DRAFT" | "PUBLISH
     entityId: id,
   });
   revalidatePath("/admin/articles");
+  revalidatePath("/", "layout");
   revalidatePath("/actualites");
 }

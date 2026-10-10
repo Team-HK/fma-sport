@@ -7,11 +7,11 @@ import { Tabs } from "@/components/ui/Tabs";
 import { ImageField } from "@/components/ui/ImageField";
 import { POSITION_LABELS, STRONG_FOOT_LABELS } from "@/lib/constants";
 import { upsertPlayer, type PlayerActionState } from "@/app/actions/admin/players";
-import type { Player } from "@prisma/client";
+import type { Player, PlayerStat } from "@prisma/client";
 
 const initialState: PlayerActionState = { success: false, message: "" };
 
-export function PlayerForm({ player, onSuccess }: { player?: Player; onSuccess?: () => void }) {
+export function PlayerForm({ player, onSuccess }: { player?: Player & { stats?: PlayerStat[] }; onSuccess?: () => void }) {
   const action = upsertPlayer.bind(null, player?.id ?? null);
   const [state, formAction, isPending] = useActionState(action, initialState);
   const didRun = useRef(false);
@@ -93,6 +93,23 @@ export function PlayerForm({ player, onSuccess }: { player?: Player; onSuccess?:
                     defaultValue={player?.careerHistory.join("\n") ?? ""}
                     placeholder={"2021–2023 · Académie de quartier\n2023–2025 · Club formateur\n2025– · Club actuel"}
                   />
+                </div>
+                <div>
+                  <Label htmlFor="stats">Statistiques (une ligne par saison et compétition)</Label>
+                  <Textarea
+                    id="stats"
+                    name="stats"
+                    rows={4}
+                    defaultValue={(player?.stats ?? [])
+                      .slice()
+                      .sort((a, b) => b.season.localeCompare(a.season))
+                      .map((s) => `${s.season} | ${s.competition} | ${s.matches} | ${s.goals} | ${s.assists} | ${s.minutesPlayed}`)
+                      .join("\n")}
+                    placeholder={"2025/2026 | Championnat | 20 | 5 | 3 | 1500"}
+                  />
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Format : saison | compétition | matchs | buts | passes décisives | minutes
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="status">Statut *</Label>

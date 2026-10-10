@@ -66,6 +66,7 @@ export async function upsertSiteSettings(
   }
 
   revalidatePath("/admin/referentiels");
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/contact");
   return { success: true, message: "Coordonnées mises à jour." };

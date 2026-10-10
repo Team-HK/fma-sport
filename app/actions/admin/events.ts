@@ -52,6 +52,7 @@ export async function upsertEvent(
       });
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "event", entityId: id });
       revalidatePath("/admin/evenements");
+      revalidatePath("/", "layout");
       revalidatePath("/evenements");
       return { success: true, message: "Événement mis à jour." };
     }
@@ -82,6 +83,7 @@ export async function upsertEvent(
   }
 
   revalidatePath("/admin/evenements");
+  revalidatePath("/", "layout");
   revalidatePath("/evenements");
   redirect("/admin/evenements");
 }

@@ -11,7 +11,7 @@ import type { Video } from "@prisma/client";
 const initialState: VideoActionState = { success: false, message: "" };
 const PLATFORMS = Object.keys(VIDEO_PLATFORM_LABELS);
 
-export function VideoForm({ video, onSuccess }: { video?: Video; onSuccess?: () => void }) {
+export function VideoForm({ video, players = [], onSuccess }: { video?: Video; players?: { id: string; name: string }[]; onSuccess?: () => void }) {
   const action = upsertVideo.bind(null, video?.id ?? null);
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [platform, setPlatform] = useState(video?.platform ?? "");
@@ -70,6 +70,28 @@ export function VideoForm({ video, onSuccess }: { video?: Video; onSuccess?: () 
         <div>
           <Label htmlFor="url">Lien de la vidéo *</Label>
           <Input id="url" name="url" defaultValue={video?.url} required placeholder="https://..." />
+        </div>
+      )}
+
+      {players.length > 0 && (
+        <div>
+          <Label htmlFor="playerId">Joueur associé (optionnel)</Label>
+          <select
+            id="playerId"
+            name="playerId"
+            defaultValue={video?.playerId ?? ""}
+            className="w-full rounded-[10px] border border-border bg-card px-4 py-3 text-base text-foreground"
+          >
+            <option value="">Aucun</option>
+            {players.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            La vidéo apparaîtra sur la fiche publique de ce joueur.
+          </p>
         </div>
       )}
 

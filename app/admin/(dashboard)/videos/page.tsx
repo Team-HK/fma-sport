@@ -10,6 +10,7 @@ import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
 import { Trash2, Archive } from "lucide-react";
 import { DeleteVideoButton, RestoreVideoButton } from "./RowActions";
 import { EditVideoModal } from "./EditVideoModal";
+import { getPlayerOptions } from "./player-options";
 import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -29,9 +30,10 @@ export default async function AdminVideosPage({
     ...(category ? { category: category as never } : {}),
   };
 
-  const [total, videos] = await Promise.all([
+  const [total, videos, playerOptions] = await Promise.all([
     prisma.video.count({ where }),
     prisma.video.findMany({ where, orderBy: { createdAt: "desc" }, ...paginationArgs(page) }),
+    getPlayerOptions(),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
@@ -103,7 +105,7 @@ export default async function AdminVideosPage({
                   <RestoreVideoButton id={v.id} />
                 ) : (
                   <>
-                    <EditVideoModal video={v} />
+                    <EditVideoModal video={v} players={playerOptions} />
                     <DeleteVideoButton id={v.id} />
                   </>
                 )

@@ -15,6 +15,7 @@ const videoSchema = z.object({
   url: z.string().min(1),
   category: z.string().min(1),
   status: z.enum(["DRAFT", "PUBLISHED"]),
+  playerId: z.string().optional(),
 });
 
 export type VideoActionState = { success: boolean; message: string };
@@ -30,9 +31,11 @@ export async function upsertVideo(
     return { success: false, message: "Merci de vérifier les champs obligatoires." };
   }
   const data = parsed.data;
+  const playerId = data.playerId || null;
 
   try {
     if (id) {
+      const existing = await prisma.video.findUnique({ where: { id }, select: { publishedAt: true } });
       await prisma.video.update({
         where: { id },
         data: {
@@ -43,11 +46,14 @@ export async function upsertVideo(
           url: data.url,
           category: data.category as never,
           status: data.status,
-          publishedAt: data.status === "PUBLISHED" ? new Date() : null,
+          playerId,
+          // Keep the original publication date when an already-published video is edited.
+          publishedAt: data.status === "PUBLISHED" ? (existing?.publishedAt ?? new Date()) : null,
         },
       });
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "video", entityId: id });
       revalidatePath("/admin/videos");
+      revalidatePath("/", "layout");
       revalidatePath("/videos");
       return { success: true, message: "Vidéo mise à jour." };
     }
@@ -61,6 +67,7 @@ export async function upsertVideo(
         url: data.url,
         category: data.category as never,
         status: data.status,
+        playerId,
         publishedAt: data.status === "PUBLISHED" ? new Date() : null,
       },
     });
@@ -76,6 +83,7 @@ export async function upsertVideo(
   }
 
   revalidatePath("/admin/videos");
+  revalidatePath("/", "layout");
   revalidatePath("/videos");
   redirect("/admin/videos");
 }

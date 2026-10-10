@@ -54,6 +54,7 @@ export async function upsertAd(
         entityId: id,
       });
       revalidatePath("/admin/publicites");
+      revalidatePath("/", "layout");
       return { success: true, message: "Publicité mise à jour." };
     }
 
@@ -70,6 +71,7 @@ export async function upsertAd(
   }
 
   revalidatePath("/admin/publicites");
+  revalidatePath("/", "layout");
   redirect("/admin/publicites");
 }
 
@@ -101,4 +103,5 @@ export async function toggleAdActive(id: string, active: boolean) {
     entityId: id,
   });
   revalidatePath("/admin/publicites");
+  revalidatePath("/", "layout");
 }

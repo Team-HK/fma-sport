@@ -52,6 +52,7 @@ export async function upsertHeroSlide(
         entityId: id,
       });
       revalidatePath("/admin/referentiels/carousel");
+      revalidatePath("/", "layout");
       revalidatePath("/");
       return { success: true, message: "Diapositive mise à jour." };
     }
@@ -69,6 +70,7 @@ export async function upsertHeroSlide(
   }
 
   revalidatePath("/admin/referentiels/carousel");
+  revalidatePath("/", "layout");
   revalidatePath("/");
   redirect("/admin/referentiels/carousel");
 }

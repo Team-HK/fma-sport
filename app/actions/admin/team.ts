@@ -46,6 +46,7 @@ export async function upsertTeamMember(
       await prisma.teamMember.update({ where: { id }, data: payload });
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "team_member", entityId: id });
       revalidatePath("/admin/equipe");
+      revalidatePath("/", "layout");
       revalidatePath("/equipe");
       return { success: true, message: "Membre mis à jour." };
     }
@@ -63,6 +64,7 @@ export async function upsertTeamMember(
   }
 
   revalidatePath("/admin/equipe");
+  revalidatePath("/", "layout");
   revalidatePath("/equipe");
   redirect("/admin/equipe");
 }

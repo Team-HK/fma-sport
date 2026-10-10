@@ -22,6 +22,7 @@ export async function updateCandidacyStatus(
     entityId: id,
   });
   revalidatePath("/admin/joueurs");
+  revalidatePath("/", "layout");
 }
 
 export async function createPlayerFromCandidacy(candidacyId: string) {
@@ -63,6 +64,7 @@ export async function createPlayerFromCandidacy(candidacyId: string) {
   });
 
   revalidatePath("/admin/joueurs");
+  revalidatePath("/", "layout");
 }
 
 const playerSchema = z.object({
@@ -83,10 +85,47 @@ const playerSchema = z.object({
   bio: z.string().optional(),
   strengths: z.string().optional(),
   careerHistory: z.string().optional(),
+  stats: z.string().optional(),
   cvUrl: z.string().optional(),
   documentUrls: z.string().optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
 });
+
+/** "2025/2026 | Championnat | 20 | 5 | 3 | 1500" -> one PlayerStat row per line. */
+function parseStats(value?: string) {
+  const rows: {
+    season: string;
+    competition: string;
+    matches: number;
+    goals: number;
+    assists: number;
+    minutesPlayed: number;
+  }[] = [];
+  for (const line of (value ?? "").split("\n")) {
+    const [season, competition, matches, goals, assists, minutes] = line.split("|").map((c) => c.trim());
+    if (!season || !competition) continue;
+    const n = (v?: string) => Math.max(0, Math.round(Number(v) || 0));
+    rows.push({
+      season,
+      competition,
+      matches: n(matches),
+      goals: n(goals),
+      assists: n(assists),
+      minutesPlayed: n(minutes),
+    });
+  }
+  return rows;
+}
+
+/** Two players can share a name: suffix -2, -3... so the unique slug never collides. */
+async function uniquePlayerSlug(fullName: string) {
+  const base = slugify(fullName);
+  let candidate = base;
+  for (let n = 2; await prisma.player.findUnique({ where: { slug: candidate }, select: { id: true } }); n++) {
+    candidate = `${base}-${n}`;
+  }
+  return candidate;
+}
 
 export type PlayerActionState = { success: boolean; message: string };
 
@@ -111,10 +150,12 @@ export async function upsertPlayer(
   const documentUrls = toLines(data.documentUrls);
   const strengths = toLines(data.strengths);
   const careerHistory = toLines(data.careerHistory);
+  const stats = parseStats(data.stats);
 
   try {
     if (id) {
-      await prisma.player.update({
+      await prisma.$transaction([
+        prisma.player.update({
         where: { id },
         data: {
           firstName: data.firstName,
@@ -138,9 +179,13 @@ export async function upsertPlayer(
           documentUrls,
           status: data.status,
         },
-      });
+        }),
+        prisma.playerStat.deleteMany({ where: { playerId: id } }),
+        prisma.playerStat.createMany({ data: stats.map((row) => ({ ...row, playerId: id })) }),
+      ]);
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "player", entityId: id });
       revalidatePath("/admin/joueurs");
+      revalidatePath("/", "layout");
       revalidatePath("/talents");
       revalidatePath("/joueurs/[slug]", "page");
       return { success: true, message: "Profil mis à jour." };
@@ -149,7 +194,7 @@ export async function upsertPlayer(
         data: {
           firstName: data.firstName,
           lastName: data.lastName,
-          slug: slugify(`${data.firstName} ${data.lastName}`),
+          slug: await uniquePlayerSlug(`${data.firstName} ${data.lastName}`),
           nationality: data.nationality,
           flag: data.flag || null,
           birthDate: new Date(data.birthDate),
@@ -168,6 +213,7 @@ export async function upsertPlayer(
           cvUrl: data.cvUrl || null,
           documentUrls,
           status: data.status,
+          stats: { create: stats },
         },
       });
       await logAdminAction({
@@ -183,6 +229,7 @@ export async function upsertPlayer(
   }
 
   revalidatePath("/admin/joueurs");
+  revalidatePath("/", "layout");
   revalidatePath("/talents");
   redirect("/admin/joueurs");
 }
