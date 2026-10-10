@@ -82,6 +82,7 @@ export async function deleteAd(id: string) {
   revalidatePath("/admin/publicites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Publicité déplacée dans la corbeille. Elle n'est plus visible sur le site." };
 }
 
 export async function restoreAd(id: string) {
@@ -91,6 +92,7 @@ export async function restoreAd(id: string) {
   revalidatePath("/admin/publicites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Publicité restaurée." };
 }
 
 export async function toggleAdActive(id: string, active: boolean) {

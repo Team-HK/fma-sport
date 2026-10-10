@@ -139,7 +139,7 @@ export default async function AdminPlayersPage({
                           thumbnail={p.photo}
                           badges={<StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>}
                           title={`${p.firstName} ${p.lastName}`}
-                          meta={p.club ?? undefined}
+                          meta={showTrash && p.deletedAt ? `Supprimé le ${formatDate(p.deletedAt)}${p.club ? ` · ${p.club}` : ""}` : (p.club ?? undefined)}
                           actions={
                             showTrash ? (
                               <RestorePlayerButton id={p.id} />
@@ -167,7 +167,7 @@ export default async function AdminPlayersPage({
               ),
             },
           ]}
-          defaultTab={showTrash ? "profils" : undefined}
+          defaultTab={showTrash || candidacies.length === 0 || q || status || page ? "profils" : undefined}
         />
       </div>
     </div>

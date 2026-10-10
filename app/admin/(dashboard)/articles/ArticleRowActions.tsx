@@ -1,26 +1,26 @@
 "use client";
 
 import { runAdminAction } from "@/lib/run-admin-action";
-import { confirmDialog } from "@/lib/admin-dialog";
+import { confirmAndRun } from "@/lib/admin-dialog";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw, Eye, EyeOff } from "lucide-react";
 import { deleteArticle, restoreArticle, toggleArticleStatus } from "@/app/actions/admin/articles";
 
 export function DeleteArticleButton({ id }: { id: string }) {
-  const [isPending, startTransition] = useTransition();
 
   return (
     <Button
       type="button"
       variant="destructive"
       size="sm"
-      disabled={isPending}
-      onClick={async () => {
-        if (await confirmDialog("Déplacer cet article vers la corbeille ?")) {
-          startTransition(() => runAdminAction(() => deleteArticle(id)));
-        }
-      }}
+      onClick={() =>
+        confirmAndRun({
+          message: "Déplacer cet article vers la corbeille ?",
+          run: () => deleteArticle(id),
+          trashHref: "/admin/articles?corbeille=1",
+        })
+      }
     >
       <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
       Supprimer

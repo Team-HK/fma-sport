@@ -122,6 +122,7 @@ export async function deleteArticle(id: string) {
   revalidatePath("/actualites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Article déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
 export async function restoreArticle(id: string) {
@@ -132,6 +133,7 @@ export async function restoreArticle(id: string) {
   revalidatePath("/actualites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Article restauré." };
 }
 
 export async function toggleArticleStatus(id: string, status: "DRAFT" | "PUBLISHED") {

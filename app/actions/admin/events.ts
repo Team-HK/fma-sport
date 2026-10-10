@@ -106,6 +106,7 @@ export async function deleteEvent(id: string) {
   revalidatePath("/evenements");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Événement déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
 export async function restoreEvent(id: string) {
@@ -116,4 +117,5 @@ export async function restoreEvent(id: string) {
   revalidatePath("/evenements");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Événement restauré." };
 }

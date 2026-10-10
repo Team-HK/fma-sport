@@ -83,6 +83,7 @@ export async function deleteHeroSlide(id: string) {
   revalidatePath("/");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Slide déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
 export async function restoreHeroSlide(id: string) {
@@ -93,4 +94,5 @@ export async function restoreHeroSlide(id: string) {
   revalidatePath("/");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Slide restauré." };
 }

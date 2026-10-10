@@ -1,12 +1,20 @@
-import { notifyError } from "@/lib/admin-dialog";
+import { notifyError, pushToast, type TaskResult } from "@/lib/admin-dialog";
 
 /**
- * Runs an admin server action from a button and tells the user when it fails
+ * Runs an admin server action from a button. Reports the real outcome: a toast
+ * with the message the server returned, or an error dialog when it fails
  * (database unavailable, session expired, ...) instead of failing silently.
  */
-export async function runAdminAction(action: () => Promise<unknown>): Promise<void> {
+export async function runAdminAction(action: () => Promise<TaskResult | void | unknown>): Promise<void> {
   try {
-    await action();
+    const result = (await action()) as TaskResult | undefined;
+    if (result && typeof result === "object" && "success" in result) {
+      if (result.success === false) {
+        notifyError(result.message || "L'action n'a pas pu aboutir.");
+      } else if (result.message) {
+        pushToast({ tone: "success", message: result.message });
+      }
+    }
   } catch (error) {
     // Let Next.js redirects/navigation signals through untouched.
     const digest = (error as { digest?: unknown } | null)?.digest;

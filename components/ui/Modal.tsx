@@ -40,7 +40,7 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-foreground/40 p-4 py-10 backdrop-blur-sm"
+      className="fixed inset-0 z-[70] flex overflow-y-auto bg-foreground/40 p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -48,7 +48,7 @@ export function Modal({
       <div
         ref={panelRef}
         className={cn(
-          "w-full rounded-xl border border-border bg-card p-6 shadow-xl",
+          "m-auto w-full rounded-xl border border-border bg-card p-6 shadow-xl",
           maxWidth
         )}
       >

@@ -96,6 +96,7 @@ export async function deleteVideo(id: string) {
   revalidatePath("/videos");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Vidéo déplacée dans la corbeille. Elle n'est plus visible sur le site." };
 }
 
 export async function restoreVideo(id: string) {
@@ -106,4 +107,5 @@ export async function restoreVideo(id: string) {
   revalidatePath("/videos");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Vidéo restaurée." };
 }

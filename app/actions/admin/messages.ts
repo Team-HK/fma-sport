@@ -16,6 +16,7 @@ export async function deleteMessage(id: string) {
   await prisma.contactMessage.update({ where: { id }, data: { deletedAt: new Date() } });
   await logAdminAction({ adminId: admin.id, action: "delete", entityType: "message", entityId: id });
   revalidatePath("/admin/messages");
+  return { success: true as const, message: "Message déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
 export async function restoreMessage(id: string) {
@@ -23,4 +24,5 @@ export async function restoreMessage(id: string) {
   await prisma.contactMessage.update({ where: { id }, data: { deletedAt: null } });
   await logAdminAction({ adminId: admin.id, action: "restore", entityType: "message", entityId: id });
   revalidatePath("/admin/messages");
+  return { success: true as const, message: "Message restauré." };
 }

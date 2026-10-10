@@ -1,25 +1,25 @@
 "use client";
 
 import { runAdminAction } from "@/lib/run-admin-action";
-import { confirmDialog } from "@/lib/admin-dialog";
+import { confirmAndRun } from "@/lib/admin-dialog";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw, Power, PowerOff } from "lucide-react";
 import { deleteAd, restoreAd, toggleAdActive } from "@/app/actions/admin/ads";
 
 export function DeleteAdButton({ id }: { id: string }) {
-  const [isPending, startTransition] = useTransition();
   return (
     <Button
       type="button"
       variant="destructive"
       size="sm"
-      disabled={isPending}
-      onClick={async () => {
-        if (await confirmDialog("Déplacer cette publicité vers la corbeille ?")) {
-          startTransition(() => runAdminAction(() => deleteAd(id)));
-        }
-      }}
+      onClick={() =>
+        confirmAndRun({
+          message: "Déplacer cette publicité vers la corbeille ?",
+          run: () => deleteAd(id),
+          trashHref: "/admin/publicites?corbeille=1",
+        })
+      }
     >
       <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
       Supprimer

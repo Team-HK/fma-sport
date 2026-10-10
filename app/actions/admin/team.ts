@@ -77,6 +77,7 @@ export async function deleteTeamMember(id: string) {
   revalidatePath("/equipe");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Membre de l'équipe déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
 export async function restoreTeamMember(id: string) {
@@ -87,4 +88,5 @@ export async function restoreTeamMember(id: string) {
   revalidatePath("/equipe");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  return { success: true as const, message: "Membre de l'équipe restauré." };
 }
