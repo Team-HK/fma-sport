@@ -8,10 +8,9 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { statusMeta } from "@/lib/admin-ui";
 import { formatDate } from "@/lib/utils";
 import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
-import { Trash2, Archive } from "lucide-react";
+import { Trash2, Archive, Pencil } from "lucide-react";
 import { CandidacyRowActions } from "./CandidacyRowActions";
 import { DeletePlayerButton, RestorePlayerButton } from "./PlayerRowActions";
-import { EditPlayerModal } from "./EditPlayerModal";
 import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +45,6 @@ export default async function AdminPlayersPage({
     prisma.player.count({ where: playerWhere }),
     prisma.player.findMany({
       where: playerWhere,
-      include: { stats: true },
       orderBy: { createdAt: "desc" },
       ...paginationArgs(page),
     }),
@@ -147,7 +145,10 @@ export default async function AdminPlayersPage({
                               <RestorePlayerButton id={p.id} />
                             ) : (
                               <>
-                                <EditPlayerModal player={p} />
+                                <Button href={`/admin/joueurs/${p.id}`} variant="ghost" size="sm">
+                                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                                  Modifier
+                                </Button>
                                 <DeletePlayerButton id={p.id} />
                               </>
                             )

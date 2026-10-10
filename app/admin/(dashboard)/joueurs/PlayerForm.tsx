@@ -4,14 +4,24 @@ import { useActionState, useEffect, useRef } from "react";
 import { Input, Label, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
+import Link from "next/link";
 import { ImageField } from "@/components/ui/ImageField";
+import { StatsEditor } from "@/components/admin/StatsEditor";
 import { POSITION_LABELS, STRONG_FOOT_LABELS } from "@/lib/constants";
 import { upsertPlayer, type PlayerActionState } from "@/app/actions/admin/players";
 import type { Player, PlayerStat } from "@prisma/client";
 
 const initialState: PlayerActionState = { success: false, message: "" };
 
-export function PlayerForm({ player, onSuccess }: { player?: Player & { stats?: PlayerStat[] }; onSuccess?: () => void }) {
+export function PlayerForm({
+  player,
+  onSuccess,
+  cancelHref,
+}: {
+  player?: Player & { stats?: PlayerStat[] };
+  onSuccess?: () => void;
+  cancelHref?: string;
+}) {
   const action = upsertPlayer.bind(null, player?.id ?? null);
   const [state, formAction, isPending] = useActionState(action, initialState);
   const didRun = useRef(false);
@@ -93,23 +103,6 @@ export function PlayerForm({ player, onSuccess }: { player?: Player & { stats?: 
                     defaultValue={player?.careerHistory.join("\n") ?? ""}
                     placeholder={"2021–2023 · Académie de quartier\n2023–2025 · Club formateur\n2025– · Club actuel"}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="stats">Statistiques (une ligne par saison et compétition)</Label>
-                  <Textarea
-                    id="stats"
-                    name="stats"
-                    rows={4}
-                    defaultValue={(player?.stats ?? [])
-                      .slice()
-                      .sort((a, b) => b.season.localeCompare(a.season))
-                      .map((s) => `${s.season} | ${s.competition} | ${s.matches} | ${s.goals} | ${s.assists} | ${s.minutesPlayed}`)
-                      .join("\n")}
-                    placeholder={"2025/2026 | Championnat | 20 | 5 | 3 | 1500"}
-                  />
-                  <p className="mt-1.5 text-xs text-muted-foreground">
-                    Format : saison | compétition | matchs | buts | passes décisives | minutes
-                  </p>
                 </div>
                 <div>
                   <Label htmlFor="status">Statut *</Label>
@@ -208,6 +201,7 @@ export function PlayerForm({ player, onSuccess }: { player?: Player & { stats?: 
                   <Label htmlFor="number">Numéro</Label>
                   <Input id="number" name="number" type="number" defaultValue={player?.number ?? ""} />
                 </div>
+                <StatsEditor defaultValue={player?.stats ?? []} />
               </div>
             ),
           },
@@ -238,10 +232,31 @@ export function PlayerForm({ player, onSuccess }: { player?: Player & { stats?: 
         ]}
       />
 
-      <div className="flex justify-end border-t border-border pt-4">
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Enregistrement..." : "Enregistrer"}
-        </Button>
+      <div
+        className={
+          cancelHref
+            ? "sticky bottom-0 z-10 -mx-5 flex items-center justify-between gap-3 border-t border-border bg-card/95 px-5 py-3 backdrop-blur sm:-mx-6 sm:px-6"
+            : "flex justify-end border-t border-border pt-4"
+        }
+      >
+        {cancelHref && (
+          <Link
+            href={cancelHref}
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Retour à la liste
+          </Link>
+        )}
+        <div className="flex items-center gap-3">
+          {cancelHref && state.message && (
+            <span className={state.success ? "text-sm text-success" : "text-sm text-destructive"}>
+              {state.message}
+            </span>
+          )}
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Enregistrement..." : "Enregistrer"}
+          </Button>
+        </div>
       </div>
     </form>
   );
