@@ -1,5 +1,6 @@
 "use client";
 
+import { runAdminAction } from "@/lib/run-admin-action";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw } from "lucide-react";
@@ -15,7 +16,7 @@ export function DeleteVideoButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => {
         if (confirm("Déplacer cette vidéo vers la corbeille ?")) {
-          startTransition(() => deleteVideo(id));
+          startTransition(() => runAdminAction(() => deleteVideo(id)));
         }
       }}
     >
@@ -33,7 +34,7 @@ export function RestoreVideoButton({ id }: { id: string }) {
       variant="secondary"
       size="sm"
       disabled={isPending}
-      onClick={() => startTransition(() => restoreVideo(id))}
+      onClick={() => startTransition(() => runAdminAction(() => restoreVideo(id)))}
     >
       <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer

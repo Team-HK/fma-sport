@@ -1,5 +1,6 @@
 "use client";
 
+import { runAdminAction } from "@/lib/run-admin-action";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw } from "lucide-react";
@@ -15,7 +16,7 @@ export function DeleteEventButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => {
         if (confirm("Déplacer cet événement vers la corbeille ?")) {
-          startTransition(() => deleteEvent(id));
+          startTransition(() => runAdminAction(() => deleteEvent(id)));
         }
       }}
     >
@@ -33,7 +34,7 @@ export function RestoreEventButton({ id }: { id: string }) {
       variant="secondary"
       size="sm"
       disabled={isPending}
-      onClick={() => startTransition(() => restoreEvent(id))}
+      onClick={() => startTransition(() => runAdminAction(() => restoreEvent(id)))}
     >
       <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer

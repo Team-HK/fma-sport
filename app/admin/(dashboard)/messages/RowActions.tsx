@@ -1,5 +1,6 @@
 "use client";
 
+import { runAdminAction } from "@/lib/run-admin-action";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw, Mail, MailOpen } from "lucide-react";
@@ -14,7 +15,7 @@ export function MessageRowActions({ id, read }: { id: string; read: boolean }) {
         variant="secondary"
         size="sm"
         disabled={isPending}
-        onClick={() => startTransition(() => markMessageRead(id, !read))}
+        onClick={() => startTransition(() => runAdminAction(() => markMessageRead(id, !read)))}
       >
         {read ? (
           <Mail className="h-3.5 w-3.5" aria-hidden="true" />
@@ -30,7 +31,7 @@ export function MessageRowActions({ id, read }: { id: string; read: boolean }) {
         disabled={isPending}
         onClick={() => {
           if (confirm("Déplacer ce message vers la corbeille ?")) {
-            startTransition(() => deleteMessage(id));
+            startTransition(() => runAdminAction(() => deleteMessage(id)));
           }
         }}
       >
@@ -49,7 +50,7 @@ export function RestoreMessageButton({ id }: { id: string }) {
       variant="secondary"
       size="sm"
       disabled={isPending}
-      onClick={() => startTransition(() => restoreMessage(id))}
+      onClick={() => startTransition(() => runAdminAction(() => restoreMessage(id)))}
     >
       <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer

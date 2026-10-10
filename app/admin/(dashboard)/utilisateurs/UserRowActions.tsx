@@ -1,5 +1,6 @@
 "use client";
 
+import { runAdminAction } from "@/lib/run-admin-action";
 import { useTransition } from "react";
 import { Power, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +16,7 @@ export function ToggleUserActiveButton({ id, active }: { id: string; active: boo
       disabled={isPending}
       onClick={() => {
         if (!active || confirm("Désactiver ce compte ? Il ne pourra plus se connecter.")) {
-          startTransition(() => toggleAdminUserActive(id, !active));
+          startTransition(() => runAdminAction(() => toggleAdminUserActive(id, !active)));
         }
       }}
     >
@@ -36,7 +37,7 @@ export function RoleSelect({ id, role }: { id: string; role: string }) {
       aria-label="Rôle"
       defaultValue={role}
       disabled={isPending}
-      onChange={(e) => startTransition(() => updateAdminUserRole(id, e.target.value as "SUPER_ADMIN" | "EDITOR"))}
+      onChange={(e) => startTransition(() => runAdminAction(() => updateAdminUserRole(id, e.target.value as "SUPER_ADMIN" | "EDITOR")))}
       className="cursor-pointer rounded-[10px] border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30"
     >
       <option value="EDITOR">Éditeur</option>

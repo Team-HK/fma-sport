@@ -1,5 +1,6 @@
 "use client";
 
+import { runAdminAction } from "@/lib/run-admin-action";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw, Eye, EyeOff } from "lucide-react";
@@ -16,7 +17,7 @@ export function DeleteArticleButton({ id }: { id: string }) {
       disabled={isPending}
       onClick={() => {
         if (confirm("Déplacer cet article vers la corbeille ?")) {
-          startTransition(() => deleteArticle(id));
+          startTransition(() => runAdminAction(() => deleteArticle(id)));
         }
       }}
     >
@@ -35,7 +36,7 @@ export function RestoreArticleButton({ id }: { id: string }) {
       variant="secondary"
       size="sm"
       disabled={isPending}
-      onClick={() => startTransition(() => restoreArticle(id))}
+      onClick={() => startTransition(() => runAdminAction(() => restoreArticle(id)))}
     >
       <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
       Restaurer
@@ -60,7 +61,7 @@ export function TogglePublishButton({
       size="sm"
       disabled={isPending}
       onClick={() =>
-        startTransition(() => toggleArticleStatus(id, isPublished ? "DRAFT" : "PUBLISHED"))
+        startTransition(() => runAdminAction(() => toggleArticleStatus(id, isPublished ? "DRAFT" : "PUBLISHED")))
       }
     >
       {isPublished ? (
