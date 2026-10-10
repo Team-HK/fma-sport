@@ -11,6 +11,7 @@ import { getArticleBySlug, getRelatedArticles } from "@/lib/queries";
 import { prisma } from "@/lib/prisma";
 import { ARTICLE_CATEGORY_LABELS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
+import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -38,12 +39,24 @@ export async function generateMetadata({
   return {
     title: article.title,
     description: article.excerpt,
+    keywords: article.tags.length > 0 ? article.tags : undefined,
+    alternates: { canonical: `/actualites/${article.slug}` },
     openGraph: {
       type: "article",
       title: article.title,
       description: article.excerpt,
-      images: article.coverImage ? [article.coverImage] : undefined,
+      url: `/actualites/${article.slug}`,
+      images: article.coverImage ? [{ url: article.coverImage, alt: article.title }] : undefined,
       publishedTime: article.publishedAt?.toISOString(),
+      modifiedTime: article.updatedAt.toISOString(),
+      section: ARTICLE_CATEGORY_LABELS[article.category] ?? article.category,
+      tags: article.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+      images: article.coverImage ? [article.coverImage] : undefined,
     },
   };
 }
@@ -71,7 +84,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
     "@type": "NewsArticle",
     headline: article.title,
     description: article.excerpt,
-    image: article.coverImage ? [article.coverImage] : undefined,
+    image: article.coverImage ? [absoluteUrl(article.coverImage)] : undefined,
     datePublished: article.publishedAt?.toISOString(),
     dateModified: article.updatedAt.toISOString(),
     mainEntityOfPage: `${SITE_URL}/actualites/${article.slug}`,

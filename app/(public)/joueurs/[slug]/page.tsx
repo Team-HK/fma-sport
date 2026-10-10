@@ -18,6 +18,7 @@ import { PlayerPhotoPlaceholder } from "@/components/sections/PlayerPhotoPlaceho
 import { Flag } from "@/components/ui/Flag";
 import { ShareButtons } from "@/components/sections/ShareButtons";
 import { formatDate } from "@/lib/utils";
+import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -55,7 +56,7 @@ export async function generateMetadata({
       url: `/joueurs/${player.slug}`,
       description,
       type: "profile",
-      images: player.photo ? [{ url: player.photo, alt: `${player.firstName} ${player.lastName}` }] : undefined,
+      images: player.photo ? [{ url: player.photo, alt: `${fullName}, ${positionLabel}${player.club ? ` à ${player.club}` : ""}` }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -130,7 +131,15 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
     alternateName: `${player.lastName} ${player.firstName}`,
     knowsAbout: "Football",
     url: `${SITE_URL}/joueurs/${player.slug}`,
-    image: player.photo ?? undefined,
+    image: player.photo
+      ? {
+          "@type": "ImageObject",
+          url: absoluteUrl(player.photo),
+          contentUrl: absoluteUrl(player.photo),
+          caption: `${fullName}, ${positionLabel}${player.club ? ` à ${player.club}` : ""}`,
+          name: fullName,
+        }
+      : undefined,
     description: player.bio ?? undefined,
     nationality: player.nationality,
     jobTitle: positionLabel,
@@ -138,6 +147,16 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
     birthDate: player.birthDate.toISOString().slice(0, 10),
     height: player.height ? `${player.height} cm` : undefined,
     weight: player.weight ? `${player.weight} kg` : undefined,
+  };
+
+  const profileJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    url: `${SITE_URL}/joueurs/${player.slug}`,
+    name: `${fullName} — profil joueur FMA SPORT`,
+    dateModified: player.updatedAt.toISOString(),
+    primaryImageOfPage: player.photo ? { "@type": "ImageObject", url: absoluteUrl(player.photo) } : undefined,
+    mainEntity: { "@id": `${SITE_URL}/joueurs/${player.slug}#person` },
   };
 
   const breadcrumbJsonLd = {
@@ -154,7 +173,7 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
     <div>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbJsonLd]) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, profileJsonLd, breadcrumbJsonLd]) }}
       />
 
       {/* Hero */}
@@ -181,7 +200,8 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
               {player.photo ? (
                 <Image
                   src={player.photo}
-                  alt={fullName}
+                  alt={`${fullName}, ${positionLabel}${player.club ? ` à ${player.club}` : ""} — photo FMA SPORT`}
+                  title={fullName}
                   fill
                   sizes="280px"
                   priority

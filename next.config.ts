@@ -4,6 +4,17 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "4mb" },
   },
+  async redirects() {
+    // One canonical host for search engines: send the Vercel URL to www.fmasport.com.
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "fma-sport.vercel.app" }],
+        destination: "https://www.fmasport.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

@@ -18,7 +18,7 @@ export function PlayerCard({ player }: { player: Player }) {
         {player.photo ? (
           <Image
             src={player.photo}
-            alt={`${player.firstName} ${player.lastName}`}
+            alt={`${player.firstName} ${player.lastName}, joueur${player.club ? ` ${player.club}` : ""} — FMA SPORT`}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
             className="object-cover"

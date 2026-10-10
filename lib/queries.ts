@@ -186,12 +186,18 @@ export async function searchSite(query: string) {
       where: {
         status: "PUBLISHED",
         deletedAt: null,
-        OR: [
-          { firstName: { contains: query, mode: "insensitive" } },
-          { lastName: { contains: query, mode: "insensitive" } },
-          { club: { contains: query, mode: "insensitive" } },
-          { nationality: { contains: query, mode: "insensitive" } },
-        ],
+        // Every word must match somewhere, so a full name ("Cheikh Fall") finds the player.
+        AND: query
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((word) => ({
+            OR: [
+              { firstName: { contains: word, mode: "insensitive" as const } },
+              { lastName: { contains: word, mode: "insensitive" as const } },
+              { club: { contains: word, mode: "insensitive" as const } },
+              { nationality: { contains: word, mode: "insensitive" as const } },
+            ],
+          })),
       },
       take: 8,
     }),
