@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -76,6 +77,7 @@ export async function upsertArticle(
       });
       revalidatePath("/admin/articles");
       revalidatePath("/", "layout");
+      expirePublicContent();
       revalidatePath("/actualites");
       return { success: true, message: "Article mis à jour." };
     } else {
@@ -110,6 +112,7 @@ export async function upsertArticle(
 
   revalidatePath("/admin/articles");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/actualites");
   redirect("/admin/articles");
 }
@@ -122,6 +125,7 @@ export async function deleteArticle(id: string) {
   revalidatePath("/actualites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Article déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
@@ -133,6 +137,7 @@ export async function restoreArticle(id: string) {
   revalidatePath("/actualites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Article restauré." };
 }
 
@@ -150,5 +155,6 @@ export async function toggleArticleStatus(id: string, status: "DRAFT" | "PUBLISH
   });
   revalidatePath("/admin/articles");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/actualites");
 }

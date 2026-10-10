@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -53,6 +54,7 @@ export async function upsertHeroSlide(
       });
       revalidatePath("/admin/referentiels/carousel");
       revalidatePath("/", "layout");
+      expirePublicContent();
       revalidatePath("/");
       return { success: true, message: "Diapositive mise à jour." };
     }
@@ -71,6 +73,7 @@ export async function upsertHeroSlide(
 
   revalidatePath("/admin/referentiels/carousel");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/");
   redirect("/admin/referentiels/carousel");
 }
@@ -83,6 +86,7 @@ export async function deleteHeroSlide(id: string) {
   revalidatePath("/");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Slide déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
@@ -94,5 +98,6 @@ export async function restoreHeroSlide(id: string) {
   revalidatePath("/");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Slide restauré." };
 }

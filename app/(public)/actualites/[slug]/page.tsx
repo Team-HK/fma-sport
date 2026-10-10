@@ -5,15 +5,21 @@ import { notFound } from "next/navigation";
 import { Clock, Eye } from "lucide-react";
 import { ArticleCard } from "@/components/sections/ArticleCard";
 import { ShareButtons } from "@/components/sections/ShareButtons";
+import { ArticleViewTracker } from "@/components/sections/ArticleViewTracker";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { Logo } from "@/components/ui/Logo";
 import { getArticleBySlug, getRelatedArticles } from "@/lib/queries";
-import { prisma } from "@/lib/prisma";
 import { ARTICLE_CATEGORY_LABELS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 300;
+
+// Render each page on its first visit, then serve it from the cache and refresh
+// it in the background (ISR). Without this the page is rebuilt on every request.
+export async function generateStaticParams() {
+  return [];
+}
 
 type Params = { slug: string };
 
@@ -69,8 +75,6 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
     notFound();
   }
 
-  prisma.article.update({ where: { slug }, data: { views: { increment: 1 } } }).catch(() => {});
-
   const related = await getRelatedArticles(article.category, article.slug);
   const writer =
     article.writer && article.writer.visible && !article.writer.deletedAt ? article.writer : null;
@@ -97,6 +101,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
 
   return (
     <article>
+      <ArticleViewTracker slug={article.slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

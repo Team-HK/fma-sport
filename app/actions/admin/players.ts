@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -23,6 +24,7 @@ export async function updateCandidacyStatus(
   });
   revalidatePath("/admin/joueurs");
   revalidatePath("/", "layout");
+  expirePublicContent();
 }
 
 export async function createPlayerFromCandidacy(candidacyId: string) {
@@ -65,6 +67,7 @@ export async function createPlayerFromCandidacy(candidacyId: string) {
 
   revalidatePath("/admin/joueurs");
   revalidatePath("/", "layout");
+  expirePublicContent();
 }
 
 const playerSchema = z.object({
@@ -186,6 +189,7 @@ export async function upsertPlayer(
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "player", entityId: id });
       revalidatePath("/admin/joueurs");
       revalidatePath("/", "layout");
+      expirePublicContent();
       revalidatePath("/talents");
       revalidatePath("/joueurs/[slug]", "page");
       return { success: true, message: "Profil mis à jour." };
@@ -230,6 +234,7 @@ export async function upsertPlayer(
 
   revalidatePath("/admin/joueurs");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/talents");
   redirect("/admin/joueurs");
 }
@@ -242,6 +247,7 @@ export async function deletePlayer(id: string) {
   revalidatePath("/talents");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Joueur déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
@@ -253,5 +259,6 @@ export async function restorePlayer(id: string) {
   revalidatePath("/talents");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Joueur restauré." };
 }

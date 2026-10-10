@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -55,6 +56,7 @@ export async function upsertAd(
       });
       revalidatePath("/admin/publicites");
       revalidatePath("/", "layout");
+      expirePublicContent();
       return { success: true, message: "Publicité mise à jour." };
     }
 
@@ -72,6 +74,7 @@ export async function upsertAd(
 
   revalidatePath("/admin/publicites");
   revalidatePath("/", "layout");
+  expirePublicContent();
   redirect("/admin/publicites");
 }
 
@@ -82,6 +85,7 @@ export async function deleteAd(id: string) {
   revalidatePath("/admin/publicites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Publicité déplacée dans la corbeille. Elle n'est plus visible sur le site." };
 }
 
@@ -92,6 +96,7 @@ export async function restoreAd(id: string) {
   revalidatePath("/admin/publicites");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Publicité restaurée." };
 }
 
@@ -106,4 +111,5 @@ export async function toggleAdActive(id: string, active: boolean) {
   });
   revalidatePath("/admin/publicites");
   revalidatePath("/", "layout");
+  expirePublicContent();
 }

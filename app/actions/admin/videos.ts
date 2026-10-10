@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -54,6 +55,7 @@ export async function upsertVideo(
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "video", entityId: id });
       revalidatePath("/admin/videos");
       revalidatePath("/", "layout");
+      expirePublicContent();
       revalidatePath("/videos");
       return { success: true, message: "Vidéo mise à jour." };
     }
@@ -84,6 +86,7 @@ export async function upsertVideo(
 
   revalidatePath("/admin/videos");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/videos");
   redirect("/admin/videos");
 }
@@ -96,6 +99,7 @@ export async function deleteVideo(id: string) {
   revalidatePath("/videos");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Vidéo déplacée dans la corbeille. Elle n'est plus visible sur le site." };
 }
 
@@ -107,5 +111,6 @@ export async function restoreVideo(id: string) {
   revalidatePath("/videos");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Vidéo restaurée." };
 }

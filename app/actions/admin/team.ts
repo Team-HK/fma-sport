@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -47,6 +48,7 @@ export async function upsertTeamMember(
       await logAdminAction({ adminId: admin.id, action: "update", entityType: "team_member", entityId: id });
       revalidatePath("/admin/equipe");
       revalidatePath("/", "layout");
+      expirePublicContent();
       revalidatePath("/equipe");
       return { success: true, message: "Membre mis à jour." };
     }
@@ -65,6 +67,7 @@ export async function upsertTeamMember(
 
   revalidatePath("/admin/equipe");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/equipe");
   redirect("/admin/equipe");
 }
@@ -77,6 +80,7 @@ export async function deleteTeamMember(id: string) {
   revalidatePath("/equipe");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Membre de l'équipe déplacé dans la corbeille. Il n'est plus visible sur le site." };
 }
 
@@ -88,5 +92,6 @@ export async function restoreTeamMember(id: string) {
   revalidatePath("/equipe");
   // Public pages are ISR-cached: refresh them (lists, detail pages, home)
   revalidatePath("/", "layout");
+  expirePublicContent();
   return { success: true as const, message: "Membre de l'équipe restauré." };
 }

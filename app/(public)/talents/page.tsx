@@ -7,6 +7,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { prisma } from "@/lib/prisma";
 import { parsePage } from "@/lib/pagination";
+import { cachedQuery } from "@/lib/cache";
 
 export const metadata: Metadata = {
   title: "Nos talents",
@@ -14,6 +15,29 @@ export const metadata: Metadata = {
 };
 
 const PAGE_SIZE = 24;
+
+const countTalents = cachedQuery("talents-count", async (positions: PlayerPosition[]) =>
+  prisma.player.count({
+    where: {
+      status: "PUBLISHED",
+      deletedAt: null,
+      ...(positions.length > 0 ? { position: { in: positions } } : {}),
+    },
+  })
+);
+
+const listTalents = cachedQuery("talents-list", async (positions: PlayerPosition[], page: number) =>
+  prisma.player.findMany({
+    where: {
+      status: "PUBLISHED",
+      deletedAt: null,
+      ...(positions.length > 0 ? { position: { in: positions } } : {}),
+    },
+    orderBy: [{ isDemo: "asc" }, { updatedAt: "desc" }],
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+  })
+);
 
 const POSITION_GROUPS: Record<string, { label: string; positions: PlayerPosition[] }> = {
   gardiens: { label: "Gardiens", positions: ["GARDIEN"] },
@@ -31,22 +55,11 @@ export default async function TalentsPage({
   const group = poste ? POSITION_GROUPS[poste] : undefined;
   const currentPage = parsePage(page);
 
-  const where = {
-    status: "PUBLISHED" as const,
-    deletedAt: null,
-    ...(group ? { position: { in: group.positions } } : {}),
-  };
+  const positions = group ? group.positions : [];
 
   const [total, players] = await Promise.all([
-    prisma.player.count({ where }).catch(() => 0),
-    prisma.player
-      .findMany({
-        where,
-        orderBy: [{ isDemo: "asc" }, { updatedAt: "desc" }],
-        skip: (currentPage - 1) * PAGE_SIZE,
-        take: PAGE_SIZE,
-      })
-      .catch(() => []),
+    countTalents(positions).catch(() => 0),
+    listTalents(positions, currentPage).catch(() => []),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 

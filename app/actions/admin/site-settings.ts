@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { expirePublicContent } from "@/lib/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
@@ -67,6 +68,7 @@ export async function upsertSiteSettings(
 
   revalidatePath("/admin/referentiels");
   revalidatePath("/", "layout");
+  expirePublicContent();
   revalidatePath("/");
   revalidatePath("/contact");
   return { success: true, message: "Coordonnées mises à jour." };

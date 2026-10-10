@@ -22,6 +22,12 @@ import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 300;
 
+// Render each page on its first visit, then serve it from the cache and refresh
+// it in the background (ISR). Without this the page is rebuilt on every request.
+export async function generateStaticParams() {
+  return [];
+}
+
 type Params = { slug: string };
 
 export async function generateMetadata({

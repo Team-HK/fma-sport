@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { cachedQuery } from "@/lib/cache";
 import type { ArticleCategory, AdPlacement } from "@prisma/client";
 
 // An article counts as publicly visible once it's PUBLISHED, or once a
@@ -29,28 +30,28 @@ function articleWhere(options?: ArticleFilters) {
   };
 }
 
-export function getPublishedArticles(options?: ArticleFilters & { take?: number; skip?: number }) {
+export const getPublishedArticles = cachedQuery("getPublishedArticles", async (options?: ArticleFilters & { take?: number; skip?: number }) => {
   return prisma.article.findMany({
     where: articleWhere(options),
     orderBy: { publishedAt: "desc" },
     take: options?.take,
     skip: options?.skip,
   });
-}
+});
 
-export function getPublishedArticleCount(options?: ArticleFilters) {
+export const getPublishedArticleCount = cachedQuery("getPublishedArticleCount", async (options?: ArticleFilters) => {
   return prisma.article.count({ where: articleWhere(options) });
-}
+});
 
-export function getMostReadArticles(options?: ArticleFilters & { take?: number }) {
+export const getMostReadArticles = cachedQuery("getMostReadArticles", async (options?: ArticleFilters & { take?: number }) => {
   return prisma.article.findMany({
     where: articleWhere(options),
     orderBy: { views: "desc" },
     take: options?.take ?? 5,
   });
-}
+});
 
-export async function getArticleBySlug(slug: string) {
+export const getArticleBySlug = cachedQuery("getArticleBySlug", async (slug: string) => {
   const article = await prisma.article.findUnique({
     where: { slug },
     include: {
@@ -64,17 +65,17 @@ export async function getArticleBySlug(slug: string) {
     article.status === "PUBLISHED" ||
     (article.status === "SCHEDULED" && article.publishedAt !== null && article.publishedAt <= new Date());
   return isVisible ? article : null;
-}
+});
 
-export function getRelatedArticles(category: ArticleCategory, excludeSlug: string) {
+export const getRelatedArticles = cachedQuery("getRelatedArticles", async (category: ArticleCategory, excludeSlug: string) => {
   return prisma.article.findMany({
     where: { status: "PUBLISHED", deletedAt: null, category, slug: { not: excludeSlug } },
     orderBy: { publishedAt: "desc" },
     take: 3,
   });
-}
+});
 
-export function getPublishedVideos(options?: { category?: string; take?: number }) {
+export const getPublishedVideos = cachedQuery("getPublishedVideos", async (options?: { category?: string; take?: number }) => {
   return prisma.video.findMany({
     where: {
       status: "PUBLISHED",
@@ -84,51 +85,55 @@ export function getPublishedVideos(options?: { category?: string; take?: number 
     orderBy: { publishedAt: "desc" },
     take: options?.take,
   });
-}
+});
 
-export function getPublishedPlayers(take?: number) {
+export const getPublishedPlayers = cachedQuery("getPublishedPlayers", async (take?: number) => {
   return prisma.player.findMany({
     where: { status: "PUBLISHED", deletedAt: null },
     orderBy: { createdAt: "desc" },
     take,
   });
-}
+});
 
-export async function getPlayerBySlug(slug: string) {
+export const getPlayerBySlug = cachedQuery("getPlayerBySlug", async (slug: string) => {
   const player = await prisma.player.findUnique({
     where: { slug },
     include: { stats: true, videos: { where: { status: "PUBLISHED", deletedAt: null } } },
   });
   return player?.deletedAt ? null : player;
-}
+});
 
 export function getSimilarPlayers(player: { id: string; position: string; nationality: string }, take = 4) {
+  return findSimilarPlayers(player.id, player.position, player.nationality, take);
+}
+
+const findSimilarPlayers = cachedQuery("findSimilarPlayers", async (id: string, position: string, nationality: string, take: number) => {
   return prisma.player.findMany({
     where: {
       status: "PUBLISHED",
       deletedAt: null,
-      id: { not: player.id },
-      OR: [{ position: player.position as never }, { nationality: player.nationality }],
+      id: { not: id },
+      OR: [{ position: position as never }, { nationality }],
     },
     orderBy: { updatedAt: "desc" },
     take,
   });
-}
+});
 
-export function getPublishedEvents(take?: number) {
+export const getPublishedEvents = cachedQuery("getPublishedEvents", async (take?: number) => {
   return prisma.event.findMany({
     where: { status: { in: ["PUBLISHED", "RESULTS_PUBLISHED"] }, deletedAt: null },
     orderBy: { date: "asc" },
     take,
   });
-}
+});
 
-export async function getEventBySlug(slug: string) {
+export const getEventBySlug = cachedQuery("getEventBySlug", async (slug: string) => {
   const event = await prisma.event.findUnique({ where: { slug } });
   return event?.deletedAt ? null : event;
-}
+});
 
-export async function getActiveAd(placement: AdPlacement) {
+export const getActiveAd = cachedQuery("getActiveAd", async (placement: AdPlacement) => {
   const now = new Date();
   return prisma.advertisement.findFirst({
     where: {
@@ -142,30 +147,30 @@ export async function getActiveAd(placement: AdPlacement) {
     },
     orderBy: { createdAt: "desc" },
   });
-}
+}, 60);
 
-export function getSiteSettings() {
+export const getSiteSettings = cachedQuery("getSiteSettings", async () => {
   return prisma.siteSettings.findUnique({ where: { id: "singleton" } });
-}
+});
 
-export function getActiveHeroSlides() {
+export const getActiveHeroSlides = cachedQuery("getActiveHeroSlides", async () => {
   return prisma.heroSlide.findMany({
     where: { active: true, deletedAt: null },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
-}
+});
 
-export function getVisibleTeamMember(id: string) {
+export const getVisibleTeamMember = cachedQuery("getVisibleTeamMember", async (id: string) => {
   return prisma.teamMember.findFirst({ where: { id, visible: true, deletedAt: null } });
-}
+});
 
-export function getVisibleTeamMembers(take?: number) {
+export const getVisibleTeamMembers = cachedQuery("getVisibleTeamMembers", async (take?: number) => {
   return prisma.teamMember.findMany({
     where: { visible: true, deletedAt: null },
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
     take,
   });
-}
+});
 
 export async function searchSite(query: string) {
   const [articles, players, videos] = await Promise.all([
