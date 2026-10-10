@@ -1,6 +1,7 @@
 "use client";
 
 import { runAdminAction } from "@/lib/run-admin-action";
+import { confirmDialog } from "@/lib/admin-dialog";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw } from "lucide-react";
@@ -14,8 +15,8 @@ export function DeleteTeamMemberButton({ id }: { id: string }) {
       variant="destructive"
       size="sm"
       disabled={isPending}
-      onClick={() => {
-        if (confirm("Déplacer ce membre vers la corbeille ?")) {
+      onClick={async () => {
+        if (await confirmDialog("Déplacer ce membre vers la corbeille ?")) {
           startTransition(() => runAdminAction(() => deleteTeamMember(id)));
         }
       }}

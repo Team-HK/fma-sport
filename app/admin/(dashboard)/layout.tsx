@@ -5,6 +5,7 @@ import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail
 import { AdminSidebarLink } from "@/components/admin/AdminSidebarLink";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { Logo } from "@/components/ui/Logo";
+import { AdminDialogHost } from "@/components/admin/AdminDialogHost";
 
 const ADMIN_NAV = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
@@ -110,6 +111,7 @@ export default async function AdminDashboardLayout({
           {children}
         </div>
       </div>
+      <AdminDialogHost />
     </div>
   );
 }

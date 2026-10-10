@@ -1,6 +1,7 @@
 "use client";
 
 import { runAdminAction } from "@/lib/run-admin-action";
+import { confirmDialog } from "@/lib/admin-dialog";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw, Mail, MailOpen } from "lucide-react";
@@ -29,8 +30,8 @@ export function MessageRowActions({ id, read }: { id: string; read: boolean }) {
         variant="destructive"
         size="sm"
         disabled={isPending}
-        onClick={() => {
-          if (confirm("Déplacer ce message vers la corbeille ?")) {
+        onClick={async () => {
+          if (await confirmDialog("Déplacer ce message vers la corbeille ?")) {
             startTransition(() => runAdminAction(() => deleteMessage(id)));
           }
         }}

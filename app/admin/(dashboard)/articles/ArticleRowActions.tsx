@@ -1,6 +1,7 @@
 "use client";
 
 import { runAdminAction } from "@/lib/run-admin-action";
+import { confirmDialog } from "@/lib/admin-dialog";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Trash2, RotateCcw, Eye, EyeOff } from "lucide-react";
@@ -15,8 +16,8 @@ export function DeleteArticleButton({ id }: { id: string }) {
       variant="destructive"
       size="sm"
       disabled={isPending}
-      onClick={() => {
-        if (confirm("Déplacer cet article vers la corbeille ?")) {
+      onClick={async () => {
+        if (await confirmDialog("Déplacer cet article vers la corbeille ?")) {
           startTransition(() => runAdminAction(() => deleteArticle(id)));
         }
       }}

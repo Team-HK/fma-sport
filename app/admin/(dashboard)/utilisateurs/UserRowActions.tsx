@@ -1,6 +1,7 @@
 "use client";
 
 import { runAdminAction } from "@/lib/run-admin-action";
+import { confirmDialog } from "@/lib/admin-dialog";
 import { useTransition } from "react";
 import { Power, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -14,8 +15,8 @@ export function ToggleUserActiveButton({ id, active }: { id: string; active: boo
       variant="secondary"
       size="sm"
       disabled={isPending}
-      onClick={() => {
-        if (!active || confirm("Désactiver ce compte ? Il ne pourra plus se connecter.")) {
+      onClick={async () => {
+        if (!active || await confirmDialog("Ce compte ne pourra plus se connecter à l'espace administrateur tant qu'il n'est pas réactivé.", { title: "Désactiver ce compte ?", confirmLabel: "Désactiver" })) {
           startTransition(() => runAdminAction(() => toggleAdminUserActive(id, !active)));
         }
       }}
