@@ -5,6 +5,7 @@ import { Input, Label, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
 import { ImageField } from "@/components/ui/ImageField";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { upsertArticle, type ArticleActionState } from "@/app/actions/admin/articles";
 import type { Article } from "@prisma/client";
@@ -85,16 +86,7 @@ export function ArticleForm({
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="content">Contenu (HTML autorisé) *</Label>
-                  <Textarea
-                    id="content"
-                    name="content"
-                    rows={10}
-                    defaultValue={article?.content}
-                    required
-                  />
-                </div>
+                <RichTextEditor name="content" label="Contenu *" defaultValue={article?.content ?? ""} />
                 <ImageField
                   id="coverImage"
                   name="coverImage"
@@ -109,7 +101,7 @@ export function ArticleForm({
             label: "Publication & SEO",
             content: (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="category">Catégorie *</Label>
                     <select
@@ -142,7 +134,7 @@ export function ArticleForm({
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="country">Pays (facultatif)</Label>
                     <Input id="country" name="country" defaultValue={article?.country ?? ""} />

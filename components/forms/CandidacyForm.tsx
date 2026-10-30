@@ -53,7 +53,18 @@ export function CandidacyForm() {
   return (
     <form action={formAction} className="mx-auto max-w-3xl" onSubmit={() => setErrors([])}>
       {/* Progress */}
-      <ol className="mb-8 flex flex-wrap gap-2" aria-label="Étapes du formulaire">
+      <div className="mb-8 md:hidden">
+        <p className="flex items-baseline justify-between text-sm">
+          <span className="font-semibold text-foreground">
+            Étape {step} sur {totalSteps}
+          </span>
+          <span className="text-muted-foreground">{CANDIDACY_STEPS[step - 1]?.title}</span>
+        </p>
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+          <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(step / totalSteps) * 100}%` }} />
+        </div>
+      </div>
+      <ol className="mb-8 hidden flex-wrap gap-2 md:flex" aria-label="Étapes du formulaire">
         {CANDIDACY_STEPS.map((s) => (
           <li key={s.id}>
             <button
@@ -61,7 +72,7 @@ export function CandidacyForm() {
               onClick={() => setStep(s.id)}
               aria-current={step === s.id ? "step" : undefined}
               className={cn(
-                "cursor-pointer rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                "min-h-10 cursor-pointer rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
                 step === s.id
                   ? "bg-primary text-on-primary"
                   : step > s.id

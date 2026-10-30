@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/constants";
 
-export function MobileNav() {
+export function MobileNav({ links = NAV_LINKS }: { links?: readonly { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +56,7 @@ export function MobileNav() {
             className="fixed inset-x-0 top-16 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-border/60 bg-card shadow-md"
           >
             <ul className="flex flex-col p-2">
-              {NAV_LINKS.map((link) => (
+              {links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

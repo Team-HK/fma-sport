@@ -33,7 +33,7 @@ export function AdForm({ ad, onSuccess }: { ad?: Advertisement; onSuccess?: () =
         <Label htmlFor="title">Titre *</Label>
         <Input id="title" name="title" defaultValue={ad?.title} required />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="format">Format *</Label>
           <select
@@ -80,7 +80,7 @@ export function AdForm({ ad, onSuccess }: { ad?: Advertisement; onSuccess?: () =
         <Label htmlFor="linkUrl">Lien de destination</Label>
         <Input id="linkUrl" name="linkUrl" defaultValue={ad?.linkUrl ?? ""} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="startDate">Début d&apos;affichage</Label>
           <Input

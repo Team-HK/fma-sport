@@ -52,7 +52,7 @@ export default async function SearchPage({
         {results.players.length > 0 && (
           <section className="mb-12">
             <h2 className="mb-4 font-heading text-xl font-bold text-foreground">Joueurs</h2>
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
               {results.players.map((p) => (
                 <PlayerCard key={p.id} player={p} />
               ))}

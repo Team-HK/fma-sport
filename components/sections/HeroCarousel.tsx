@@ -127,7 +127,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlideContent[] }) {
         <div
           role="tablist"
           aria-label="Diapositives"
-          className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2"
+          className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2"
         >
           {slides.map((slide, i) => (
             <button
@@ -137,10 +137,15 @@ export function HeroCarousel({ slides }: { slides: HeroSlideContent[] }) {
               aria-selected={i === current}
               aria-label={`Image ${i + 1} sur ${slides.length}`}
               onClick={() => goTo(i)}
-              className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
-                i === current ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/80"
-              }`}
-            />
+              // 44px hit area around a small visual dot
+              className="group flex h-11 w-8 cursor-pointer items-center justify-center"
+            >
+              <span
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i === current ? "w-6 bg-white" : "w-2 bg-white/50 group-hover:bg-white/80"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

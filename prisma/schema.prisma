@@ -475,3 +475,133 @@ model ContactMessage {
   @@index([type, read])
   @@map("contact_messages")
 }
+
+// ---------------------------------------------------------------------------
+// Polls (sondages): ranked "top N" votes, e.g. Ballon d'Or européen / africain
+// ---------------------------------------------------------------------------
+
+enum PollStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+// Who can see the standings, and when. Always chosen in the back-office.
+enum PollResultsVisibility {
+  ALWAYS       // visible to everyone, even before voting
+  AFTER_VOTE   // visible once the visitor has voted (and when the poll is closed)
+  AFTER_CLOSE  // visible only once the poll is closed
+  NEVER        // admin only
+}
+
+// How voters are identified, on top of the per-browser token.
+enum PollIdentification {
+  NONE   // anonymous
+  EMAIL  // an e-mail address is required (one vote per address)
+  PHONE  // a phone number is required (one vote per number)
+}
+
+model Poll {
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String?
+  coverImage    String?
+  status        PollStatus     @default(DRAFT)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  resultsVisibility PollResultsVisibility @default(AFTER_VOTE)
+  identification    PollIdentification    @default(NONE)
+  // Abuse limits (all editable in the back-office).
+  maxBallotsPerDevice    Int @default(10)
+  maxBallotsPerIpPerHour Int @default(30)
+  // A ballot submitted faster than this is treated as a bot. 0 disables the check.
+  minFillSeconds         Int @default(3)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+
+  questions     PollQuestion[]
+  ballots       PollBallot[]
+
+  @@index([status, deletedAt])
+  @@map("polls")
+}
+
+model PollQuestion {
+  id        String       @id @default(cuid())
+  pollId    String
+  poll      Poll         @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  title     String
+  // How many candidates each voter must pick (6 for the Ballon d'Or, 4 for the GOAT...).
+  picks     Int          @default(1)
+  // Ranked: 1st place is worth `picks` points, last place 1 point (Borda count).
+  ranked    Boolean      @default(true)
+  // Voters may type their own answer in addition to the proposed ones.
+  allowWriteIn Boolean   @default(false)
+  order     Int          @default(0)
+
+  options   PollOption[]
+  votes     PollVote[]
+
+  @@index([pollId, order])
+  @@map("poll_questions")
+}
+
+model PollOption {
+  id         String       @id @default(cuid())
+  questionId String
+  question   PollQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  name       String
+  club       String?
+  photo      String?
+  order      Int          @default(0)
+  // Proposed by a voter (write-in) rather than created by the admin.
+  custom     Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+
+  votes      PollVote[]
+
+  @@index([questionId, order])
+  @@map("poll_options")
+}
+
+// One ballot = one voter's full submission for a poll (all its questions).
+model PollBallot {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  // Salted hash of a random per-browser token; never the raw value.
+  voterHash String
+  // Salted hash of the IP, only used to rate-limit abuse (shared mobile IPs are common).
+  ipHash    String?
+  // Salted hash of IP + browser: a looser cap catches "clear cookies and vote again".
+  deviceHash String?
+  // Salted hash of the e-mail / phone when the poll requires identification (never stored in clear).
+  contactHash String?
+  createdAt DateTime   @default(now())
+
+  votes     PollVote[]
+
+  @@unique([pollId, voterHash])
+  @@unique([pollId, contactHash])
+  @@index([pollId, ipHash, createdAt])
+  @@index([pollId, deviceHash])
+  @@map("poll_ballots")
+}
+
+model PollVote {
+  id         String       @id @default(cuid())
+  ballotId   String
+  ballot     PollBallot   @relation(fields: [ballotId], references: [id], onDelete: Cascade)
+  questionId String
+  question   PollQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  optionId   String
+  option     PollOption   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  // 1 = voter's first choice. Always 1 for unranked questions.
+  rank       Int          @default(1)
+
+  @@unique([ballotId, questionId, optionId])
+  @@index([questionId, optionId])
+  @@map("poll_votes")
+}

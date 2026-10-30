@@ -45,7 +45,7 @@ export default async function CandidacyDetailPage({
             <h2 className="font-heading text-lg font-semibold text-foreground">
               Informations personnelles
             </h2>
-            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <Row label="Âge" value={`${age} ans`} />
               <Row label="Nationalité" value={candidacy.nationality} />
               <Row label="Pays de résidence" value={candidacy.residenceCountry} />
@@ -59,7 +59,7 @@ export default async function CandidacyDetailPage({
             <h2 className="font-heading text-lg font-semibold text-foreground">
               Informations football
             </h2>
-            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <Row
                 label="Poste principal"
                 value={POSITION_LABELS[candidacy.mainPosition] ?? candidacy.mainPosition}
@@ -84,7 +84,7 @@ export default async function CandidacyDetailPage({
 
           <Card className="p-6">
             <h2 className="font-heading text-lg font-semibold text-foreground">Passeport</h2>
-            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <Row label="Possède un passeport" value={candidacy.hasPassport ? "Oui" : "Non"} />
               {candidacy.hasPassport && candidacy.passportCountry && (
                 <Row label="Pays du passeport" value={candidacy.passportCountry} />

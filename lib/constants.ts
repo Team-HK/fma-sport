@@ -241,3 +241,15 @@ export const INTERNATIONAL_COMPETITIONS = [
   "Europa League",
   "Coupe du monde",
 ] as const;
+
+/** The polls entry only exists in menus while at least one poll is public. */
+export const POLLS_LINK = { href: "/sondages", label: "Sondages" } as const;
+
+/** Inserts the polls link just before "Contact" when there is something to vote on. */
+export function withPollsLink<T>(links: readonly T[], hasPolls: boolean, link: T): T[] {
+  if (!hasPolls) return [...links];
+  const index = links.findIndex((item) => (item as { href?: string }).href === "/contact");
+  const copy = [...links];
+  copy.splice(index === -1 ? copy.length : index, 0, link);
+  return copy;
+}

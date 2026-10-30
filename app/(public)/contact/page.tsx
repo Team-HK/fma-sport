@@ -44,7 +44,7 @@ export default async function ContactPage() {
               <div className="mt-5 space-y-2.5 text-sm">
                 <a
                   href={`mailto:${settings?.email || "footballmediaafriquesport@gmail.com"}`}
-                  className="flex items-center gap-2.5 text-white/90 hover:text-white"
+                  className="flex min-h-11 items-center gap-2.5 text-white/90 hover:text-white"
                 >
                   <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
                   {settings?.email || "footballmediaafriquesport@gmail.com"}
@@ -54,13 +54,13 @@ export default async function ContactPage() {
                     <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="flex flex-wrap items-center gap-x-2">
                       {settings?.phone && (
-                        <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="hover:text-white">
+                        <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="inline-flex min-h-11 items-center hover:text-white">
                           {settings.phone}
                         </a>
                       )}
                       {settings?.phone && settings?.phone2 && <span className="text-white/50">/</span>}
                       {settings?.phone2 && (
-                        <a href={`tel:${settings.phone2.replace(/\s+/g, "")}`} className="hover:text-white">
+                        <a href={`tel:${settings.phone2.replace(/\s+/g, "")}`} className="inline-flex min-h-11 items-center hover:text-white">
                           {settings.phone2}
                         </a>
                       )}
@@ -72,7 +72,7 @@ export default async function ContactPage() {
                     href={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 text-white/90 hover:text-white"
+                    className="flex min-h-11 items-center gap-2.5 text-white/90 hover:text-white"
                   >
                     <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                     WhatsApp : {settings.whatsapp}

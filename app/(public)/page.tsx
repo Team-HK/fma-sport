@@ -57,7 +57,7 @@ export default async function HomePage() {
             <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
               À la une
             </h2>
-            <Link href="/actualites" className="text-sm font-semibold text-primary hover:underline">
+            <Link href="/actualites" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline">
               Toutes les actualités →
             </Link>
           </div>
@@ -117,11 +117,11 @@ export default async function HomePage() {
               <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
                 Nos talents
               </h2>
-              <Link href="/talents" className="text-sm font-semibold text-primary hover:underline">
+              <Link href="/talents" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline">
                 Tous les talents →
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
               {players.map((player) => (
                 <PlayerCard key={player.id} player={player} />
               ))}
@@ -135,7 +135,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">Vidéos</h2>
-            <Link href="/videos" className="text-sm font-semibold text-primary hover:underline">
+            <Link href="/videos" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline">
               Toutes les vidéos →
             </Link>
           </div>
@@ -154,7 +154,7 @@ export default async function HomePage() {
             <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
               Notre équipe
             </h2>
-            <Link href="/equipe" className="text-sm font-semibold text-accent hover:underline">
+            <Link href="/equipe" className="inline-flex min-h-11 items-center text-sm font-semibold text-accent hover:underline">
               Découvrir l&apos;équipe →
             </Link>
           </div>
