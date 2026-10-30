@@ -22,6 +22,7 @@ const questionSchema = z
     title: z.string().trim().min(1),
     picks: z.coerce.number().int().min(1).max(20),
     ranked: z.boolean(),
+    allowWriteIn: z.boolean().default(false),
     options: z.array(optionSchema).min(2),
   })
   .refine((q) => q.options.length >= q.picks, { message: "picks" });
@@ -33,7 +34,13 @@ const pollSchema = z.object({
   status: z.enum(["DRAFT", "OPEN", "CLOSED"]),
   startsAt: z.string().optional(),
   endsAt: z.string().optional(),
-  showResults: z.boolean(),
+  resultsVisibility: z.enum(["ALWAYS", "AFTER_VOTE", "AFTER_CLOSE", "NEVER"]),
+  identification: z.enum(["NONE", "EMAIL", "PHONE"]),
+  maxBallotsPerDevice: z.coerce.number().int().min(1).max(1000),
+  maxBallotsPerIpPerHour: z.coerce.number().int().min(1).max(10000),
+  minFillSeconds: z.coerce.number().int().min(0).max(60),
+  // When the form was opened: options voters added since then must not be deleted by this save.
+  loadedAt: z.string().optional(),
   questions: z.array(questionSchema).min(1),
 });
 
@@ -76,7 +83,12 @@ export async function savePoll(
     status: formData.get("status"),
     startsAt: formData.get("startsAt") || undefined,
     endsAt: formData.get("endsAt") || undefined,
-    showResults: formData.get("showResults") === "on",
+    resultsVisibility: formData.get("resultsVisibility"),
+    identification: formData.get("identification"),
+    maxBallotsPerDevice: formData.get("maxBallotsPerDevice") || 10,
+    maxBallotsPerIpPerHour: formData.get("maxBallotsPerIpPerHour") || 30,
+    minFillSeconds: formData.get("minFillSeconds") ?? 3,
+    loadedAt: formData.get("loadedAt") || undefined,
     questions: structure,
   });
   if (!parsed.success) {
@@ -102,8 +114,13 @@ export async function savePoll(
     status: data.status,
     startsAt,
     endsAt,
-    showResults: data.showResults,
+    resultsVisibility: data.resultsVisibility,
+    identification: data.identification,
+    maxBallotsPerDevice: data.maxBallotsPerDevice,
+    maxBallotsPerIpPerHour: data.maxBallotsPerIpPerHour,
+    minFillSeconds: data.minFillSeconds,
   };
+  const loadedAt = data.loadedAt ? new Date(data.loadedAt) : null;
 
   let pollId = id;
   try {
@@ -118,6 +135,7 @@ export async function savePoll(
                 title: q.title,
                 picks: q.picks,
                 ranked: q.ranked,
+                allowWriteIn: q.allowWriteIn,
                 order: qi,
                 options: {
                   create: q.options.map((o, oi) => ({
@@ -156,6 +174,7 @@ export async function savePoll(
               title: q.title,
               picks: q.picks,
               ranked: q.ranked,
+              allowWriteIn: q.allowWriteIn,
               order: qi,
               options: {
                 create: q.options.map((o, oi) => ({
@@ -172,12 +191,17 @@ export async function savePoll(
 
         await tx.pollQuestion.update({
           where: { id: current.id },
-          data: { title: q.title, picks: q.picks, ranked: q.ranked, order: qi },
+          data: { title: q.title, picks: q.picks, ranked: q.ranked, allowWriteIn: q.allowWriteIn, order: qi },
         });
         const currentOptionIds = new Set(current.options.map((o) => o.id));
         const keptOptionIds = q.options.map((o) => o.id).filter((v): v is string => !!v && currentOptionIds.has(v));
         await tx.pollOption.deleteMany({
-          where: { questionId: current.id, id: { notIn: keptOptionIds } },
+          where: {
+            questionId: current.id,
+            id: { notIn: keptOptionIds },
+            // Answers proposed by voters after this form was opened are kept.
+            ...(loadedAt ? { createdAt: { lte: loadedAt } } : {}),
+          },
         });
         for (const [oi, o] of q.options.entries()) {
           const fields = { name: o.name, club: o.club || null, photo: o.photo || null, order: oi };

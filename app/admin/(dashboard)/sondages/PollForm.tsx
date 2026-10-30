@@ -7,14 +7,21 @@ import { Input, Label, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageField } from "@/components/ui/ImageField";
 import { savePoll, type PollActionState } from "@/app/actions/admin/polls";
+import {
+  IDENTIFICATION_LABELS,
+  RESULTS_VISIBILITY_LABELS,
+  type PollIdentification,
+  type PollResultsVisibility,
+} from "@/lib/poll-rules";
 
-type OptionDraft = { key: string; id?: string; name: string; club: string; photo: string };
+type OptionDraft = { key: string; id?: string; name: string; club: string; photo: string; custom?: boolean };
 type QuestionDraft = {
   key: string;
   id?: string;
   title: string;
   picks: number;
   ranked: boolean;
+  allowWriteIn: boolean;
   options: OptionDraft[];
   bulk: string;
   showBulk: boolean;
@@ -28,14 +35,21 @@ export type PollFormData = {
   status: "DRAFT" | "OPEN" | "CLOSED";
   startsAt: Date | null;
   endsAt: Date | null;
-  showResults: boolean;
+  resultsVisibility: PollResultsVisibility;
+  identification: PollIdentification;
+  maxBallotsPerDevice: number;
+  maxBallotsPerIpPerHour: number;
+  minFillSeconds: number;
+  /** ISO time the form was loaded: voters' own answers added later are never deleted by this save. */
+  loadedAt: string;
   hasVotes: boolean;
   questions: {
     id: string;
     title: string;
     picks: number;
     ranked: boolean;
-    options: { id: string; name: string; club: string | null; photo: string | null }[];
+    allowWriteIn: boolean;
+    options: { id: string; name: string; club: string | null; photo: string | null; custom: boolean }[];
   }[];
 };
 
@@ -50,6 +64,7 @@ const newQuestion = (title = "", picks = 1): QuestionDraft => ({
   title,
   picks,
   ranked: true,
+  allowWriteIn: false,
   options: [],
   bulk: "",
   showBulk: false,
@@ -84,6 +99,7 @@ export function PollForm({
           title: q.title,
           picks: q.picks,
           ranked: q.ranked,
+          allowWriteIn: q.allowWriteIn,
           bulk: "",
           showBulk: false,
           options: q.options.map((o) => ({
@@ -92,6 +108,7 @@ export function PollForm({
             name: o.name,
             club: o.club ?? "",
             photo: o.photo ?? "",
+            custom: o.custom,
           })),
         }))
       : [newQuestion()]
@@ -152,6 +169,7 @@ export function PollForm({
       title: q.title,
       picks: q.picks,
       ranked: q.ranked,
+      allowWriteIn: q.allowWriteIn,
       options: q.options.map((o) => ({ id: o.id, name: o.name, club: o.club, photo: o.photo })),
     }))
   );
@@ -164,6 +182,7 @@ export function PollForm({
         </p>
       )}
       <input type="hidden" name="structure" value={structure} />
+      <input type="hidden" name="loadedAt" value={poll?.loadedAt ?? ""} />
 
       <section className="space-y-4">
         <div>
@@ -199,10 +218,85 @@ export function PollForm({
             <Input id="endsAt" name="endsAt" type="datetime-local" defaultValue={toLocalInput(poll?.endsAt ?? null)} />
           </div>
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
-          <input type="checkbox" name="showResults" defaultChecked={poll?.showResults ?? true} />
-          Afficher le classement aux visiteurs après leur vote
-        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="resultsVisibility">Résultats visibles pour les visiteurs</Label>
+            <select
+              id="resultsVisibility"
+              name="resultsVisibility"
+              defaultValue={poll?.resultsVisibility ?? "AFTER_VOTE"}
+              className={selectClass}
+            >
+              {(Object.keys(RESULTS_VISIBILITY_LABELS) as PollResultsVisibility[]).map((value) => (
+                <option key={value} value={value}>
+                  {RESULTS_VISIBILITY_LABELS[value]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label htmlFor="identification">Identification des votants</Label>
+            <select
+              id="identification"
+              name="identification"
+              defaultValue={poll?.identification ?? "NONE"}
+              className={selectClass}
+            >
+              {(Object.keys(IDENTIFICATION_LABELS) as PollIdentification[]).map((value) => (
+                <option key={value} value={value}>
+                  {IDENTIFICATION_LABELS[value]}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Un seul vote par adresse ou numéro. Il est enregistré sous forme chiffrée, jamais en clair.
+            </p>
+          </div>
+        </div>
+
+        <details className="rounded-xl border border-border bg-muted/40 p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-foreground">
+            Protection contre les abus (avancé)
+          </summary>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            <div>
+              <Label htmlFor="maxBallotsPerDevice">Votes max par appareil</Label>
+              <Input
+                id="maxBallotsPerDevice"
+                name="maxBallotsPerDevice"
+                type="number"
+                min={1}
+                max={1000}
+                defaultValue={poll?.maxBallotsPerDevice ?? 10}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">Même connexion et même navigateur.</p>
+            </div>
+            <div>
+              <Label htmlFor="maxBallotsPerIpPerHour">Votes max par connexion et par heure</Label>
+              <Input
+                id="maxBallotsPerIpPerHour"
+                name="maxBallotsPerIpPerHour"
+                type="number"
+                min={1}
+                max={10000}
+                defaultValue={poll?.maxBallotsPerIpPerHour ?? 30}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">Sur mobile, plusieurs personnes partagent une connexion.</p>
+            </div>
+            <div>
+              <Label htmlFor="minFillSeconds">Délai minimum pour voter (s)</Label>
+              <Input
+                id="minFillSeconds"
+                name="minFillSeconds"
+                type="number"
+                min={0}
+                max={60}
+                defaultValue={poll?.minFillSeconds ?? 3}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">0 pour désactiver. Bloque les robots.</p>
+            </div>
+          </div>
+        </details>
       </section>
 
       <section className="space-y-4">
@@ -296,6 +390,15 @@ export function PollForm({
                   : `Le visiteur choisit ${q.picks} réponses : chaque réponse compte 1 point.`}
             </p>
 
+            <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-foreground">
+              <input
+                type="checkbox"
+                checked={q.allowWriteIn}
+                onChange={(e) => updateQuestion(q.key, { allowWriteIn: e.target.checked })}
+              />
+              Les visiteurs peuvent proposer leur propre réponse (saisie libre)
+            </label>
+
             <div className="mt-4 space-y-2">
               <p className="text-sm font-medium text-foreground">
                 Réponses proposées ({q.options.length}){q.options.length < q.picks && (
@@ -305,6 +408,11 @@ export function PollForm({
               {q.options.map((o, oi) => (
                 <div key={o.key} className="flex flex-wrap items-center gap-2 rounded-lg bg-muted/50 p-2">
                   <span className="w-6 text-center text-xs text-muted-foreground">{oi + 1}</span>
+                  {o.custom && (
+                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">
+                      Proposée par un votant
+                    </span>
+                  )}
                   <Input
                     aria-label={`Réponse ${oi + 1}`}
                     className="min-w-[160px] flex-1"

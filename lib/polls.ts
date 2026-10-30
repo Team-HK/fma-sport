@@ -1,15 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { cachedQuery } from "@/lib/cache";
 
-type PollWindow = { status: string; startsAt: Date | null; endsAt: Date | null };
-
-/** A poll accepts votes while it is OPEN and inside its optional start/end dates. */
-export function isPollOpen(poll: PollWindow, now = new Date()): boolean {
-  if (poll.status !== "OPEN") return false;
-  if (poll.startsAt && poll.startsAt > now) return false;
-  if (poll.endsAt && poll.endsAt < now) return false;
-  return true;
-}
+export { isPollOpen } from "@/lib/poll-rules";
 
 const questionInclude = {
   questions: {

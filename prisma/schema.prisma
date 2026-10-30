@@ -486,6 +486,21 @@ enum PollStatus {
   CLOSED
 }
 
+// Who can see the standings, and when. Always chosen in the back-office.
+enum PollResultsVisibility {
+  ALWAYS       // visible to everyone, even before voting
+  AFTER_VOTE   // visible once the visitor has voted (and when the poll is closed)
+  AFTER_CLOSE  // visible only once the poll is closed
+  NEVER        // admin only
+}
+
+// How voters are identified, on top of the per-browser token.
+enum PollIdentification {
+  NONE   // anonymous
+  EMAIL  // an e-mail address is required (one vote per address)
+  PHONE  // a phone number is required (one vote per number)
+}
+
 model Poll {
   id            String         @id @default(cuid())
   title         String
@@ -495,8 +510,13 @@ model Poll {
   status        PollStatus     @default(DRAFT)
   startsAt      DateTime?
   endsAt        DateTime?
-  // When false, voters don't see the standings (the admin always does).
-  showResults   Boolean        @default(true)
+  resultsVisibility PollResultsVisibility @default(AFTER_VOTE)
+  identification    PollIdentification    @default(NONE)
+  // Abuse limits (all editable in the back-office).
+  maxBallotsPerDevice    Int @default(10)
+  maxBallotsPerIpPerHour Int @default(30)
+  // A ballot submitted faster than this is treated as a bot. 0 disables the check.
+  minFillSeconds         Int @default(3)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
@@ -517,6 +537,8 @@ model PollQuestion {
   picks     Int          @default(1)
   // Ranked: 1st place is worth `picks` points, last place 1 point (Borda count).
   ranked    Boolean      @default(true)
+  // Voters may type their own answer in addition to the proposed ones.
+  allowWriteIn Boolean   @default(false)
   order     Int          @default(0)
 
   options   PollOption[]
@@ -534,6 +556,9 @@ model PollOption {
   club       String?
   photo      String?
   order      Int          @default(0)
+  // Proposed by a voter (write-in) rather than created by the admin.
+  custom     Boolean      @default(false)
+  createdAt  DateTime     @default(now())
 
   votes      PollVote[]
 
@@ -552,11 +577,14 @@ model PollBallot {
   ipHash    String?
   // Salted hash of IP + browser: a looser cap catches "clear cookies and vote again".
   deviceHash String?
+  // Salted hash of the e-mail / phone when the poll requires identification (never stored in clear).
+  contactHash String?
   createdAt DateTime   @default(now())
 
   votes     PollVote[]
 
   @@unique([pollId, voterHash])
+  @@unique([pollId, contactHash])
   @@index([pollId, ipHash, createdAt])
   @@index([pollId, deviceHash])
   @@map("poll_ballots")

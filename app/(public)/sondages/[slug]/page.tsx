@@ -100,7 +100,8 @@ export default async function PollPage({ params }: { params: Promise<Params> }) 
         <PollVoter
           poll={{
             id: poll.id,
-            showResults: poll.showResults,
+            resultsVisibility: poll.resultsVisibility,
+            identification: poll.identification,
             // Evaluated here so the cached page doesn't need the clock on the client.
             open,
             endsAt: poll.endsAt ? poll.endsAt.toISOString() : null,
@@ -109,6 +110,7 @@ export default async function PollPage({ params }: { params: Promise<Params> }) 
               title: q.title,
               picks: q.picks,
               ranked: q.ranked,
+              allowWriteIn: q.allowWriteIn,
               options: q.options.map((o) => ({ id: o.id, name: o.name, club: o.club, photo: o.photo })),
             })),
           }}

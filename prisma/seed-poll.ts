@@ -43,6 +43,7 @@ const questions = [
     title: "Quels contenus voulez-vous voir en plus ? (2 choix)",
     picks: 2,
     ranked: false,
+    allowWriteIn: true,
     options: [
       ["Interviews de joueurs", null],
       ["Reportages terrain", null],
@@ -66,12 +67,14 @@ async function main() {
       description:
         "Un sondage d'exemple pour tester le vote : un seul vote par personne. Modifiez-le ou supprimez-le depuis le back-office.",
       status: "OPEN",
-      showResults: true,
+      resultsVisibility: "AFTER_VOTE",
+      identification: "NONE",
       questions: {
         create: questions.map((q, qi) => ({
           title: q.title,
           picks: q.picks,
           ranked: q.ranked,
+          allowWriteIn: "allowWriteIn" in q ? q.allowWriteIn : false,
           order: qi,
           options: {
             create: q.options.map(([name, club], oi) => ({ name, club, order: oi })),

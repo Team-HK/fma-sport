@@ -2,19 +2,28 @@
 
 import { useActionState, useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowUp, Check, CheckCircle2, Clock, Loader2, ShieldCheck, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, CheckCircle2, Clock, Loader2, Plus, ShieldCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { PollResults } from "@/components/sections/PollResults";
 import { submitPollVote, type PollVoteState } from "@/app/actions/poll-vote";
 import { cn } from "@/lib/utils";
+import { canSeeResults, type PollIdentification, type PollResultsVisibility } from "@/lib/poll-rules";
 import type { PollResults as PollResultsData } from "@/lib/polls";
 
 type Option = { id: string; name: string; club: string | null; photo: string | null };
-type Question = { id: string; title: string; picks: number; ranked: boolean; options: Option[] };
+type Question = {
+  id: string;
+  title: string;
+  picks: number;
+  ranked: boolean;
+  allowWriteIn: boolean;
+  options: Option[];
+};
 
 type PollData = {
   id: string;
-  showResults: boolean;
+  resultsVisibility: PollResultsVisibility;
+  identification: PollIdentification;
   open: boolean;
   endsAt: string | null;
   questions: Question[];
@@ -84,6 +93,10 @@ export function PollVoter({
   );
   const [results, setResults] = useState<PollResultsData | null>(null);
   const [hint, setHint] = useState<string | null>(null);
+  const [contact, setContact] = useState("");
+  // Answers typed by the visitor (write-in), per question. Ids look like `new:<text>`.
+  const [extras, setExtras] = useState<Record<string, Option[]>>({});
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
   // Set once on mount (after hydration): when the visitor started filling the ballot.
   const [startedAt, setStartedAt] = useState(0);
   useEffect(() => setStartedAt(Date.now()), []);
@@ -100,7 +113,7 @@ export function PollVoter({
     }
   }, [state, storageKey]);
 
-  const showResultsNow = poll.showResults && (alreadyVoted || !poll.open);
+  const showResultsNow = canSeeResults(poll.resultsVisibility, { open: poll.open, voted: alreadyVoted });
   useEffect(() => {
     if (!showResultsNow) return;
     let cancelled = false;
@@ -133,6 +146,37 @@ export function PollVoter({
     }
   }
 
+  const writeInCount = Object.values(extras).reduce((sum, list) => sum + list.length, 0);
+
+  function addWriteIn(question: Question) {
+    const text = (drafts[question.id] ?? "").replace(/\s+/g, " ").trim().slice(0, 60);
+    if (text.length < 2) {
+      setHint("Saisissez au moins 2 caractères pour votre réponse.");
+      return;
+    }
+    const known = [...question.options, ...(extras[question.id] ?? [])].find(
+      (o) => o.name.toLowerCase() === text.toLowerCase()
+    );
+    if (known) {
+      if (!(choices[question.id] ?? []).includes(known.id)) toggle(question, known.id);
+    } else {
+      if (writeInCount >= 3) {
+        setHint("Vous pouvez proposer 3 réponses libres au maximum.");
+        return;
+      }
+      const picked = choices[question.id] ?? [];
+      if (question.picks > 1 && picked.length >= question.picks) {
+        setHint(`« ${question.title} » : ${question.picks} choix maximum. Retirez-en un pour en ajouter un autre.`);
+        return;
+      }
+      const option: Option = { id: `new:${text}`, name: text, club: null, photo: null };
+      setExtras({ ...extras, [question.id]: [...(extras[question.id] ?? []), option] });
+      setChoices({ ...choices, [question.id]: question.picks === 1 ? [option.id] : [...picked, option.id] });
+      setHint(null);
+    }
+    setDrafts({ ...drafts, [question.id]: "" });
+  }
+
   function move(questionId: string, index: number, direction: -1 | 1) {
     const list = [...(choices[questionId] ?? [])];
     const target = index + direction;
@@ -159,7 +203,7 @@ export function PollVoter({
             </p>
           </div>
         </div>
-        {poll.showResults ? (
+        {showResultsNow ? (
           results ? (
             <PollResults results={results} />
           ) : (
@@ -169,7 +213,9 @@ export function PollVoter({
             </p>
           )
         ) : (
-          <p className="text-sm text-muted-foreground">Les résultats seront annoncés prochainement.</p>
+          poll.resultsVisibility !== "NEVER" && (
+            <p className="text-sm text-muted-foreground">Les résultats seront publiés à la clôture du sondage.</p>
+          )
         )}
       </div>
     );
@@ -181,14 +227,21 @@ export function PollVoter({
   });
   const partial = progress.find((p) => p.partial);
   const completeCount = progress.filter((p) => p.complete).length;
-  const canSubmit = completeCount > 0 && !partial;
+  const needsContact = poll.identification !== "NONE";
+  const contactOk = !needsContact || contact.trim().length > 0;
+  const canSubmit = completeCount > 0 && !partial && contactOk;
   const blocker = partial
     ? `Complétez « ${partial.question.title} » (${partial.count}/${partial.question.picks}) ou retirez vos choix.`
     : completeCount === 0
       ? "Faites au moins un choix pour voter."
-      : null;
+      : !contactOk
+        ? poll.identification === "EMAIL"
+          ? "Saisissez votre adresse e-mail pour voter."
+          : "Saisissez votre numéro de téléphone pour voter."
+        : null;
 
   return (
+    <div className="space-y-10">
     <form action={formAction} className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
       {/* Honeypot: invisible to people, filled in by bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -241,7 +294,7 @@ export function PollVoter({
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {question.options.map((option) => {
+                {[...question.options, ...(extras[question.id] ?? [])].map((option) => {
                   const rank = picked.indexOf(option.id) + 1;
                   const selected = rank > 0;
                   return (
@@ -280,12 +333,40 @@ export function PollVoter({
                 })}
               </div>
 
+              {question.allowWriteIn && (
+                <div className="mt-4 flex gap-2">
+                  <input
+                    type="text"
+                    maxLength={60}
+                    value={drafts[question.id] ?? ""}
+                    onChange={(e) => setDrafts({ ...drafts, [question.id]: e.target.value })}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addWriteIn(question);
+                      }
+                    }}
+                    placeholder="Une autre réponse ? Saisissez-la ici"
+                    aria-label={`${question.title} : proposer votre propre réponse`}
+                    className="min-h-11 min-w-0 flex-1 rounded-xl border border-dashed border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addWriteIn(question)}
+                    className="flex min-h-11 cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-muted"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden="true" />
+                    Ajouter
+                  </button>
+                </div>
+              )}
+
               {question.ranked && picked.length > 1 && (
                 <div className="mt-5 rounded-xl bg-muted/60 p-4">
                   <p className="text-sm font-semibold text-foreground">Mon classement</p>
                   <ol className="mt-2 space-y-1.5">
                     {picked.map((id, index) => {
-                      const option = question.options.find((o) => o.id === id);
+                      const option = [...question.options, ...(extras[question.id] ?? [])].find((o) => o.id === id);
                       if (!option) return null;
                       return (
                         <li key={id} className="flex items-center gap-2 rounded-lg bg-card px-3 py-2 text-sm">
@@ -349,6 +430,29 @@ export function PollVoter({
           ))}
         </ul>
 
+        {needsContact && (
+          <div>
+            <label htmlFor="poll-contact" className="mb-1.5 block text-sm font-medium text-foreground">
+              {poll.identification === "EMAIL" ? "Votre adresse e-mail *" : "Votre numéro de téléphone *"}
+            </label>
+            <input
+              id="poll-contact"
+              name="contact"
+              type={poll.identification === "EMAIL" ? "email" : "tel"}
+              inputMode={poll.identification === "EMAIL" ? "email" : "tel"}
+              autoComplete={poll.identification === "EMAIL" ? "email" : "tel"}
+              required
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              placeholder={poll.identification === "EMAIL" ? "vous@exemple.com" : "+221 77 000 00 00"}
+              className="min-h-11 w-full rounded-xl border border-border bg-card px-4 text-base text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30"
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Sert uniquement à éviter les votes multiples. Il n&apos;est pas conservé en clair.
+            </p>
+          </div>
+        )}
+
         {(hint || blocker) && (
           <p className="text-sm text-muted-foreground" role="note">
             {hint ?? blocker}
@@ -386,5 +490,21 @@ export function PollVoter({
         </ul>
       </aside>
     </form>
+    {showResultsNow && (
+      <section aria-labelledby="live-results">
+        <h2 id="live-results" className="mb-4 font-heading text-xl font-semibold text-foreground">
+          Résultats en direct
+        </h2>
+        {results ? (
+          <PollResults results={results} />
+        ) : (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            Chargement des résultats…
+          </p>
+        )}
+      </section>
+    )}
+    </div>
   );
 }

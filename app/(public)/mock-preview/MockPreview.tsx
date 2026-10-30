@@ -18,6 +18,7 @@ type Q = {
   title: string;
   picks: number;
   ranked: boolean;
+  allowWriteIn: boolean;
   options: { id: string; name: string; club: string | null; photo: string | null }[];
 };
 
@@ -29,6 +30,7 @@ const QUESTIONS: Q[] = [
     title: "Quel est le meilleur joueur du mois ?",
     picks: 1,
     ranked: true,
+    allowWriteIn: false,
     options: [
       opt("best", 1, "Ibrahima Ndiaye", "Dakar Sacré-Cœur"),
       opt("best", 2, "Moussa Diallo", "Teungueth FC"),
@@ -41,6 +43,7 @@ const QUESTIONS: Q[] = [
     title: "Top 3 des meilleurs buteurs",
     picks: 3,
     ranked: true,
+    allowWriteIn: false,
     options: [
       opt("top", 1, "Mamadou Gueye", "Jaraaf"),
       opt("top", 2, "Pape Thiam", "Casa Sports"),
@@ -55,6 +58,7 @@ const QUESTIONS: Q[] = [
     title: "Quels contenus voulez-vous voir en plus ? (2 choix)",
     picks: 2,
     ranked: false,
+    allowWriteIn: true,
     options: [
       opt("content", 1, "Interviews de joueurs", null),
       opt("content", 2, "Reportages terrain", null),
@@ -66,7 +70,8 @@ const QUESTIONS: Q[] = [
 
 const POLL = {
   id: "mock-poll",
-  showResults: true,
+  resultsVisibility: "AFTER_VOTE" as const,
+  identification: "NONE" as const,
   open: true,
   endsAt: "2026-12-31T18:00:00.000Z" as string | null,
   questions: QUESTIONS,
@@ -117,9 +122,14 @@ const ADMIN_POLL: PollFormData = {
   status: "OPEN",
   startsAt: null,
   endsAt: null,
-  showResults: true,
+  resultsVisibility: "AFTER_VOTE" as const,
+  identification: "NONE" as const,
+  maxBallotsPerDevice: 10,
+  maxBallotsPerIpPerHour: 30,
+  minFillSeconds: 3,
+  loadedAt: "2026-01-01T00:00:00.000Z",
   hasVotes: true,
-  questions: QUESTIONS.map((q) => ({ ...q })),
+  questions: QUESTIONS.map((q) => ({ ...q, options: q.options.map((o) => ({ ...o, custom: false })) })),
 };
 
 const SAMPLE_ARTICLE = `

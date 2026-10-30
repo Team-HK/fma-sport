@@ -85,14 +85,26 @@ export default async function EditPollPage({ params }: { params: Promise<{ id: s
             status: poll.status,
             startsAt: poll.startsAt,
             endsAt: poll.endsAt,
-            showResults: poll.showResults,
+            resultsVisibility: poll.resultsVisibility,
+            identification: poll.identification,
+            maxBallotsPerDevice: poll.maxBallotsPerDevice,
+            maxBallotsPerIpPerHour: poll.maxBallotsPerIpPerHour,
+            minFillSeconds: poll.minFillSeconds,
+            loadedAt: new Date().toISOString(),
             hasVotes: results.totalBallots > 0,
             questions: poll.questions.map((q) => ({
               id: q.id,
               title: q.title,
               picks: q.picks,
               ranked: q.ranked,
-              options: q.options.map((o) => ({ id: o.id, name: o.name, club: o.club, photo: o.photo })),
+              allowWriteIn: q.allowWriteIn,
+              options: q.options.map((o) => ({
+                id: o.id,
+                name: o.name,
+                club: o.club,
+                photo: o.photo,
+                custom: o.custom,
+              })),
             })),
           }}
         />
