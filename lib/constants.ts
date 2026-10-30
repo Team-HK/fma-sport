@@ -11,6 +11,7 @@ export const NAV_LINKS = [
   { href: "/equipe", label: "Notre équipe" },
   { href: "/devenir-joueur", label: "Devenir joueur" },
   { href: "/evenements", label: "Événements" },
+  { href: "/sondages", label: "Sondages" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -40,6 +41,7 @@ export const DESKTOP_NAV_ITEMS = [
     ],
   },
   { type: "link", href: "/evenements", label: "Événements" },
+  { type: "link", href: "/sondages", label: "Sondages" },
   { type: "link", href: "/contact", label: "Contact" },
 ] as const;
 
@@ -50,6 +52,7 @@ export const FOOTER_LINKS = [
   { href: "/management", label: "Management sportif" },
   { href: "/equipe", label: "Notre équipe" },
   { href: "/devenir-joueur", label: "Devenir joueur" },
+  { href: "/sondages", label: "Sondages" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

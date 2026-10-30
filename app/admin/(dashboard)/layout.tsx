@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
-import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, Settings2, ShieldCheck, UserCog, Contact2 } from "lucide-react";
+import { LayoutDashboard, Newspaper, Users, Video, CalendarDays, Megaphone, Mail, LogOut, ExternalLink, Settings2, ShieldCheck, UserCog, Contact2, Vote } from "lucide-react";
 import { AdminSidebarLink } from "@/components/admin/AdminSidebarLink";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { Logo } from "@/components/ui/Logo";
@@ -15,6 +15,7 @@ const ADMIN_NAV = [
   { href: "/admin/equipe", label: "Équipe", icon: Contact2 },
   { href: "/admin/videos", label: "Vidéos", icon: Video },
   { href: "/admin/evenements", label: "Événements", icon: CalendarDays },
+  { href: "/admin/sondages", label: "Sondages", icon: Vote },
   { href: "/admin/publicites", label: "Publicités", icon: Megaphone },
   { href: "/admin/messages", label: "Messages", icon: Mail },
   { href: "/admin/securite", label: "Sécurité", icon: ShieldCheck },

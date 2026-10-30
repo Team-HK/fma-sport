@@ -25,14 +25,21 @@ export function ImageField({
   label,
   defaultValue,
   accept = "image/*",
+  onChange,
 }: {
   id: string;
   name: string;
   label: string;
   defaultValue?: string | null;
   accept?: string;
+  /** Called whenever the value changes (upload, link typed, removal). */
+  onChange?: (value: string) => void;
 }) {
-  const [value, setValue] = useState(defaultValue ?? "");
+  const [value, setRawValue] = useState(defaultValue ?? "");
+  const setValue = (next: string) => {
+    setRawValue(next);
+    onChange?.(next);
+  };
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);

@@ -6,6 +6,8 @@ export const STATUS_META: Record<string, { label: string; tone: StatusTone }> = 
   SCHEDULED: { label: "Programmé", tone: "info" },
   PUBLISHED: { label: "Publié", tone: "success" },
   RESULTS_PUBLISHED: { label: "Résultats publiés", tone: "success" },
+  OPEN: { label: "Ouvert aux votes", tone: "success" },
+  CLOSED: { label: "Clos", tone: "neutral" },
 
   // Candidacies
   PENDING: { label: "En attente", tone: "warning" },
