@@ -50,7 +50,7 @@ export function HeroSlideForm({ slide, onSuccess }: { slide?: HeroSlide; onSucce
         <Input id="subtitle" name="subtitle" defaultValue={slide?.subtitle ?? ""} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="ctaLabel">Texte du bouton</Label>
           <Input id="ctaLabel" name="ctaLabel" defaultValue={slide?.ctaLabel ?? ""} />
@@ -66,7 +66,7 @@ export function HeroSlideForm({ slide, onSuccess }: { slide?: HeroSlide; onSucce
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="order">Ordre d&apos;affichage</Label>
           <Input

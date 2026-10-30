@@ -97,7 +97,7 @@ export function VideoForm({ video, players = [], onSuccess }: { video?: Video; p
 
       <ImageField id="thumbnail" name="thumbnail" label="Miniature" defaultValue={video?.thumbnail} />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="category">Catégorie *</Label>
           <select

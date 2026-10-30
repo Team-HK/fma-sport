@@ -32,7 +32,7 @@ export function EventForm({ event, onSuccess }: { event?: Event; onSuccess?: () 
         <Label htmlFor="name">Nom de l&apos;événement *</Label>
         <Input id="name" name="name" defaultValue={event?.name} required />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="date">Date *</Label>
           <Input
@@ -48,7 +48,7 @@ export function EventForm({ event, onSuccess }: { event?: Event; onSuccess?: () 
           <Input id="location" name="location" defaultValue={event?.location} required />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="price">Prix</Label>
           <Input id="price" name="price" defaultValue={event?.price ?? ""} />

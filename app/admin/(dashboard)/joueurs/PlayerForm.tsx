@@ -48,7 +48,7 @@ export function PlayerForm({
             content: (
               <div className="space-y-4">
                 <ImageField id="photo" name="photo" label="Photo" defaultValue={player?.photo} />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="firstName">Prénom *</Label>
                     <Input id="firstName" name="firstName" defaultValue={player?.firstName} required />
@@ -58,7 +58,7 @@ export function PlayerForm({
                     <Input id="lastName" name="lastName" defaultValue={player?.lastName} required />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="nationality">Nationalité *</Label>
                     <Input id="nationality" name="nationality" defaultValue={player?.nationality} required />
@@ -125,7 +125,7 @@ export function PlayerForm({
             label: "Football",
             content: (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="position">Poste principal *</Label>
                     <select
@@ -160,7 +160,7 @@ export function PlayerForm({
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div>
                     <Label htmlFor="strongFoot">Pied fort *</Label>
                     <select
@@ -187,7 +187,7 @@ export function PlayerForm({
                     <Input id="weight" name="weight" type="number" defaultValue={player?.weight ?? ""} />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="club">Club actuel</Label>
                     <Input id="club" name="club" defaultValue={player?.club ?? ""} />

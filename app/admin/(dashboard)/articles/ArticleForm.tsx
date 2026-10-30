@@ -101,7 +101,7 @@ export function ArticleForm({
             label: "Publication & SEO",
             content: (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="category">Catégorie *</Label>
                     <select
@@ -134,7 +134,7 @@ export function ArticleForm({
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="country">Pays (facultatif)</Label>
                     <Input id="country" name="country" defaultValue={article?.country ?? ""} />
