@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import {
@@ -23,7 +24,10 @@ function slugify(text: string): string {
 async function main() {
   console.log("Seeding FMA SPORT (données fictives, contexte Sénégal)...");
 
-  const passwordHash = await bcrypt.hash("FmaSport2026!", 10);
+  // The admin password is never stored in the repository: take it from SEED_ADMIN_PASSWORD,
+  // or generate a random one and show it once at the end.
+  const generatedPassword = process.env.SEED_ADMIN_PASSWORD ? null : randomBytes(18).toString("base64url");
+  const passwordHash = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD ?? generatedPassword!, 10);
   const admin = await prisma.adminUser.upsert({
     where: { email: "admin@fmasport.test" },
     update: {},
@@ -468,7 +472,11 @@ async function main() {
   }
 
   console.log("Seed terminé.");
-  console.log(`Compte admin : admin@fmasport.test / FmaSport2026!`);
+  console.log(
+    generatedPassword
+      ? `Compte admin : admin@fmasport.test / ${generatedPassword}  (généré, affiché une seule fois — changez-le)`
+      : "Compte admin : admin@fmasport.test (mot de passe défini par SEED_ADMIN_PASSWORD)"
+  );
 }
 
 main()

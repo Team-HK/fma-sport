@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
+import { getPublicPolls } from "@/lib/polls";
 import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -36,6 +37,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [[], [], []] as [never[], never[], never[]];
   });
 
+  const hasPolls = ((await getPublicPolls().catch(() => [])) ?? []).length > 0;
+
   const staticRoutes = [
     "",
     "/actualites",
@@ -47,8 +50,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/equipe",
     "/devenir-joueur",
     "/evenements",
-    "/sondages",
     "/publicite",
+    ...(hasPolls ? ["/sondages"] : []),
     "/contact",
     "/mentions-legales",
     "/politique-de-confidentialite",
