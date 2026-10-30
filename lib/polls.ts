@@ -10,19 +10,40 @@ const questionInclude = {
   },
 };
 
+/**
+ * The poll tables are created by a one-off SQL step (see prisma/sql). Until that has run,
+ * Prisma answers P2021/P2022 ("table/column does not exist"): treat that as "no polls"
+ * instead of failing every page, and let the cache remember it for a few minutes so the
+ * header and footer don't retry a failing query on each request.
+ */
+function isMissingPollSchema(error: unknown) {
+  const code = (error as { code?: string } | null)?.code;
+  return code === "P2021" || code === "P2022";
+}
+
 /** Polls shown on the public site (not drafts, not trashed). */
 export const getPublicPolls = cachedQuery("getPublicPolls", async () => {
-  return prisma.poll.findMany({
-    where: { status: { in: ["OPEN", "CLOSED"] }, deletedAt: null },
-    orderBy: { createdAt: "desc" },
-    include: { questions: { select: { id: true } } },
-  });
+  try {
+    return await prisma.poll.findMany({
+      where: { status: { in: ["OPEN", "CLOSED"] }, deletedAt: null },
+      orderBy: { createdAt: "desc" },
+      include: { questions: { select: { id: true } } },
+    });
+  } catch (error) {
+    if (isMissingPollSchema(error)) return [];
+    throw error;
+  }
 });
 
 export const getPublicPollBySlug = cachedQuery("getPublicPollBySlug", async (slug: string) => {
-  const poll = await prisma.poll.findUnique({ where: { slug }, include: questionInclude });
-  if (!poll || poll.deletedAt || poll.status === "DRAFT") return null;
-  return poll;
+  try {
+    const poll = await prisma.poll.findUnique({ where: { slug }, include: questionInclude });
+    if (!poll || poll.deletedAt || poll.status === "DRAFT") return null;
+    return poll;
+  } catch (error) {
+    if (isMissingPollSchema(error)) return null;
+    throw error;
+  }
 });
 
 export type PollWithQuestions = NonNullable<Awaited<ReturnType<typeof getPublicPollBySlug>>>;

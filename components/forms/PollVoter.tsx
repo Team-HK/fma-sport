@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, useSyncExternalStore } from "react";
+import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUp, Check, CheckCircle2, Clock, Loader2, Plus, ShieldCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -97,9 +97,11 @@ export function PollVoter({
   // Answers typed by the visitor (write-in), per question. Ids look like `new:<text>`.
   const [extras, setExtras] = useState<Record<string, Option[]>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
-  // Set once on mount (after hydration): when the visitor started filling the ballot.
-  const [startedAt, setStartedAt] = useState(0);
-  useEffect(() => setStartedAt(Date.now()), []);
+  // Stamped once on mount (after hydration): when the visitor started filling the ballot.
+  const startedAtRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (startedAtRef.current) startedAtRef.current.value = String(Date.now());
+  }, []);
 
   const alreadyVoted = votedBefore || state.success || /déjà voté/i.test(state.message);
 
@@ -250,7 +252,7 @@ export function PollVoter({
           <input type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
         </label>
       </div>
-      <input type="hidden" name="startedAt" value={startedAt} />
+      <input ref={startedAtRef} type="hidden" name="startedAt" defaultValue="" />
       {poll.questions.flatMap((q) =>
         Array.from({ length: q.picks }, (_, i) => (
           <input key={`${q.id}-${i}`} type="hidden" name={`q_${q.id}_${i + 1}`} value={choices[q.id]?.[i] ?? ""} />

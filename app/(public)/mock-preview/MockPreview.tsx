@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { PollResults } from "@/components/sections/PollResults";
 import { PollVoter } from "@/components/forms/PollVoter";
@@ -152,7 +152,7 @@ const TABS = [
 
 export function MockPreview() {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("vote");
-  const ballot = useRef<Record<string, string[]> | null>(null);
+  const [ballot, setBallot] = useState<Record<string, string[]> | null>(null);
 
   // Same rules as the real server action, against local memory instead of the database.
   const submit = useCallback(async (_prev: PollVoteState, formData: FormData): Promise<PollVoteState> => {
@@ -174,14 +174,14 @@ export function MockPreview() {
       picked[q.id] = chosen;
     }
     if (Object.keys(picked).length === 0) return { success: false, message: "Choisissez au moins une réponse pour voter." };
-    ballot.current = picked;
+    setBallot(picked);
     return { success: true, message: "Merci ! Votre vote a bien été pris en compte." };
   }, []);
 
   const loadResults = useCallback(async () => {
     await new Promise((resolve) => setTimeout(resolve, 400));
-    return buildResults(ballot.current);
-  }, []);
+    return buildResults(ballot);
+  }, [ballot]);
 
   const saveAdmin = useCallback(async (): Promise<PollActionState> => {
     await new Promise((resolve) => setTimeout(resolve, 700));
@@ -228,7 +228,7 @@ export function MockPreview() {
 
           {tab === "results" && (
             <div>
-              <PollResults results={buildResults(ballot.current)} />
+              <PollResults results={buildResults(ballot)} />
             </div>
           )}
 
