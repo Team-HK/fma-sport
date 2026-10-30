@@ -13,46 +13,46 @@ export function PlayerCard({ player }: { player: Player }) {
   );
 
   return (
-    <Card className="flex flex-col overflow-hidden p-0">
-      <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+    <Card className="flex flex-row overflow-hidden p-0 sm:flex-col">
+      <div className="relative min-h-[220px] w-[38%] shrink-0 overflow-hidden bg-muted sm:min-h-0 sm:w-auto sm:aspect-[4/5]">
         {player.photo ? (
           <Image
             src={player.photo}
             alt={`${player.firstName} ${player.lastName}, joueur${player.club ? ` ${player.club}` : ""} — FMA SPORT`}
             fill
-            sizes="(max-width: 768px) 50vw, 25vw"
+            sizes="(max-width: 640px) 40vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover"
           />
         ) : (
           <PlayerPhotoPlaceholder player={player} />
         )}
       </div>
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex min-w-0 flex-1 flex-col p-4">
         <h3 className="font-heading text-lg font-semibold text-foreground">
           {player.firstName} {player.lastName}{" "}
           <Flag emoji={player.flag} className="ml-1 h-3.5" />
         </h3>
-        <dl className="mt-2 space-y-1 text-sm text-muted-foreground">
-          <div className="flex justify-between">
-            <dt>Âge</dt>
-            <dd>{age} ans</dd>
+        <dl className="mb-4 mt-2 space-y-1 text-sm text-muted-foreground">
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0">Âge</dt>
+            <dd className="text-right">{age} ans</dd>
           </div>
-          <div className="flex justify-between">
-            <dt>Poste</dt>
-            <dd>{POSITION_LABELS[player.position] ?? player.position}</dd>
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0">Poste</dt>
+            <dd className="text-right">{POSITION_LABELS[player.position] ?? player.position}</dd>
           </div>
-          <div className="flex justify-between">
-            <dt>Pied fort</dt>
-            <dd>{STRONG_FOOT_LABELS[player.strongFoot] ?? player.strongFoot}</dd>
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0">Pied fort</dt>
+            <dd className="text-right">{STRONG_FOOT_LABELS[player.strongFoot] ?? player.strongFoot}</dd>
           </div>
           {player.club && (
             <div className="flex justify-between">
               <dt>Club</dt>
-              <dd>{player.club}</dd>
+              <dd className="text-right">{player.club}</dd>
             </div>
           )}
         </dl>
-        <Button href={`/joueurs/${player.slug}`} variant="secondary" size="sm" className="mt-4">
+        <Button href={`/joueurs/${player.slug}`} variant="secondary" size="sm" className="mt-auto">
           Voir le profil
         </Button>
       </div>

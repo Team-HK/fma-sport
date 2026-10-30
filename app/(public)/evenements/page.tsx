@@ -62,7 +62,7 @@ function EventCard({ event, past = false }: { event: Event; past?: boolean }) {
         </ul>
         <Link
           href={`/evenements/${event.slug}`}
-          className="mt-4 inline-block text-sm font-semibold text-accent hover:underline"
+          className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-accent hover:underline"
         >
           {past ? "Voir les résultats" : "Voir les informations"}
         </Link>

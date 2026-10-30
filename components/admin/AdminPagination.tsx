@@ -42,7 +42,7 @@ export function AdminPagination({ currentPage, totalPages }: { currentPage: numb
         onClick={() => go(currentPage - 1)}
         disabled={currentPage <= 1}
         aria-label="Page précédente"
-        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[10px] text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-11 w-11 cursor-pointer sm:h-9 sm:w-9 items-center justify-center rounded-[10px] text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronLeft className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -59,7 +59,7 @@ export function AdminPagination({ currentPage, totalPages }: { currentPage: numb
             onClick={() => go(p)}
             aria-current={p === currentPage ? "page" : undefined}
             className={cn(
-              "flex h-9 min-w-9 cursor-pointer items-center justify-center rounded-[10px] px-2.5 text-sm font-medium transition-colors",
+              "flex h-11 min-w-11 cursor-pointer sm:h-9 sm:min-w-9 items-center justify-center rounded-[10px] px-2.5 text-sm font-medium transition-colors",
               p === currentPage
                 ? "bg-primary text-on-primary"
                 : "text-foreground hover:bg-muted"
@@ -75,7 +75,7 @@ export function AdminPagination({ currentPage, totalPages }: { currentPage: numb
         onClick={() => go(currentPage + 1)}
         disabled={currentPage >= totalPages}
         aria-label="Page suivante"
-        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[10px] text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-11 w-11 cursor-pointer sm:h-9 sm:w-9 items-center justify-center rounded-[10px] text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronRight className="h-4 w-4" aria-hidden="true" />
       </button>

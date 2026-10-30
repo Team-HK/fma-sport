@@ -343,7 +343,46 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
             {stats.length > 0 && (
               <section>
                 <SectionTitle>Statistiques par saison</SectionTitle>
-                <div className="mt-4 overflow-x-auto rounded-lg border border-border">
+                <ul className="mt-4 space-y-3 sm:hidden">
+                  {stats.map((s) => (
+                    <li key={s.id} className="rounded-xl border border-border p-4">
+                      <p className="font-semibold text-foreground">{s.season}</p>
+                      <p className="text-sm text-muted-foreground">{s.competition}</p>
+                      <dl className="mt-3 grid grid-cols-4 gap-2 text-center">
+                        {[
+                          ["MJ", s.matches],
+                          ["Buts", s.goals],
+                          ["PD", s.assists],
+                          ["Min.", s.minutesPlayed.toLocaleString("fr-FR")],
+                        ].map(([label, value]) => (
+                          <div key={label} className="rounded-lg bg-muted px-1 py-2">
+                            <dd className="font-semibold tabular-nums text-foreground">{value}</dd>
+                            <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</dt>
+                          </div>
+                        ))}
+                      </dl>
+                    </li>
+                  ))}
+                  {stats.length > 1 && (
+                    <li className="rounded-xl bg-primary p-4 text-on-primary">
+                      <p className="font-semibold">Total</p>
+                      <dl className="mt-3 grid grid-cols-4 gap-2 text-center">
+                        {[
+                          ["MJ", totals.matches],
+                          ["Buts", totals.goals],
+                          ["PD", totals.assists],
+                          ["Min.", totals.minutes.toLocaleString("fr-FR")],
+                        ].map(([label, value]) => (
+                          <div key={label}>
+                            <dd className="font-semibold tabular-nums">{value}</dd>
+                            <dt className="text-[11px] uppercase tracking-wide text-white/70">{label}</dt>
+                          </div>
+                        ))}
+                      </dl>
+                    </li>
+                  )}
+                </ul>
+                <div className="mt-4 hidden overflow-x-auto rounded-lg border border-border sm:block">
                   <table className="w-full min-w-[520px] text-sm">
                     <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
                       <tr>
@@ -440,7 +479,7 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
             )}
 
             <div className="border-t border-border pt-6">
-              <ShareButtons title={`${fullName} — ${positionLabel} | FMA SPORT`} />
+              <ShareButtons title={`${fullName} — ${positionLabel} | FMA SPORT`} url={`${SITE_URL}/joueurs/${player.slug}`} />
             </div>
           </div>
 
@@ -513,7 +552,7 @@ export default async function PlayerProfilePage({ params }: { params: Promise<Pa
                 Tous les talents →
               </Link>
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-6 lg:grid-cols-4">
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
               {similar.map((p) => (
                 <PlayerCard key={p.id} player={p} />
               ))}

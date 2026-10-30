@@ -15,8 +15,8 @@ export async function Footer() {
       <AdSlot placement="FOOTER" className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8" />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-[1fr_1.5fr_1fr]">
-          <div>
+        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-[1fr_1.5fr_1fr]">
+          <div className="sm:col-span-2 lg:col-span-1">
             <Logo size={48} />
             <p className="mt-3 max-w-xs text-sm italic text-muted-foreground">
               « Le Média qui vit le foot. »
@@ -38,12 +38,12 @@ export async function Footer() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">
               Navigation
             </h2>
-            <ul className="mt-4 grid grid-cols-2 gap-x-8 gap-y-2.5">
+            <ul className="mt-3 grid grid-cols-2 gap-x-6 lg:gap-x-8">
               {footerLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                    className="inline-flex min-h-11 items-center text-sm text-muted-foreground transition-colors hover:text-primary lg:min-h-9"
                   >
                     {link.label}
                   </Link>
@@ -56,12 +56,12 @@ export async function Footer() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">
               Informations
             </h2>
-            <ul className="mt-4 space-y-2">
+            <ul className="mt-3">
               {LEGAL_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                    className="inline-flex min-h-11 items-center text-sm text-muted-foreground transition-colors hover:text-primary lg:min-h-9"
                   >
                     {link.label}
                   </Link>
@@ -71,7 +71,7 @@ export async function Footer() {
             <p className="mt-4 text-sm text-muted-foreground">{settings?.address || "Dakar, Sénégal"}</p>
             <a
               href={`mailto:${settings?.email || "footballmediaafriquesport@gmail.com"}`}
-              className="text-sm text-muted-foreground transition-colors hover:text-primary"
+              className="inline-flex min-h-11 items-center text-sm text-muted-foreground transition-colors hover:text-primary lg:min-h-9"
             >
               {settings?.email || "footballmediaafriquesport@gmail.com"}
             </a>
@@ -80,7 +80,7 @@ export async function Footer() {
                 {settings?.phone && (
                   <a
                     href={`tel:${settings.phone.replace(/\s+/g, "")}`}
-                    className="transition-colors hover:text-primary"
+                    className="inline-flex min-h-11 items-center transition-colors hover:text-primary lg:min-h-9"
                   >
                     {settings.phone}
                   </a>
@@ -89,7 +89,7 @@ export async function Footer() {
                 {settings?.phone2 && (
                   <a
                     href={`tel:${settings.phone2.replace(/\s+/g, "")}`}
-                    className="transition-colors hover:text-primary"
+                    className="inline-flex min-h-11 items-center transition-colors hover:text-primary lg:min-h-9"
                   >
                     {settings.phone2}
                   </a>

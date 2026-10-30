@@ -232,7 +232,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         )}
 
         <div className="mt-10 border-t border-border pt-6">
-          <ShareButtons title={article.title} />
+          <ShareButtons title={article.title} url={`${SITE_URL}/actualites/${article.slug}`} />
         </div>
       </div>
 

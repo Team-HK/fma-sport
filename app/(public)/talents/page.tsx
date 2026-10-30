@@ -89,7 +89,7 @@ export default async function TalentsPage({
         {players.length === 0 ? (
           <p className="mt-10 text-center text-muted-foreground">Aucun talent publié pour le moment.</p>
         ) : (
-          <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {players.map((player) => (
               <PlayerCard key={player.id} player={player} />
             ))}

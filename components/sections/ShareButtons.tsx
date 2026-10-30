@@ -4,9 +4,13 @@ import { useState } from "react";
 import { Link2, Check } from "lucide-react";
 import { FacebookIcon, XIcon } from "@/components/ui/SocialIcons";
 
-export function ShareButtons({ title }: { title: string }) {
+/**
+ * `url` is the page's canonical address, passed by the server: reading
+ * `window.location` while rendering made the server HTML differ from the
+ * browser's (hydration mismatch) and left the share links without an address.
+ */
+export function ShareButtons({ title, url }: { title: string; url: string }) {
   const [copied, setCopied] = useState(false);
-  const url = typeof window !== "undefined" ? window.location.href : "";
 
   async function handleCopy() {
     try {
@@ -53,7 +57,7 @@ export function ShareButtons({ title }: { title: string }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Partager sur ${link.label}`}
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-muted text-foreground transition-colors hover:bg-primary hover:text-on-primary"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-muted text-foreground transition-colors hover:bg-primary hover:text-on-primary"
         >
           {link.icon}
         </a>
@@ -62,7 +66,7 @@ export function ShareButtons({ title }: { title: string }) {
         type="button"
         onClick={handleCopy}
         aria-label="Copier le lien"
-        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-muted text-foreground transition-colors hover:bg-primary hover:text-on-primary"
+        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-muted text-foreground transition-colors hover:bg-primary hover:text-on-primary"
       >
         {copied ? <Check className="h-5 w-5" aria-hidden="true" /> : <Link2 className="h-5 w-5" aria-hidden="true" />}
       </button>
