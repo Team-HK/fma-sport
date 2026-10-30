@@ -6,6 +6,11 @@ import { VIDEO_CATEGORY_LABELS, VIDEO_PLATFORM_LABELS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Play, Clapperboard, ExternalLink } from "lucide-react";
 
+/** Imported titles sometimes keep Markdown leftovers ("# Title", "word\."): clean them for display. */
+function cleanText(text: string) {
+  return text.replace(/^\s*#+\s*/, "").replace(/\\([.!?,;:'"()[\]-])/g, "$1").trim();
+}
+
 export function VideoCard({ video }: { video: Video }) {
   const isSiteHosted = video.platform === "SITE";
 
@@ -31,13 +36,13 @@ export function VideoCard({ video }: { video: Video }) {
             href={video.url}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Voir la vidéo « ${video.title} » (ouvre un nouvel onglet)`}
+            aria-label={`Voir la vidéo « ${cleanText(video.title)} » (ouvre un nouvel onglet)`}
             className="block h-full w-full"
           >
             {video.thumbnail ? (
               <Image
                 src={video.thumbnail}
-                alt={video.title}
+                alt={cleanText(video.title)}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -65,9 +70,9 @@ export function VideoCard({ video }: { video: Video }) {
           {VIDEO_CATEGORY_LABELS[video.category] ?? video.category}
         </Badge>
         <h3 className="mt-2 line-clamp-2 font-heading text-base font-semibold text-foreground">
-          {video.title}
+          {cleanText(video.title)}
         </h3>
-        <p className="mt-1 line-clamp-2 flex-1 text-sm text-muted-foreground">{video.description}</p>
+        <p className="mt-1 line-clamp-2 flex-1 text-sm text-muted-foreground">{cleanText(video.description)}</p>
         {video.publishedAt && (
           <p className="mt-3 text-xs text-muted-foreground/80">{formatDate(video.publishedAt)}</p>
         )}
