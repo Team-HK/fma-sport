@@ -108,3 +108,24 @@ export async function getPollResults(pollId: string): Promise<PollResults> {
 
   return { totalBallots, questions: results };
 }
+
+export type PollSecuritySummary = {
+  /** Connections (hashed IPs) that cast several ballots. */
+  repeatNetworks: number;
+  /** Largest number of ballots coming from a single connection. */
+  maxFromOneNetwork: number;
+};
+
+/** Signals ballot stuffing to the admin: many ballots from the same connection. */
+export async function getPollSecuritySummary(pollId: string): Promise<PollSecuritySummary> {
+  const groups = await prisma.pollBallot.groupBy({
+    by: ["ipHash"],
+    where: { pollId, ipHash: { not: null } },
+    _count: { _all: true },
+  });
+  const repeat = groups.filter((g) => g._count._all >= 5);
+  return {
+    repeatNetworks: repeat.length,
+    maxFromOneNetwork: groups.reduce((max, g) => Math.max(max, g._count._all), 0),
+  };
+}

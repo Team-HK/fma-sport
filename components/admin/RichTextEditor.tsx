@@ -86,11 +86,14 @@ export function RichTextEditor({
   label,
   defaultValue = "",
   placeholder = "Rédigez votre article…",
+  onUploadImage = uploadFile,
 }: {
   name: string;
   label: string;
   defaultValue?: string;
   placeholder?: string;
+  /** Uploads an image and returns its URL. Defaults to the real storage upload. */
+  onUploadImage?: (file: File) => Promise<string>;
 }) {
   const [html, setHtml] = useState(defaultValue);
   const [uploading, setUploading] = useState(false);
@@ -106,7 +109,7 @@ export function RichTextEditor({
     setUploading(true);
     try {
       for (const file of files) {
-        const src = await uploadFile(file);
+        const src = await onUploadImage(file);
         const alt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
         editor.chain().focus().setImage({ src, alt }).run();
       }

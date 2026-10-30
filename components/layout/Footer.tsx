@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { FOOTER_LINKS, LEGAL_LINKS } from "@/lib/constants";
+import { FOOTER_LINKS, LEGAL_LINKS, POLLS_LINK, withPollsLink } from "@/lib/constants";
+import { getPublicPolls } from "@/lib/polls";
 import { SocialLinks } from "./SocialLinks";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { Logo } from "@/components/ui/Logo";
@@ -7,12 +8,14 @@ import { getSiteSettings } from "@/lib/queries";
 
 export async function Footer() {
   const settings = await getSiteSettings().catch(() => null);
+  const hasPolls = ((await getPublicPolls().catch(() => [])) ?? []).length > 0;
+  const footerLinks = withPollsLink(FOOTER_LINKS, hasPolls, POLLS_LINK as never);
   return (
     <footer className="mt-auto border-t border-border bg-card">
       <AdSlot placement="FOOTER" className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8" />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-[1fr_1.5fr_1fr]">
           <div>
             <Logo size={48} />
             <p className="mt-3 max-w-xs text-sm italic text-muted-foreground">
@@ -35,8 +38,8 @@ export async function Footer() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">
               Navigation
             </h2>
-            <ul className="mt-4 space-y-2">
-              {FOOTER_LINKS.map((link) => (
+            <ul className="mt-4 grid grid-cols-2 gap-x-8 gap-y-2.5">
+              {footerLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

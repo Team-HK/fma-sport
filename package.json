@@ -10,6 +10,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "test:e2e": "playwright test",
     "seed:demo": "tsx prisma/seed-demo.ts",
+    "seed:poll": "tsx prisma/seed-poll.ts",
     "seed:demo:clear": "tsx prisma/seed-demo.ts --clear",
     "postinstall": "prisma generate"
   },

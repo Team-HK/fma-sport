@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getPollResults } from "@/lib/polls";
+import { getPollResults, getPollSecuritySummary } from "@/lib/polls";
 import { PollResults } from "@/components/sections/PollResults";
 import { PollForm } from "../PollForm";
 import { ResetVotesButton } from "../RowActions";
@@ -19,7 +19,7 @@ export default async function EditPollPage({ params }: { params: Promise<{ id: s
   });
   if (!poll || poll.deletedAt) notFound();
 
-  const results = await getPollResults(poll.id);
+  const [results, security] = await Promise.all([getPollResults(poll.id), getPollSecuritySummary(poll.id)]);
 
   return (
     <div>
@@ -55,6 +55,20 @@ export default async function EditPollPage({ params }: { params: Promise<{ id: s
           <h2 className="font-heading text-lg font-semibold text-foreground">Résultats en direct</h2>
           <ResetVotesButton id={poll.id} votes={results.totalBallots} />
         </div>
+        {security.repeatNetworks > 0 ? (
+          <p role="alert" className="mt-4 rounded-lg bg-destructive-soft px-4 py-3 text-sm text-destructive-soft-foreground">
+            Activité inhabituelle : {security.repeatNetworks} connexion{security.repeatNetworks > 1 ? "s ont" : " a"} voté
+            5 fois ou plus (maximum : {security.maxFromOneNetwork} votes depuis une même connexion). Sur mobile, plusieurs
+            personnes peuvent partager une connexion ; en cas de doute, vérifiez le classement.
+          </p>
+        ) : (
+          results.totalBallots > 0 && (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Aucune activité inhabituelle détectée (maximum : {security.maxFromOneNetwork} vote
+              {security.maxFromOneNetwork > 1 ? "s" : ""} depuis une même connexion).
+            </p>
+          )
+        )}
         <div className="mt-4">
           <PollResults results={results} />
         </div>

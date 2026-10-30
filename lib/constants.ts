@@ -11,7 +11,6 @@ export const NAV_LINKS = [
   { href: "/equipe", label: "Notre équipe" },
   { href: "/devenir-joueur", label: "Devenir joueur" },
   { href: "/evenements", label: "Événements" },
-  { href: "/sondages", label: "Sondages" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -41,7 +40,6 @@ export const DESKTOP_NAV_ITEMS = [
     ],
   },
   { type: "link", href: "/evenements", label: "Événements" },
-  { type: "link", href: "/sondages", label: "Sondages" },
   { type: "link", href: "/contact", label: "Contact" },
 ] as const;
 
@@ -52,7 +50,6 @@ export const FOOTER_LINKS = [
   { href: "/management", label: "Management sportif" },
   { href: "/equipe", label: "Notre équipe" },
   { href: "/devenir-joueur", label: "Devenir joueur" },
-  { href: "/sondages", label: "Sondages" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -244,3 +241,15 @@ export const INTERNATIONAL_COMPETITIONS = [
   "Europa League",
   "Coupe du monde",
 ] as const;
+
+/** The polls entry only exists in menus while at least one poll is public. */
+export const POLLS_LINK = { href: "/sondages", label: "Sondages" } as const;
+
+/** Inserts the polls link just before "Contact" when there is something to vote on. */
+export function withPollsLink<T>(links: readonly T[], hasPolls: boolean, link: T): T[] {
+  if (!hasPolls) return [...links];
+  const index = links.findIndex((item) => (item as { href?: string }).href === "/contact");
+  const copy = [...links];
+  copy.splice(index === -1 ? copy.length : index, 0, link);
+  return copy;
+}

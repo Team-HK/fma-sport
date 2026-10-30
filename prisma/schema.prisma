@@ -550,12 +550,15 @@ model PollBallot {
   voterHash String
   // Salted hash of the IP, only used to rate-limit abuse (shared mobile IPs are common).
   ipHash    String?
+  // Salted hash of IP + browser: a looser cap catches "clear cookies and vote again".
+  deviceHash String?
   createdAt DateTime   @default(now())
 
   votes     PollVote[]
 
   @@unique([pollId, voterHash])
   @@index([pollId, ipHash, createdAt])
+  @@index([pollId, deviceHash])
   @@map("poll_ballots")
 }
 

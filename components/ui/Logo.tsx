@@ -17,6 +17,7 @@ export function Logo({
       alt="FMA SPORT"
       width={size}
       height={size}
+      style={{ width: size, height: "auto" }}
       className={cn("shrink-0 object-contain", !onDark && className)}
       priority
     />

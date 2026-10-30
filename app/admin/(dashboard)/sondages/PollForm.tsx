@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { ArrowDown, ArrowUp, ListPlus, Plus, Trash2, Wand2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ListPlus, Plus, Trash2 } from "lucide-react";
 import { Input, Label, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageField } from "@/components/ui/ImageField";
@@ -58,11 +58,23 @@ const newQuestion = (title = "", picks = 1): QuestionDraft => ({
 const toLocalInput = (date: Date | null) =>
   date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "";
 
+type QuestionType = "single" | "ranked" | "multiple";
+
+const questionType = (q: Pick<QuestionDraft, "picks" | "ranked">): QuestionType =>
+  q.picks === 1 ? "single" : q.ranked ? "ranked" : "multiple";
+
 const selectClass =
   "w-full rounded-[10px] border border-border bg-card px-4 py-3 text-base text-foreground";
 
-export function PollForm({ poll }: { poll?: PollFormData }) {
-  const action = savePoll.bind(null, poll?.id ?? null);
+export function PollForm({
+  poll,
+  save,
+}: {
+  poll?: PollFormData;
+  /** Replaces the real save action (used by the local mock preview). */
+  save?: (prev: PollActionState, formData: FormData) => Promise<PollActionState>;
+}) {
+  const action = save ?? savePoll.bind(null, poll?.id ?? null);
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [questions, setQuestions] = useState<QuestionDraft[]>(() =>
     poll
@@ -97,6 +109,16 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
     );
   }
 
+  function setQuestionType(key: string, type: QuestionType) {
+    setQuestions((current) =>
+      current.map((q) => {
+        if (q.key !== key) return q;
+        if (type === "single") return { ...q, picks: 1, ranked: true };
+        return { ...q, picks: Math.max(2, q.picks), ranked: type === "ranked" };
+      })
+    );
+  }
+
   function moveQuestion(index: number, direction: -1 | 1) {
     setQuestions((current) => {
       const target = index + direction;
@@ -124,14 +146,6 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
     );
   }
 
-  function applyBallonDorTemplate() {
-    setQuestions([
-      newQuestion("Ballon d'Or européen", 6),
-      newQuestion("Ballon d'Or africain", 6),
-      newQuestion("Super Ballon d'Or GOAT", 4),
-    ]);
-  }
-
   const structure = JSON.stringify(
     questions.map((q) => ({
       id: q.id,
@@ -154,7 +168,7 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
       <section className="space-y-4">
         <div>
           <Label htmlFor="title">Titre du sondage *</Label>
-          <Input id="title" name="title" defaultValue={poll?.title} required placeholder="Sondage Ballons d'Or 2026" />
+          <Input id="title" name="title" defaultValue={poll?.title} required placeholder="Ex. : Joueur du mois" />
         </div>
         <div>
           <Label htmlFor="description">Description</Label>
@@ -163,7 +177,7 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
             name="description"
             rows={3}
             defaultValue={poll?.description ?? ""}
-            placeholder="Expliquez en une phrase comment voter."
+            placeholder="Expliquez en une phrase le but du sondage."
           />
         </div>
         <ImageField id="coverImage" name="coverImage" label="Image de couverture" defaultValue={poll?.coverImage} />
@@ -194,18 +208,12 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-heading text-lg font-semibold text-foreground">Questions</h2>
-          {!poll && (
-            <Button type="button" variant="soft" size="sm" onClick={applyBallonDorTemplate}>
-              <Wand2 className="h-3.5 w-3.5" aria-hidden="true" />
-              Modèle Ballon d&apos;Or (3 questions)
-            </Button>
-          )}
         </div>
 
         {poll?.hasVotes && (
           <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
-            Des votes existent déjà. Vous pouvez corriger un nom ou ajouter des candidats, mais retirer un candidat
-            supprime les votes qu&apos;il a reçus, et changer le nombre de choix peut fausser les résultats.
+            Des votes existent déjà. Vous pouvez corriger un intitulé ou ajouter des réponses, mais retirer une réponse
+            supprime les votes qu&apos;elle a reçus, et changer le nombre de choix peut fausser les résultats.
           </p>
         )}
 
@@ -218,20 +226,37 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
                   id={`q-title-${q.key}`}
                   value={q.title}
                   onChange={(e) => updateQuestion(q.key, { title: e.target.value })}
-                  placeholder="Ballon d'Or européen"
+                  placeholder="Ex. : Quel est votre match préféré ?"
                 />
               </div>
-              <div className="w-32">
-                <Label htmlFor={`q-picks-${q.key}`}>Joueurs à choisir</Label>
-                <Input
-                  id={`q-picks-${q.key}`}
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={q.picks}
-                  onChange={(e) => updateQuestion(q.key, { picks: Math.max(1, Math.min(20, Number(e.target.value) || 1)) })}
-                />
+              <div className="w-full sm:w-56">
+                <Label htmlFor={`q-type-${q.key}`}>Type de question</Label>
+                <select
+                  id={`q-type-${q.key}`}
+                  value={questionType(q)}
+                  onChange={(e) => setQuestionType(q.key, e.target.value as QuestionType)}
+                  className={selectClass}
+                >
+                  <option value="single">Un seul choix</option>
+                  <option value="ranked">Classement (Top N)</option>
+                  <option value="multiple">Plusieurs choix (sans ordre)</option>
+                </select>
               </div>
+              {q.picks > 1 && (
+                <div className="w-28">
+                  <Label htmlFor={`q-picks-${q.key}`}>Nombre de choix</Label>
+                  <Input
+                    id={`q-picks-${q.key}`}
+                    type="number"
+                    min={2}
+                    max={20}
+                    value={q.picks}
+                    onChange={(e) =>
+                      updateQuestion(q.key, { picks: Math.max(2, Math.min(20, Number(e.target.value) || 2)) })
+                    }
+                  />
+                </div>
+              )}
               <div className="flex items-end gap-1 pt-6">
                 <button
                   type="button"
@@ -263,18 +288,17 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
               </div>
             </div>
 
-            <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-foreground">
-              <input
-                type="checkbox"
-                checked={q.ranked}
-                onChange={(e) => updateQuestion(q.key, { ranked: e.target.checked })}
-              />
-              Classement (1er, 2e, 3e…) : le 1er vaut {q.picks} point{q.picks > 1 ? "s" : ""}, le dernier 1 point
-            </label>
+            <p className="mt-3 text-xs text-muted-foreground">
+              {questionType(q) === "single"
+                ? "Le visiteur choisit une seule réponse."
+                : questionType(q) === "ranked"
+                  ? `Le visiteur classe ses ${q.picks} favoris : le 1er vaut ${q.picks} points, le dernier 1 point.`
+                  : `Le visiteur choisit ${q.picks} réponses : chaque réponse compte 1 point.`}
+            </p>
 
             <div className="mt-4 space-y-2">
               <p className="text-sm font-medium text-foreground">
-                Candidats ({q.options.length}){q.options.length < q.picks && (
+                Réponses proposées ({q.options.length}){q.options.length < q.picks && (
                   <span className="ml-2 text-xs text-destructive">il en faut au moins {Math.max(2, q.picks)}</span>
                 )}
               </p>
@@ -282,18 +306,18 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
                 <div key={o.key} className="flex flex-wrap items-center gap-2 rounded-lg bg-muted/50 p-2">
                   <span className="w-6 text-center text-xs text-muted-foreground">{oi + 1}</span>
                   <Input
-                    aria-label={`Nom du candidat ${oi + 1}`}
+                    aria-label={`Réponse ${oi + 1}`}
                     className="min-w-[160px] flex-1"
                     value={o.name}
                     onChange={(e) => updateOption(q.key, o.key, { name: e.target.value })}
-                    placeholder="Lamine Yamal"
+                    placeholder="Intitulé de la réponse"
                   />
                   <Input
-                    aria-label={`Club du candidat ${oi + 1}`}
+                    aria-label={`Détail de la réponse ${oi + 1}`}
                     className="min-w-[140px] flex-1"
                     value={o.club}
                     onChange={(e) => updateOption(q.key, o.key, { club: e.target.value })}
-                    placeholder="Club (optionnel)"
+                    placeholder="Détail (optionnel) : club, équipe…"
                   />
                   <div className="w-full sm:w-64">
                     <ImageField
@@ -306,7 +330,7 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
                   </div>
                   <button
                     type="button"
-                    aria-label={`Retirer le candidat ${oi + 1}`}
+                    aria-label={`Retirer la réponse ${oi + 1}`}
                     onClick={() =>
                       setQuestions((current) =>
                         current.map((x) =>
@@ -329,7 +353,7 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
                   onClick={() => updateQuestion(q.key, { options: [...q.options, newOption()] })}
                 >
                   <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                  Ajouter un candidat
+                  Ajouter une réponse
                 </Button>
                 <Button
                   type="button"
@@ -344,16 +368,16 @@ export function PollForm({ poll }: { poll?: PollFormData }) {
 
               {q.showBulk && (
                 <div className="space-y-2 rounded-lg border border-border p-3">
-                  <Label htmlFor={`bulk-${q.key}`}>Un candidat par ligne : « Nom, Club »</Label>
+                  <Label htmlFor={`bulk-${q.key}`}>Une réponse par ligne : « Intitulé, Détail »</Label>
                   <Textarea
                     id={`bulk-${q.key}`}
                     rows={5}
                     value={q.bulk}
                     onChange={(e) => updateQuestion(q.key, { bulk: e.target.value })}
-                    placeholder={"Lamine Yamal, FC Barcelone\nHarry Kane, Bayern Munich\nKylian Mbappé, Real Madrid"}
+                    placeholder={"Réponse A, détail\nRéponse B, détail\nRéponse C"}
                   />
                   <Button type="button" size="sm" onClick={() => addBulk(q.key)}>
-                    Ajouter ces candidats
+                    Ajouter ces réponses
                   </Button>
                 </div>
               )}
