@@ -5,6 +5,7 @@ import { Input, Label, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
 import { ImageField } from "@/components/ui/ImageField";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
 import { upsertArticle, type ArticleActionState } from "@/app/actions/admin/articles";
 import type { Article } from "@prisma/client";
@@ -85,16 +86,7 @@ export function ArticleForm({
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="content">Contenu (HTML autorisé) *</Label>
-                  <Textarea
-                    id="content"
-                    name="content"
-                    rows={10}
-                    defaultValue={article?.content}
-                    required
-                  />
-                </div>
+                <RichTextEditor name="content" label="Contenu *" defaultValue={article?.content ?? ""} />
                 <ImageField
                   id="coverImage"
                   name="coverImage"

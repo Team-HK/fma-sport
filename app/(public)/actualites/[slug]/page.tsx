@@ -12,6 +12,8 @@ import { getArticleBySlug, getRelatedArticles } from "@/lib/queries";
 import { ARTICLE_CATEGORY_LABELS, SITE_URL } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { absoluteUrl } from "@/lib/seo";
+import { ARTICLE_BODY_CLASSES } from "@/lib/article-body";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
 
 export const revalidate = 300;
 
@@ -211,8 +213,8 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <div
-          className="max-w-none text-[1.0625rem] leading-[1.8] text-foreground [&_a]:text-accent [&_a]:underline [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:font-heading [&_h3]:text-xl [&_h3]:font-semibold [&_li]:my-1 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-4 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6"
-          dangerouslySetInnerHTML={{ __html: article.content }}
+          className={ARTICLE_BODY_CLASSES}
+          dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(article.content) }}
         />
 
         {article.tags.length > 0 && (

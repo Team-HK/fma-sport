@@ -7,6 +7,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 import { slugify } from "@/lib/utils";
+import { sanitizeArticleHtml, isEmptyHtml } from "@/lib/sanitize";
 import { logAdminAction } from "@/lib/audit-log";
 
 const articleSchema = z.object({
@@ -38,6 +39,10 @@ export async function upsertArticle(
   }
 
   const data = parsed.data;
+  const content = sanitizeArticleHtml(data.content);
+  if (isEmptyHtml(content)) {
+    return { success: false, message: "Le contenu de l'article est vide." };
+  }
   const tags = data.tags
     ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
     : [];
@@ -58,7 +63,7 @@ export async function upsertArticle(
         data: {
           title: data.title,
           excerpt: data.excerpt,
-          content: data.content,
+          content,
           coverImage: data.coverImage || null,
           category: data.category as never,
           country: data.country || null,
@@ -86,7 +91,7 @@ export async function upsertArticle(
           title: data.title,
           slug: slugify(data.title),
           excerpt: data.excerpt,
-          content: data.content,
+          content,
           coverImage: data.coverImage || null,
           category: data.category as never,
           country: data.country || null,
