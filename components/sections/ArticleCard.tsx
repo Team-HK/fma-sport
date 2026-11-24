@@ -1,16 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Article } from "@prisma/client";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
+import { getCategoryLabels } from "@/lib/article-categories";
 import { formatDate } from "@/lib/utils";
 
-export function ArticleCard({
+export async function ArticleCard({
   article,
   priority = false,
 }: {
   article: Article;
   priority?: boolean;
 }) {
+  const labels = await getCategoryLabels();
   return (
     <article className="group">
       <Link href={`/actualites/${article.slug}`} className="block">
@@ -28,7 +29,7 @@ export function ArticleCard({
         </div>
         <div className="pt-4">
           <p className="text-[11px] font-bold uppercase tracking-widest text-accent">
-            {ARTICLE_CATEGORY_LABELS[article.category] ?? article.category}
+            {labels[article.category] ?? article.category}
           </p>
           <h3 className="mt-1.5 line-clamp-2 font-heading text-lg font-semibold leading-snug text-foreground group-hover:text-accent">
             {article.title}

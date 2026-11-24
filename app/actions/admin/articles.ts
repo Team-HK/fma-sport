@@ -39,6 +39,8 @@ export async function upsertArticle(
   }
 
   const data = parsed.data;
+  const knownCategory = await prisma.articleCategory.findUnique({ where: { slug: data.category }, select: { slug: true } });
+  if (!knownCategory) return { success: false, message: "Cette catégorie n'existe plus. Choisissez-en une autre." };
   const content = sanitizeArticleHtml(data.content);
   if (isEmptyHtml(content)) {
     return { success: false, message: "Le contenu de l'article est vide." };
@@ -65,7 +67,7 @@ export async function upsertArticle(
           excerpt: data.excerpt,
           content,
           coverImage: data.coverImage || null,
-          category: data.category as never,
+          category: data.category,
           country: data.country || null,
           competition: data.competition || null,
           tags,
@@ -93,7 +95,7 @@ export async function upsertArticle(
           excerpt: data.excerpt,
           content,
           coverImage: data.coverImage || null,
-          category: data.category as never,
+          category: data.category,
           country: data.country || null,
           competition: data.competition || null,
           tags,

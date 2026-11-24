@@ -5,14 +5,17 @@ import { Button } from "@/components/ui/Button";
 import { Pencil } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ArticleForm, type ArticleWriterOption } from "./ArticleForm";
+import type { ArticleCategoryItem } from "@/lib/article-categories";
 import type { Article } from "@prisma/client";
 
 export function EditArticleModal({
   article,
   writers,
+  categories,
 }: {
   article: Article;
   writers: ArticleWriterOption[];
+  categories: ArticleCategoryItem[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -23,7 +26,7 @@ export function EditArticleModal({
         Modifier
       </Button>
       <Modal open={open} onClose={() => setOpen(false)} title="Modifier l'article" maxWidth="max-w-2xl">
-        <ArticleForm article={article} writers={writers} onSuccess={() => setOpen(false)} />
+        <ArticleForm article={article} writers={writers} categories={categories} onSuccess={() => setOpen(false)} />
       </Modal>
     </>
   );

@@ -59,15 +59,22 @@ enum ArticleStatus {
   PUBLISHED
 }
 
-enum ArticleCategory {
-  SENEGAL
-  AFRIQUE
-  INTERNATIONAL
-  MERCATO
-  CAN
-  LIGUE_DES_CHAMPIONS
-  JEUNES_TALENTS
-  SELECTIONS_NATIONALES
+// Article categories are data, managed from the back-office (Admin > Catégories).
+// `slug` is the stable code stored on each article and used in URLs (?categorie=SENEGAL).
+model ArticleCategory {
+  slug      String    @id
+  label     String
+  order     Int       @default(0)
+  active    Boolean   @default(true)
+  // Used by dedicated public pages (Afrique, International): can't be deleted or deactivated.
+  locked    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  articles  Article[]
+
+  @@index([active, order])
+  @@map("article_categories")
 }
 
 model Article {
@@ -77,7 +84,8 @@ model Article {
   excerpt       String
   content       String
   coverImage    String?
-  category      ArticleCategory
+  category      String
+  categoryRef   ArticleCategory @relation(fields: [category], references: [slug], onUpdate: Cascade)
   tags          String[]        @default([])
   country       String?
   competition   String?

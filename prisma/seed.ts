@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { DEFAULT_ARTICLE_CATEGORIES } from "../lib/constants";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import {
@@ -21,8 +22,20 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+/** Article categories are data: make sure the default ones exist before inserting articles (never overwrites edits). */
+async function ensureDefaultCategories() {
+  for (const [index, c] of DEFAULT_ARTICLE_CATEGORIES.entries()) {
+    await prisma.articleCategory.upsert({
+      where: { slug: c.slug },
+      update: {},
+      create: { slug: c.slug, label: c.label, order: index + 1, locked: c.locked },
+    });
+  }
+}
+
 async function main() {
   console.log("Seeding FMA SPORT (données fictives, contexte Sénégal)...");
+  await ensureDefaultCategories();
 
   // The admin password is never stored in the repository: take it from SEED_ADMIN_PASSWORD,
   // or generate a random one and show it once at the end.
