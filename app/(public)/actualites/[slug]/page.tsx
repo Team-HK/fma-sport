@@ -9,7 +9,8 @@ import { ArticleViewTracker } from "@/components/sections/ArticleViewTracker";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { Logo } from "@/components/ui/Logo";
 import { getArticleBySlug, getRelatedArticles } from "@/lib/queries";
-import { ARTICLE_CATEGORY_LABELS, SITE_URL } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
+import { getCategoryLabels } from "@/lib/article-categories";
 import { formatDate } from "@/lib/utils";
 import { absoluteUrl } from "@/lib/seo";
 import { ARTICLE_BODY_CLASSES } from "@/lib/article-body";
@@ -57,7 +58,7 @@ export async function generateMetadata({
       images: article.coverImage ? [{ url: article.coverImage, alt: article.title }] : undefined,
       publishedTime: article.publishedAt?.toISOString(),
       modifiedTime: article.updatedAt.toISOString(),
-      section: ARTICLE_CATEGORY_LABELS[article.category] ?? article.category,
+      section: (await getCategoryLabels())[article.category] ?? article.category,
       tags: article.tags,
     },
     twitter: {
@@ -80,7 +81,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   const related = await getRelatedArticles(article.category, article.slug);
   const writer =
     article.writer && article.writer.visible && !article.writer.deletedAt ? article.writer : null;
-  const categoryLabel = ARTICLE_CATEGORY_LABELS[article.category] ?? article.category;
+  const categoryLabel = (await getCategoryLabels())[article.category] ?? article.category;
   const minutes = readingMinutes(article.content);
   const wasUpdated =
     article.publishedAt && article.updatedAt.getTime() - article.publishedAt.getTime() > 60 * 60 * 1000;

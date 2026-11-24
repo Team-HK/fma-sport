@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Newspaper, Users, Video, Mail, Eye, FileText } from "lucide-react";
 import { DonutChart } from "@/components/admin/DonutChart";
 import { Sparkline } from "@/components/admin/Sparkline";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
+import { getCategoryLabels } from "@/lib/article-categories";
 import { statusMeta } from "@/lib/admin-ui";
 
 export const dynamic = "force-dynamic";
@@ -94,10 +94,11 @@ export default async function AdminDashboardPage() {
     { label: "Vues cumulées", value: viewsAgg._sum.views ?? 0, icon: Eye, color: "#8b5cf6" },
   ];
 
+  const categoryLabels = await getCategoryLabels();
   const categoryChartData = articlesByCategory
     .sort((a, b) => b._count._all - a._count._all)
     .map((row, i) => ({
-      label: ARTICLE_CATEGORY_LABELS[row.category] ?? row.category,
+      label: categoryLabels[row.category] ?? row.category,
       value: row._count._all,
       color: CHART_COLORS[i % CHART_COLORS.length],
     }));

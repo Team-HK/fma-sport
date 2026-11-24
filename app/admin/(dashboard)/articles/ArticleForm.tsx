@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
 import { ImageField } from "@/components/ui/ImageField";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
+import Link from "next/link";
+import type { ArticleCategoryItem } from "@/lib/article-categories";
 import { upsertArticle, type ArticleActionState } from "@/app/actions/admin/articles";
 import type { Article } from "@prisma/client";
 
@@ -17,10 +18,12 @@ export type ArticleWriterOption = { id: string; name: string; role: string };
 export function ArticleForm({
   article,
   writers = [],
+  categories = [],
   onSuccess,
 }: {
   article?: Article;
   writers?: ArticleWriterOption[];
+  categories?: ArticleCategoryItem[];
   onSuccess?: () => void;
 }) {
   const action = upsertArticle.bind(null, article?.id ?? null);
@@ -112,12 +115,23 @@ export function ArticleForm({
                       className="w-full rounded-[10px] border border-border bg-card px-4 py-3 text-base text-foreground"
                     >
                       <option value="">Sélectionner...</option>
-                      {Object.entries(ARTICLE_CATEGORY_LABELS).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
+                      {categories
+                        // Inactive categories can't be chosen for new content, but the one an article already uses stays listed.
+                        .filter((c) => c.active || c.slug === article?.category)
+                        .map((c) => (
+                          <option key={c.slug} value={c.slug}>
+                            {c.label}
+                            {c.active ? "" : " (désactivée)"}
+                          </option>
+                        ))}
                     </select>
+                    <Link
+                      href="/admin/categories"
+                      target="_blank"
+                      className="mt-1.5 inline-block text-xs font-medium text-primary hover:underline"
+                    >
+                      Gérer les catégories
+                    </Link>
                   </div>
                   <div>
                     <Label htmlFor="status">Statut *</Label>

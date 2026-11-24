@@ -7,7 +7,8 @@
  * these fictional players, FMA SPORT's own activity and general advice — no
  * invented quotes or results about real people.
  */
-import { PrismaClient, type PlayerPosition, type StrongFoot, type ArticleCategory } from "@prisma/client";
+import { PrismaClient, type PlayerPosition, type StrongFoot } from "@prisma/client";
+import { DEFAULT_ARTICLE_CATEGORIES } from "../lib/constants";
 import { ARTICLE_COVER_IMAGES, HERO_IMAGES } from "../lib/stock-images";
 import { slugify } from "../lib/utils";
 
@@ -223,7 +224,7 @@ type DemoArticle = {
   title: string;
   excerpt: string;
   content: string;
-  category: ArticleCategory;
+  category: string;
   tags: string[];
   country?: string;
   publishedAt: Date;
@@ -337,11 +338,23 @@ const GUIDES: { title: string; excerpt: string; body: string }[] = [
   { title: "Blessures fréquentes chez les jeunes footballeurs et comment les prévenir", excerpt: "Entorses, tendinites, douleurs de croissance : prévenir plutôt que guérir.", body: "<h2>L'échauffement</h2><p>Quinze minutes d'échauffement progressif réduisent fortement le risque de blessure.</p><h2>Écouter son corps</h2><p>Une douleur qui persiste plus de quelques jours doit être examinée. Jouer blessé retarde toujours le retour.</p>" },
 ];
 
+/** Article categories are data: make sure the default ones exist before inserting articles (never overwrites edits). */
+async function ensureDefaultCategories() {
+  for (const [index, c] of DEFAULT_ARTICLE_CATEGORIES.entries()) {
+    await prisma.articleCategory.upsert({
+      where: { slug: c.slug },
+      update: {},
+      create: { slug: c.slug, label: c.label, order: index + 1, locked: c.locked },
+    });
+  }
+}
+
 async function main() {
   if (process.argv.includes("--clear")) {
     await clear();
     return;
   }
+  await ensureDefaultCategories();
   await clear();
 
   console.log("Creating 200 demo players...");

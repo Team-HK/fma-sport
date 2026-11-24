@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminItemRow } from "@/components/admin/AdminItemRow";
 import { AdminPagination } from "@/components/admin/AdminPagination";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
+import { getArticleCategories } from "@/lib/article-categories";
 import { statusMeta } from "@/lib/admin-ui";
 import { formatDate } from "@/lib/utils";
 import { parsePage, paginationArgs, ADMIN_PAGE_SIZE } from "@/lib/pagination";
@@ -27,8 +27,11 @@ export default async function AdminArticlesPage({
     deletedAt: showTrash ? { not: null } : null,
     ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
     ...(status ? { status: status as never } : {}),
-    ...(category ? { category: category as never } : {}),
+    ...(category ? { category } : {}),
   };
+
+  const categories = await getArticleCategories();
+  const categoryLabels = Object.fromEntries(categories.map((c) => [c.slug, c.label]));
 
   const [total, articles, writers] = await Promise.all([
     prisma.article.count({ where }),
@@ -66,6 +69,11 @@ export default async function AdminArticlesPage({
               </>
             )}
           </Button>
+          {!showTrash && (
+            <Button href="/admin/categories" variant="ghost" size="sm">
+              Catégories
+            </Button>
+          )}
           {!showTrash && <Button href="/admin/articles/new">Nouvel article</Button>}
         </div>
       </div>
@@ -87,10 +95,7 @@ export default async function AdminArticlesPage({
               {
                 param: "category",
                 label: "Toutes les catégories",
-                options: Object.entries(ARTICLE_CATEGORY_LABELS).map(([value, label]) => ({
-                  value,
-                  label,
-                })),
+                options: categories.map((c) => ({ value: c.slug, label: c.active ? c.label : `${c.label} (désactivée)` })),
               },
             ]}
           />
@@ -107,7 +112,7 @@ export default async function AdminArticlesPage({
               badges={
                 <>
                   <StatusBadge tone="info">
-                    {ARTICLE_CATEGORY_LABELS[article.category] ?? article.category}
+                    {categoryLabels[article.category] ?? article.category}
                   </StatusBadge>
                   <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
                 </>
@@ -126,7 +131,7 @@ export default async function AdminArticlesPage({
                 ) : (
                   <>
                     <TogglePublishButton id={article.id} status={article.status} />
-                    <EditArticleModal article={article} writers={writers} />
+                    <EditArticleModal article={article} writers={writers} categories={categories} />
                     <DeleteArticleButton id={article.id} />
                   </>
                 )

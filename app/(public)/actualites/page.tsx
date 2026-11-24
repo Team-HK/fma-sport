@@ -7,10 +7,9 @@ import { ArticleCard } from "@/components/sections/ArticleCard";
 import { getPublishedArticles, getPublishedArticleCount, getMostReadArticles } from "@/lib/queries";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { parsePage } from "@/lib/pagination";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
+import { getActiveCategories, getCategoryLabels } from "@/lib/article-categories";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { formatDate } from "@/lib/utils";
-import type { ArticleCategory } from "@prisma/client";
 
 const PAGE_SIZE = 18;
 
@@ -27,8 +26,8 @@ export default async function ActualitesPage({
 }) {
   const { categorie, page } = await searchParams;
   const currentPage = parsePage(page);
-  const category =
-    categorie && categorie in ARTICLE_CATEGORY_LABELS ? (categorie as ArticleCategory) : undefined;
+  const [labels, filterCategories] = await Promise.all([getCategoryLabels(), getActiveCategories()]);
+  const category = categorie && categorie in labels ? categorie : undefined;
 
   // Page 1 shows a lead story above the grid, so it takes one extra article.
   const skip = currentPage === 1 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
@@ -56,10 +55,7 @@ export default async function ActualitesPage({
           basePath="/actualites"
           paramName="categorie"
           active={categorie}
-          options={Object.entries(ARTICLE_CATEGORY_LABELS).map(([value, label]) => ({
-            value,
-            label,
-          }))}
+          options={filterCategories.map((c) => ({ value: c.slug, label: c.label }))}
         />
 
         {articles.length === 0 ? (
@@ -85,7 +81,7 @@ export default async function ActualitesPage({
                     )}
                   </div>
                   <p className="mt-4 text-xs font-bold uppercase tracking-widest text-accent">
-                    {ARTICLE_CATEGORY_LABELS[lead.category] ?? lead.category}
+                    {labels[lead.category] ?? lead.category}
                   </p>
                   <h2 className="mt-2 font-heading text-2xl font-bold leading-tight text-foreground group-hover:text-accent sm:text-3xl">
                     {lead.title}
@@ -113,7 +109,7 @@ export default async function ActualitesPage({
                         </span>
                         <span>
                           <span className="block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                            {ARTICLE_CATEGORY_LABELS[item.category] ?? item.category}
+                            {labels[item.category] ?? item.category}
                           </span>
                           <span className="mt-0.5 line-clamp-2 block text-sm font-semibold text-foreground group-hover:text-accent">
                             {item.title}

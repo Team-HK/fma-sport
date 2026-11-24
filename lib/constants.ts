@@ -68,16 +68,21 @@ export const SOCIAL_LINKS = [
   { href: "https://x.com/fmasport", label: "X", key: "x" },
 ] as const;
 
-export const ARTICLE_CATEGORY_LABELS: Record<string, string> = {
-  SENEGAL: "Sénégal",
-  AFRIQUE: "Afrique",
-  INTERNATIONAL: "International",
-  MERCATO: "Mercato",
-  CAN: "CAN",
-  LIGUE_DES_CHAMPIONS: "Ligue des champions",
-  JEUNES_TALENTS: "Jeunes talents",
-  SELECTIONS_NATIONALES: "Sélections nationales",
-};
+/**
+ * Categories shipped by default. They are only the starting values: the live list is the
+ * `article_categories` table, edited in Admin > Catégories (see lib/article-categories.ts).
+ * "locked" ones feed dedicated public pages and can't be deleted.
+ */
+export const DEFAULT_ARTICLE_CATEGORIES = [
+  { slug: "SENEGAL", label: "Sénégal", locked: false },
+  { slug: "AFRIQUE", label: "Afrique", locked: true },
+  { slug: "INTERNATIONAL", label: "International", locked: true },
+  { slug: "MERCATO", label: "Mercato", locked: false },
+  { slug: "CAN", label: "CAN", locked: false },
+  { slug: "LIGUE_DES_CHAMPIONS", label: "Ligue des champions", locked: false },
+  { slug: "JEUNES_TALENTS", label: "Jeunes talents", locked: false },
+  { slug: "SELECTIONS_NATIONALES", label: "Sélections nationales", locked: false },
+] as const;
 
 export const VIDEO_CATEGORY_LABELS: Record<string, string> = {
   INTERVIEWS: "Interviews",

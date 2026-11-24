@@ -13,7 +13,7 @@ import {
   getActiveHeroSlides,
   getVisibleTeamMembers,
 } from "@/lib/queries";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/constants";
+import { getCategoryLabels } from "@/lib/article-categories";
 import { HERO_IMAGES } from "@/lib/stock-images";
 import { AdSlot } from "@/components/sections/AdSlot";
 import { NewsWire } from "@/components/sections/NewsWire";
@@ -40,6 +40,7 @@ export default async function HomePage() {
     getVisibleTeamMembers(4).catch(() => []),
   ]);
 
+  const categoryLabels = await getCategoryLabels();
   const [featured, ...secondary] = articles;
   const slides = heroSlides.length > 0 ? heroSlides : DEFAULT_HERO_SLIDES;
 
@@ -86,7 +87,7 @@ export default async function HomePage() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase text-primary">
-                      {ARTICLE_CATEGORY_LABELS[article.category] ?? article.category}
+                      {categoryLabels[article.category] ?? article.category}
                     </p>
                     <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary">
                       {article.title}

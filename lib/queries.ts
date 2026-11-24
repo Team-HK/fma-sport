@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { cachedQuery } from "@/lib/cache";
-import type { ArticleCategory, AdPlacement } from "@prisma/client";
+import type { AdPlacement } from "@prisma/client";
 
 // An article counts as publicly visible once it's PUBLISHED, or once a
 // SCHEDULED article's publishedAt date has passed — there is no cron job to
@@ -16,7 +16,7 @@ function publiclyVisibleArticle() {
 }
 
 type ArticleFilters = {
-  category?: ArticleCategory;
+  category?: string;
   country?: string;
   competition?: string;
 };
@@ -67,7 +67,7 @@ export const getArticleBySlug = cachedQuery("getArticleBySlug", async (slug: str
   return isVisible ? article : null;
 });
 
-export const getRelatedArticles = cachedQuery("getRelatedArticles", async (category: ArticleCategory, excludeSlug: string) => {
+export const getRelatedArticles = cachedQuery("getRelatedArticles", async (category: string, excludeSlug: string) => {
   return prisma.article.findMany({
     where: { status: "PUBLISHED", deletedAt: null, category, slug: { not: excludeSlug } },
     orderBy: { publishedAt: "desc" },
