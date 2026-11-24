@@ -2,7 +2,11 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFloatButton } from "@/components/layout/WhatsAppFloatButton";
 import { getSiteSettings } from "@/lib/queries";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { SITE_URL } from "@/lib/constants";
+
+// Google Analytics measurement ID ("G-XXXXXXXXXX"). Ignored unless it looks valid.
+const GA_ID = /^G-[A-Z0-9]{6,}$/.test(process.env.NEXT_PUBLIC_GA_ID ?? "") ? process.env.NEXT_PUBLIC_GA_ID : undefined;
 
 /** Name variants people (and search engines) may use for the brand. */
 const BRAND_ALTERNATE_NAMES = ["FMASPORT", "FMA Sport", "FMA SPORT Sénégal", "fmasport.com"];
@@ -62,6 +66,8 @@ export default async function PublicLayout({ children }: { children: React.React
       <main className="flex-1">{children}</main>
       <Footer />
       <WhatsAppFloatButton />
+      {/* Public pages only (never the admin). Enabled by setting NEXT_PUBLIC_GA_ID in Vercel (Production). */}
+      {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </div>
   );
 }
